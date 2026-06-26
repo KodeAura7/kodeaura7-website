@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mydomain.com/sitemap.xml
+Sitemap: https://kodeaura7.in/sitemap.xml

@@ -49,7 +49,7 @@ Frontend: deploy `frontend/` to Vercel using `frontend/vercel.json`.
 
 Backend: deploy `backend/` to Render using `backend/render.yaml`.
 
-Production branch: `main` at `https://mydomain.com`.
+Production branch: `main` at `https://kodeaura7.in`.
 
 Sandbox branch: `develop` at `https://staging.mydomain.com`.
 

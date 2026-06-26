@@ -2,8 +2,8 @@ export const site = {
   name: 'KodeAura7',
   email: 'info@kodeaura7.in',
   location: 'Dehradun, Uttarakhand, India',
-  productionUrl: 'https://mydomain.com',
-  stagingUrl: 'https://staging.mydomain.com'
+productionUrl: 'https://kodeaura7.in',
+stagingUrl: 'https://staging.kodeaura7.in'
 };
 
 export const navLinks = [
