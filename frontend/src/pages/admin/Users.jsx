@@ -186,6 +186,7 @@ function StatusDot({ status }) {
 
 export default function Users() {
   const { user: me } = useAuth();
+  const isSuperAdmin = me?.role === 'super_admin';
   const [users, setUsers] = useState(null);
   const [rollup, setRollup] = useState(null);
   const [modal, setModal] = useState(null); // null | 'create' | user object
@@ -241,13 +242,17 @@ export default function Users() {
             {users ? `${users.length} user${users.length !== 1 ? 's' : ''}` : '—'}
           </p>
         </div>
-        <button
-          onClick={() => setModal('create')}
-          className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)]"
-        >
-          <Icon icon="solar:user-plus-linear" width={16} />
-          Create User
-        </button>
+        {isSuperAdmin ? (
+          <button
+            onClick={() => setModal('create')}
+            className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)]"
+          >
+            <Icon icon="solar:user-plus-linear" width={16} />
+            Create User
+          </button>
+        ) : (
+          <span className="text-xs text-zinc-600 font-mono">View only</span>
+        )}
       </div>
 
       {error ? (
@@ -264,17 +269,19 @@ export default function Users() {
                     {h}
                   </th>
                 ))}
-                <th className="px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider text-right">Actions</th>
+                {isSuperAdmin ? (
+                  <th className="px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider text-right">Actions</th>
+                ) : null}
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-800/60">
               {!users ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td>
+                  <td colSpan={isSuperAdmin ? 7 : 6} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-sm text-zinc-600">No users found.</td>
+                  <td colSpan={isSuperAdmin ? 7 : 6} className="px-4 py-10 text-center text-sm text-zinc-600">No users found.</td>
                 </tr>
               ) : (
                 users.map((u) => (
@@ -289,25 +296,27 @@ export default function Users() {
                     <td className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">
                       {new Date(u.created_at).toLocaleDateString()}
                     </td>
-                    <td className="px-4 py-3 text-right whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => setModal(u)}
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all"
-                          title="Edit"
-                        >
-                          <Icon icon="solar:pen-linear" width={15} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(u)}
-                          disabled={deleting === u.id || u.id === me?.id}
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-30"
-                          title={u.id === me?.id ? "Can't delete yourself" : 'Delete'}
-                        >
-                          <Icon icon="solar:trash-bin-minimalistic-linear" width={15} />
-                        </button>
-                      </div>
-                    </td>
+                    {isSuperAdmin ? (
+                      <td className="px-4 py-3 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => setModal(u)}
+                            className="p-1.5 rounded-lg text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all"
+                            title="Edit"
+                          >
+                            <Icon icon="solar:pen-linear" width={15} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(u)}
+                            disabled={deleting === u.id || u.id === me?.id}
+                            className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-30"
+                            title={u.id === me?.id ? "Can't delete yourself" : 'Delete'}
+                          >
+                            <Icon icon="solar:trash-bin-minimalistic-linear" width={15} />
+                          </button>
+                        </div>
+                      </td>
+                    ) : null}
                   </tr>
                 ))
               )}

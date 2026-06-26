@@ -9,7 +9,7 @@ import {
 } from '../controllers/adminContactController.js';
 import { exportCsv as exportNewsletter, list as listNewsletter, remove as removeNewsletter } from '../controllers/adminNewsletterController.js';
 import { getDashboard } from '../controllers/dashboardController.js';
-import { adminList as listTestimonials, updateVisibility as updateTestimonialVisibility } from '../controllers/testimonialsController.js';
+import { adminList as listTestimonials, updateSortOrder as updateTestimonialOrder, updateVisibility as updateTestimonialVisibility } from '../controllers/testimonialsController.js';
 import { create as createUser, list as listUsers, remove as removeUser, rollup as userRollup, update as updateUser } from '../controllers/usersController.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { authorize } from '../middleware/authorize.js';
@@ -35,9 +35,10 @@ router.delete('/newsletter/:id', asyncHandler(removeNewsletter));
 
 router.get('/testimonials', asyncHandler(listTestimonials));
 router.patch('/testimonials/:id/visibility', asyncHandler(updateTestimonialVisibility));
+router.patch('/testimonials/:id/order', asyncHandler(updateTestimonialOrder));
 
 router.get('/users/rollup', asyncHandler(userRollup));
-router.get('/users', authorize('super_admin'), asyncHandler(listUsers));
+router.get('/users', asyncHandler(listUsers));
 router.post('/users', authorize('super_admin'), asyncHandler(createUser));
 router.put('/users/:id', authorize('super_admin'), asyncHandler(updateUser));
 router.delete('/users/:id', authorize('super_admin'), asyncHandler(removeUser));

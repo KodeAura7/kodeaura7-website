@@ -3,7 +3,8 @@ import {
   getUserTestimonial,
   listAllTestimonials,
   setVisibility,
-  submitTestimonial
+  submitTestimonial,
+  updateOrder
 } from '../services/testimonialsService.js';
 
 export async function publicList(_request, response) {
@@ -27,6 +28,11 @@ export async function adminList(_request, response) {
 }
 
 export async function updateVisibility(request, response) {
-  const result = await setVisibility(request.params.id, request.body.visible);
+  const result = await setVisibility(request.params.id, request.body.visible, request.user.sub);
+  response.status(200).json(result);
+}
+
+export async function updateSortOrder(request, response) {
+  const result = await updateOrder(request.params.id, request.body.sort_order);
   response.status(200).json(result);
 }

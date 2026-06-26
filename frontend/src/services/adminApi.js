@@ -75,6 +75,8 @@ export const adminApi = {
   testimonials: () => request('/api/admin/testimonials'),
   updateTestimonialVisibility: (id, visible) =>
     request(`/api/admin/testimonials/${id}/visibility`, { method: 'PATCH', body: JSON.stringify({ visible }) }),
+  updateTestimonialOrder: (id, sort_order) =>
+    request(`/api/admin/testimonials/${id}/order`, { method: 'PATCH', body: JSON.stringify({ sort_order }) }),
 
   users: () => request('/api/admin/users'),
   createUser: (data) =>
