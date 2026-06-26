@@ -111,7 +111,8 @@ export async function forgotPassword(email) {
 
   const resetUrl = `${env.frontendUrl}/reset-password/${rawToken}`;
 
-  await sendMail({
+  try {
+    await sendMail({
     to: user.email,
     subject: 'Reset your KodeAura7 password',
     html: `<!DOCTYPE html>
@@ -138,7 +139,10 @@ export async function forgotPassword(email) {
   </table>
 </body>
 </html>`
-  });
+    });
+  } catch (mailErr) {
+    console.error('[mailer] Failed to send password reset email:', mailErr.message);
+  }
 }
 
 export async function signupUser(payload) {
