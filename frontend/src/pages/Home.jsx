@@ -15,7 +15,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
           <div className="fade-up inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/50 border border-zinc-800 text-xs font-medium text-zinc-300 backdrop-blur-sm mb-8">
             <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" /></span>
-           Test r Trusted by 150+ businesses across India
+            Trusted by 150+ businesses across India
           </div>
           <h1 className="fade-up delay-1 font-display font-semibold text-5xl md:text-7xl tracking-tighter leading-[1.04] mb-6 max-w-4xl mx-auto">
             We Build <span className="text-gradient">Growth Systems</span> That Drive Results.
