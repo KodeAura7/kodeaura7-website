@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Icon from '../../components/Icon';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import { adminApi } from '../../services/adminApi';
 
 const ROLES = ['admin', 'super_admin'];

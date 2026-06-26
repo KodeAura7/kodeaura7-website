@@ -1,8 +1,7 @@
 import { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
+import { AlreadyAuthed, ProtectedRoute } from '../components/ProtectedRoute';
 import AdminLayout from '../layouts/AdminLayout';
-import { useAuth } from '../contexts/AuthContext';
-import Loader from '../components/Loader';
 
 const Home = lazy(() => import('../pages/Home.jsx'));
 const Services = lazy(() => import('../pages/Services.jsx'));
@@ -14,20 +13,6 @@ const Dashboard = lazy(() => import('../pages/admin/Dashboard.jsx'));
 const Contacts = lazy(() => import('../pages/admin/Contacts.jsx'));
 const Newsletter = lazy(() => import('../pages/admin/Newsletter.jsx'));
 const Users = lazy(() => import('../pages/admin/Users.jsx'));
-
-function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth();
-  if (loading) return <Loader />;
-  if (!user) return <Navigate to="/sign-in" replace />;
-  return children;
-}
-
-function AlreadyAuthed({ children }) {
-  const { user, loading } = useAuth();
-  if (loading) return <Loader />;
-  if (user) return <Navigate to="/admin/dashboard" replace />;
-  return children;
-}
 
 export const routes = [
   { path: '/', element: <Home /> },

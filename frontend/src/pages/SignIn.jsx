@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import AmbientBackground from '../components/AmbientBackground';
 import Icon from '../components/Icon';
 import SEO from '../components/SEO';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 export default function SignIn() {
   const navigate = useNavigate();

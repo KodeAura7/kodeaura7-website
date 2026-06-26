@@ -1,6 +1,5 @@
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
-import { createRequire } from 'module';
 import pg from 'pg';
 
 dotenv.config();

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import Icon from '../components/Icon';
 import Logo from '../components/Logo';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 const NAV = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: 'solar:widget-2-linear' },
