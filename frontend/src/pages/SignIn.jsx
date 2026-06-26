@@ -23,8 +23,11 @@ export default function SignIn() {
     setError('');
     setLoading(true);
     try {
-      await login(values);
-      navigate('/admin/dashboard', { replace: true });
+      const authUser = await login(values);
+      const dest = ['admin', 'super_admin'].includes(authUser.role)
+        ? '/admin/dashboard'
+        : '/welcome';
+      navigate(dest, { replace: true });
     } catch (err) {
       setError(err.message || 'Sign in failed. Please try again.');
     } finally {
@@ -131,7 +134,10 @@ export default function SignIn() {
             <Icon icon="logos:google-icon" width={18} /> Sign in with Google
           </button>
           <div className="text-center mt-6 space-y-0.5">
-            <p className="text-xs text-zinc-600">Having trouble accessing your account?</p>
+            <p className="text-xs text-zinc-600">
+              Don&apos;t have an account?{' '}
+              <Link to="/sign-up" className="text-zinc-500 hover:text-zinc-300 transition-colors">Sign up</Link>
+            </p>
             <p className="text-xs text-zinc-600">Contact support at <a href="mailto:info@kodeaura7.in" className="text-zinc-500 hover:text-zinc-300 transition-colors">info@kodeaura7.in</a></p>
           </div>
           <div className="flex items-center gap-1.5 justify-center mt-4 text-[10px] font-mono text-zinc-700">

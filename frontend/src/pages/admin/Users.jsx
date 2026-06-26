@@ -3,7 +3,7 @@ import Icon from '../../components/Icon';
 import { useAuth } from '../../hooks/useAuth';
 import { adminApi } from '../../services/adminApi';
 
-const ROLES = ['admin', 'super_admin'];
+const ROLES = ['customer', 'admin', 'super_admin'];
 const STATUSES = ['active', 'inactive'];
 
 function UserModal({ initial, onClose, onSaved }) {

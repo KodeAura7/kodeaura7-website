@@ -4,7 +4,7 @@ import { query } from '../database/pool.js';
 import { sanitize } from '../utils/sanitize.js';
 
 const SALT_ROUNDS = 12;
-const VALID_ROLES = new Set(['super_admin', 'admin']);
+const VALID_ROLES = new Set(['super_admin', 'admin', 'customer']);
 const VALID_STATUSES = new Set(['active', 'inactive']);
 
 export async function listUsers() {

@@ -30,6 +30,13 @@ export function AuthProvider({ children }) {
       sessionStorage.setItem('admin_token', token);
     }
     setUser(authUser);
+    return authUser;
+  }, []);
+
+  // Used after signup to inject the session without a second server round-trip.
+  const setSession = useCallback((token, authUser) => {
+    localStorage.setItem('admin_token', token);
+    setUser(authUser);
   }, []);
 
   const logout = useCallback(() => {
@@ -39,7 +46,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, setSession }}>
       {children}
     </AuthContext.Provider>
   );

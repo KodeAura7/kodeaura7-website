@@ -131,6 +131,39 @@ export async function forgotPassword(email) {
   */
 }
 
+export async function signupUser(payload) {
+  const name = sanitize(payload.name || '').trim();
+  const email = sanitize(payload.email || '').toLowerCase();
+  const password = String(payload.password || '');
+  const confirmPassword = String(payload.confirmPassword || '');
+
+  if (!name) throw Object.assign(new Error('Name is required.'), { status: 400 });
+  if (!validator.isEmail(email)) throw Object.assign(new Error('Please enter a valid email address.'), { status: 400 });
+  if (password.length < 8) throw Object.assign(new Error('Password must be at least 8 characters.'), { status: 400 });
+  if (password !== confirmPassword) throw Object.assign(new Error('Passwords do not match.'), { status: 400 });
+
+  const existing = await query('SELECT id FROM admin_users WHERE email = $1', [email]);
+  if (existing.rows[0]) throw Object.assign(new Error('An account with this email already exists.'), { status: 409 });
+
+  const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+
+  const result = await query(
+    `INSERT INTO admin_users (name, email, password_hash, role, status)
+     VALUES ($1, $2, $3, 'customer', 'active')
+     RETURNING id, name, email, role`,
+    [name, email, passwordHash]
+  );
+
+  const user = result.rows[0];
+  const token = jwt.sign(
+    { sub: user.id, email: user.email, role: user.role, name: user.name },
+    env.jwtSecret,
+    { expiresIn: env.jwtExpiresIn }
+  );
+
+  return { token, user };
+}
+
 export async function resetPassword(rawToken, newPassword, confirmPassword) {
   if (!rawToken || typeof rawToken !== 'string' || rawToken.length !== 64) {
     const error = new Error('Invalid or expired reset link.');
