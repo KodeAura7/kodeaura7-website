@@ -18,7 +18,7 @@ export async function myTestimonial(request, response) {
 }
 
 export async function submit(request, response) {
-  const item = await submitTestimonial(request.user.sub, request.body);
+  const item = await submitTestimonial(request.user.sub, request.body, request.user);
   response.status(200).json(item);
 }
 

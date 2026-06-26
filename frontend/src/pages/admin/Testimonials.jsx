@@ -95,7 +95,7 @@ export default function Testimonials() {
 
   // Own review form
   const [reviewOpen, setReviewOpen] = useState(false);
-  const [reviewForm, setReviewForm] = useState({ designation: '', rating: 0, review: '' });
+  const [reviewForm, setReviewForm] = useState({ name: '', designation: '', rating: 0, review: '' });
   const [reviewLoading, setReviewLoading] = useState(false);
   const [reviewSaving, setReviewSaving] = useState(false);
   const [reviewExists, setReviewExists] = useState(false);
@@ -115,8 +115,10 @@ export default function Testimonials() {
     api.myTestimonial()
       .then((data) => {
         if (data) {
-          setReviewForm({ designation: data.designation, rating: data.rating, review: data.review });
+          setReviewForm({ name: data.name, designation: data.designation, rating: data.rating, review: data.review });
           setReviewExists(true);
+        } else {
+          setReviewForm((p) => ({ ...p, name: user?.name ?? '' }));
         }
       })
       .catch(() => null)
@@ -130,7 +132,7 @@ export default function Testimonials() {
     setReviewSaving(true);
     setReviewMsg({ type: '', text: '' });
     try {
-      await api.submitTestimonial({ name: user?.name, ...reviewForm });
+      await api.submitTestimonial(reviewForm);
       setReviewExists(true);
       setReviewMsg({ type: 'success', text: reviewExists ? 'Review updated.' : 'Review submitted. It will appear on site once you approve it.' });
       load();
@@ -208,12 +210,14 @@ export default function Testimonials() {
             <form onSubmit={handleReviewSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-zinc-400">Your Name</label>
+                  <label className="text-xs font-medium text-zinc-400">Display Name <span className="text-rose-500">*</span></label>
                   <input
                     type="text"
-                    value={user?.name ?? ''}
-                    readOnly
-                    className="w-full bg-zinc-900/60 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-500 cursor-not-allowed"
+                    value={reviewForm.name}
+                    onChange={(e) => setReviewForm((p) => ({ ...p, name: e.target.value }))}
+                    placeholder="Name shown on the testimonial"
+                    required
+                    className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all"
                   />
                 </div>
                 <div className="space-y-1.5">

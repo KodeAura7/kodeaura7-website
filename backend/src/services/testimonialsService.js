@@ -20,8 +20,12 @@ export async function getUserTestimonial(userId) {
   return result.rows[0] ?? null;
 }
 
-export async function submitTestimonial(userId, payload) {
-  const name = sanitize(payload.name || '').trim();
+const ADMIN_ROLES = new Set(['admin', 'super_admin']);
+
+export async function submitTestimonial(userId, payload, caller) {
+  const isAdmin = ADMIN_ROLES.has(caller?.role);
+  const nameFromPayload = sanitize(payload.name || '').trim();
+  const name = isAdmin ? nameFromPayload : sanitize(caller?.name || '').trim();
   const designation = sanitize(payload.designation || '').trim();
   const review = sanitize(payload.review || '').trim();
   const rating = parseInt(payload.rating);
