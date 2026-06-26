@@ -66,8 +66,9 @@ export default function Welcome() {
       .finally(() => setNewsletterLoading(false));
 
     api
-      .myTestimonial()
-      .then((data) => {
+      .myTestimonials()
+      .then((rows) => {
+        const data = rows?.[0];
         if (data) {
           setReview({ designation: data.designation, rating: data.rating, review: data.review });
           setReviewExists(true);

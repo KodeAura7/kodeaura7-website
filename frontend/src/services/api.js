@@ -43,6 +43,8 @@ export const api = {
   newsletterUnsubscribe: () => authRequest('/api/customer/newsletter', { method: 'DELETE' }),
 
   testimonials: () => authRequest('/api/testimonials'),
-  myTestimonial: () => authGet('/api/testimonials/mine'),
-  submitTestimonial: (payload) => authRequest('/api/testimonials', { method: 'POST', body: JSON.stringify(payload) })
+  myTestimonials: () => authGet('/api/testimonials/mine'),
+  submitTestimonial: (payload) => authRequest('/api/testimonials', { method: 'POST', body: JSON.stringify(payload) }),
+  updateTestimonial: (id, payload) => authRequest(`/api/testimonials/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
+  deleteTestimonial: (id) => authRequest(`/api/testimonials/${id}`, { method: 'DELETE' })
 };
