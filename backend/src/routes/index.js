@@ -6,6 +6,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import authRoutes from './auth.js';
 import adminRoutes from './admin.js';
 import customerRoutes from './customer.js';
+import testimonialsRoutes from './testimonials.js';
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.post('/newsletter', asyncHandler(postNewsletter));
 router.use('/auth', authRoutes);
 router.use('/admin', adminRoutes);
 router.use('/customer', customerRoutes);
+router.use('/testimonials', testimonialsRoutes);
 
 export default router;

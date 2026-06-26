@@ -8,6 +8,7 @@ const NAV = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: 'solar:widget-2-linear' },
   { to: '/admin/contacts', label: 'Contacts', icon: 'solar:users-group-two-rounded-linear' },
   { to: '/admin/newsletter', label: 'Newsletter', icon: 'solar:letter-linear' },
+  { to: '/admin/testimonials', label: 'Testimonials', icon: 'solar:star-linear' },
   { to: '/admin/users', label: 'Users', icon: 'solar:user-circle-linear' }
 ];
 

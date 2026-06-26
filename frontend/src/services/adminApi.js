@@ -72,6 +72,10 @@ export const adminApi = {
     request(`/api/admin/newsletter/${id}`, { method: 'DELETE' }),
   exportNewsletter: () => downloadCsv('/api/admin/newsletter/export', 'newsletter.csv'),
 
+  testimonials: () => request('/api/admin/testimonials'),
+  updateTestimonialVisibility: (id, visible) =>
+    request(`/api/admin/testimonials/${id}/visibility`, { method: 'PATCH', body: JSON.stringify({ visible }) }),
+
   users: () => request('/api/admin/users'),
   createUser: (data) =>
     request('/api/admin/users', { method: 'POST', body: JSON.stringify(data) }),

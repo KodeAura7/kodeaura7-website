@@ -37,7 +37,7 @@ export default function SignIn() {
 
   return (
     <div className="antialiased selection:bg-indigo-500/30 overflow-x-hidden min-h-screen flex items-center justify-center relative">
-      <SEO title="Sign In" path="/sign-in" description="KodeAura7 admin portal sign in." />
+      <SEO title="Sign In" path="/sign-in" description="Sign in to your KodeAura7 account." />
       <AmbientBackground compact />
       <Link to="/" className="fixed top-6 left-6 inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors z-10 whitespace-nowrap">
         <Icon icon="solar:arrow-left-linear" width={14} /> Back to site
@@ -50,10 +50,9 @@ export default function SignIn() {
               <div className="w-4 h-4 bg-[#09090B] rounded-sm" />
             </div>
             <span className="font-display font-semibold text-lg mt-3">KodeAura7</span>
-            <span className="bg-zinc-900 border border-zinc-800 rounded-full px-3 py-1 text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-2">Admin Portal</span>
           </div>
           <h1 className="font-display font-semibold text-2xl text-zinc-100 text-center mb-1">Welcome back</h1>
-          <p className="text-sm text-zinc-500 text-center">Sign in to access the KodeAura7 admin dashboard.</p>
+          <p className="text-sm text-zinc-500 text-center">Sign in to your KodeAura7 account to continue.</p>
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-zinc-400 ml-0.5">Email Address</label>
@@ -66,7 +65,7 @@ export default function SignIn() {
                   type="email"
                   value={values.email}
                   onChange={handleChange}
-                  placeholder="admin@kodeaura7.in"
+                  placeholder="you@example.com"
                   autoComplete="email"
                   required
                   className="w-full bg-[#18181B] border border-zinc-800 rounded-xl pl-11 pr-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all"
@@ -84,7 +83,7 @@ export default function SignIn() {
                   type={showPassword ? 'text' : 'password'}
                   value={values.password}
                   onChange={handleChange}
-                  placeholder="Password"
+                  placeholder="Your password"
                   autoComplete="current-password"
                   required
                   className="w-full bg-[#18181B] border border-zinc-800 rounded-xl pl-11 pr-11 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all"
@@ -125,14 +124,6 @@ export default function SignIn() {
               {loading ? 'Signing in…' : <>Sign In <Icon icon="solar:arrow-right-linear" width={16} /></>}
             </button>
           </form>
-          <div className="flex items-center gap-4 my-6">
-            <div className="h-px flex-1 bg-zinc-800" />
-            <span className="text-xs text-zinc-600 whitespace-nowrap">or continue with</span>
-            <div className="h-px flex-1 bg-zinc-800" />
-          </div>
-          <button className="w-full bg-[#18181B] border border-zinc-800 rounded-xl py-3 flex items-center justify-center gap-3 hover:border-zinc-600 hover:bg-zinc-800/50 transition-all text-sm text-zinc-300 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
-            <Icon icon="logos:google-icon" width={18} /> Sign in with Google
-          </button>
           <div className="text-center mt-6 space-y-0.5">
             <p className="text-xs text-zinc-600">
               Don&apos;t have an account?{' '}

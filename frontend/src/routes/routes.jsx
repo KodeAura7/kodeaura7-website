@@ -17,6 +17,7 @@ const Dashboard = lazy(() => import('../pages/admin/Dashboard.jsx'));
 const Contacts = lazy(() => import('../pages/admin/Contacts.jsx'));
 const ContactDetail = lazy(() => import('../pages/admin/ContactDetail.jsx'));
 const Newsletter = lazy(() => import('../pages/admin/Newsletter.jsx'));
+const Testimonials = lazy(() => import('../pages/admin/Testimonials.jsx'));
 const Users = lazy(() => import('../pages/admin/Users.jsx'));
 
 export const routes = [
@@ -53,6 +54,7 @@ export const routes = [
       { path: 'contacts', element: <Contacts /> },
       { path: 'contacts/:id', element: <ContactDetail /> },
       { path: 'newsletter', element: <Newsletter /> },
+      { path: 'testimonials', element: <Testimonials /> },
       { path: 'users', element: <Users /> }
     ]
   }

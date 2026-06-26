@@ -1,13 +1,24 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ContactForm from '../components/ContactForm';
 import Icon from '../components/Icon';
 import SEO from '../components/SEO';
 import SiteLayout from '../layouts/SiteLayout';
 import { services, tech } from '../constants/site';
-import { steps, testimonials } from '../constants/content';
+import { steps, testimonials as staticTestimonials } from '../constants/content';
+import { api } from '../services/api';
 
 export default function Home() {
   const marquee = [...tech, ...tech];
+  const [testimonials, setTestimonials] = useState(staticTestimonials);
+
+  useEffect(() => {
+    api.testimonials()
+      .then((data) => {
+        if (data && data.length > 0) setTestimonials(data);
+      })
+      .catch(() => null);
+  }, []);
   return (
     
     <SiteLayout>
@@ -80,7 +91,24 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16"><p className="font-mono text-xs text-zinc-500 tracking-widest uppercase mb-4">Testimonials</p><h2 className="font-display font-semibold text-3xl md:text-5xl tracking-tighter">What Our <span className="text-gradient">Clients Say</span></h2><p className="text-zinc-400 mt-5 max-w-xl mx-auto leading-relaxed">Trusted by businesses across India.</p></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {testimonials.map((t) => <div key={t.name} className="bg-[#111113] rounded-2xl p-6 border border-zinc-800 hover:border-indigo-500/20 hover:shadow-[0_0_30px_rgba(99,102,241,0.07)] transition-all duration-500" style={{ animation: `float 6s ease-in-out ${t.delay} infinite` }}><div className="flex gap-1 mb-4 text-amber-400">{Array.from({ length: 5 }).map((_, i) => <Icon key={i} icon="solar:star-bold" width={16} />)}</div><p className="text-sm text-zinc-300 leading-relaxed font-medium italic">{t.quote}</p><div className="h-px bg-zinc-800 my-5" /><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500/20 to-cyan-500/20 border border-zinc-700 flex items-center justify-center font-display text-xs font-semibold text-zinc-200 shrink-0">{t.initials}</div><div><p className="text-sm text-zinc-100 font-semibold">{t.name}</p><p className="text-xs text-zinc-500">{t.role}</p></div></div></div>)}
+            {testimonials.map((t, idx) => {
+              const quote = t.review ?? t.quote;
+              const role = t.designation ?? t.role;
+              const initials = t.initials ?? t.name?.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+              const delay = t.delay ?? `${(idx % 6) * 0.5}s`;
+              const rating = t.rating ?? 5;
+              return (
+                <div key={t.id ?? t.name} className="bg-[#111113] rounded-2xl p-6 border border-zinc-800 hover:border-indigo-500/20 hover:shadow-[0_0_30px_rgba(99,102,241,0.07)] transition-all duration-500" style={{ animation: `float 6s ease-in-out ${delay} infinite` }}>
+                  <div className="flex gap-1 mb-4 text-amber-400">{Array.from({ length: 5 }).map((_, i) => <Icon key={i} icon={i < rating ? 'solar:star-bold' : 'solar:star-linear'} width={16} />)}</div>
+                  <p className="text-sm text-zinc-300 leading-relaxed font-medium italic">{quote}</p>
+                  <div className="h-px bg-zinc-800 my-5" />
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500/20 to-cyan-500/20 border border-zinc-700 flex items-center justify-center font-display text-xs font-semibold text-zinc-200 shrink-0">{initials}</div>
+                    <div><p className="text-sm text-zinc-100 font-semibold">{t.name}</p><p className="text-xs text-zinc-500">{role}</p></div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

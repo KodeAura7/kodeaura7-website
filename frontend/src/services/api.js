@@ -1,14 +1,21 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
-async function authGet(path) {
+async function authRequest(path, options = {}) {
   const token = localStorage.getItem('admin_token') || sessionStorage.getItem('admin_token');
   const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {}
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {})
+    }
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.message || 'Request failed.');
   return data;
 }
+
+function authGet(path) { return authRequest(path); }
 
 async function postJson(path, payload) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -30,5 +37,12 @@ export const api = {
   forgotPassword: (payload) => postJson('/api/auth/forgot-password', payload),
   resetPassword: (payload) => postJson('/api/auth/reset-password', payload),
   signup: (payload) => postJson('/api/auth/signup', payload),
-  myContacts: () => authGet('/api/customer/contacts')
+  myContacts: () => authGet('/api/customer/contacts'),
+  newsletterStatus: () => authGet('/api/customer/newsletter'),
+  newsletterSubscribe: () => authRequest('/api/customer/newsletter', { method: 'POST' }),
+  newsletterUnsubscribe: () => authRequest('/api/customer/newsletter', { method: 'DELETE' }),
+
+  testimonials: () => authRequest('/api/testimonials'),
+  myTestimonial: () => authGet('/api/testimonials/mine'),
+  submitTestimonial: (payload) => authRequest('/api/testimonials', { method: 'POST', body: JSON.stringify(payload) })
 };

@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import validator from 'validator';
 import { env } from '../config/env.js';
 import { query } from '../database/pool.js';
+import { sendMail } from '../utils/mailer.js';
 import { sanitize } from '../utils/sanitize.js';
 
 const SALT_ROUNDS = 12;
@@ -110,25 +111,34 @@ export async function forgotPassword(email) {
 
   const resetUrl = `${env.frontendUrl}/reset-password/${rawToken}`;
 
-  // Structured log — swap `console.log` call below for your SMTP client when ready.
-  console.log('[Password Reset] Email would be sent:', {
+  await sendMail({
     to: user.email,
-    name: user.name,
-    resetUrl,
-    expiresAt: expiry.toISOString()
+    subject: 'Reset your KodeAura7 password',
+    html: `<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:0;background:#09090B;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 20px;">
+    <tr><td align="center">
+      <table width="480" cellpadding="0" cellspacing="0" style="background:#111113;border:1px solid #27272A;border-radius:16px;padding:40px;">
+        <tr><td style="text-align:center;padding-bottom:24px;">
+          <div style="display:inline-block;width:40px;height:40px;background:linear-gradient(135deg,#6366F1,#06B6D4);border-radius:10px;"></div>
+          <p style="margin:12px 0 0;font-size:18px;font-weight:600;color:#F4F4F5;">KodeAura7</p>
+        </td></tr>
+        <tr><td>
+          <h1 style="margin:0 0 8px;font-size:22px;font-weight:600;color:#F4F4F5;text-align:center;">Reset your password</h1>
+          <p style="margin:0 0 24px;font-size:14px;color:#71717A;text-align:center;">Hi ${user.name}, we received a request to reset your password.</p>
+          <div style="text-align:center;margin-bottom:24px;">
+            <a href="${resetUrl}" style="display:inline-block;background:#6366F1;color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:14px;font-weight:600;">Reset Password</a>
+          </div>
+          <p style="margin:0 0 8px;font-size:12px;color:#52525B;text-align:center;">This link expires in 30 minutes. If you didn't request this, you can safely ignore this email.</p>
+          <p style="margin:0;font-size:11px;color:#3F3F46;text-align:center;word-break:break-all;">${resetUrl}</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
   });
-
-  /*
-  // SMTP example (e.g. nodemailer):
-  await transporter.sendMail({
-    from: '"KodeAura7" <noreply@kodeaura7.in>',
-    to: user.email,
-    subject: 'Reset your KodeAura7 admin password',
-    html: `<p>Hi ${user.name},</p>
-           <p>Click the link below to reset your password (expires in 30 minutes):</p>
-           <p><a href="${resetUrl}">${resetUrl}</a></p>`,
-  });
-  */
 }
 
 export async function signupUser(payload) {

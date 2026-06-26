@@ -22,9 +22,6 @@ export default function AuthCard({ title, description, seoTitle, seoPath, seoDes
               <div className="w-4 h-4 bg-[#09090B] rounded-sm" />
             </div>
             <span className="font-display font-semibold text-lg mt-3">KodeAura7</span>
-            <span className="bg-zinc-900 border border-zinc-800 rounded-full px-3 py-1 text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-2">
-              Admin Portal
-            </span>
           </div>
           <h1 className="font-display font-semibold text-2xl text-zinc-100 text-center mb-1">{title}</h1>
           {description && <p className="text-sm text-zinc-500 text-center">{description}</p>}
