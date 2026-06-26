@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Syne:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+:root { color-scheme: dark; }
+body { font-family: 'Inter', sans-serif; background-color: #09090B; color: #F4F4F5; }
+h1,h2,h3,h4,h5,h6,.font-display { font-family: 'Syne', sans-serif; }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #09090B; }
+::-webkit-scrollbar-thumb { background: #27272A; border-radius: 9999px; }
+.bg-grid { background-size:32px 32px; background-image:linear-gradient(to right,rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,0.03) 1px,transparent 1px); }
+@keyframes blob { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(30px,-50px) scale(1.1)} 66%{transform:translate(-20px,20px) scale(0.9)} 100%{transform:translate(0,0) scale(1)} }
+.animate-blob { animation:blob 10s infinite alternate; }
+.animation-delay-2000 { animation-delay:2s; }
+@keyframes fadeUp { from{transform:translateY(20px)} to{transform:translateY(0)} }
+.fade-up { animation:fadeUp .6s cubic-bezier(0.16,1,0.3,1); }
+@media (prefers-reduced-motion:reduce){ .animate-blob,.fade-up{animation:none!important} }
+</style>
+</helmet>
+
+<div class="antialiased selection:bg-indigo-500/30 overflow-x-hidden min-h-screen flex items-center justify-center relative">
+
+  <!-- Ambient background -->
+  <div class="fixed inset-0 -z-10 pointer-events-none">
+    <div class="absolute inset-0 bg-grid opacity-[0.05]"></div>
+    <div class="absolute top-[8%] left-[12%] w-[480px] h-[480px] bg-indigo-600/12 rounded-full filter blur-[120px] animate-blob"></div>
+    <div class="absolute bottom-[6%] right-[10%] w-[400px] h-[400px] bg-cyan-600/12 rounded-full filter blur-[120px] animate-blob animation-delay-2000"></div>
+  </div>
+
+  <!-- Back to site -->
+  <a href="Home.dc.html" class="fixed top-6 left-6 inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors z-10 whitespace-nowrap">
+    <iconify-icon icon="solar:arrow-left-linear" width="14"></iconify-icon> Back to site
+  </a>
+
+  <!-- Sign in card -->
+  <div class="max-w-md w-full mx-auto px-6 py-16">
+    <div class="fade-up relative bg-[#111113] rounded-3xl p-8 md:p-10 border border-zinc-800 shadow-2xl shadow-black/50">
+      <div class="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent"></div>
+
+      <!-- Brand -->
+      <div class="flex flex-col items-center text-center mb-6">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.4)]">
+          <div class="w-4 h-4 bg-[#09090B] rounded-sm"></div>
+        </div>
+        <span class="font-display font-semibold text-lg mt-3">KodeAura7</span>
+        <span class="bg-zinc-900 border border-zinc-800 rounded-full px-3 py-1 text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-2">Admin Portal</span>
+      </div>
+
+      <h1 class="font-display font-semibold text-2xl text-zinc-100 text-center mb-1">Welcome back</h1>
+      <p class="text-sm text-zinc-500 text-center">Sign in to access the KodeAura7 admin dashboard.</p>
+
+      <form onSubmit="{{ onSubmit }}" class="mt-8 space-y-5">
+        <div class="space-y-1.5">
+          <label class="text-xs font-medium text-zinc-400 ml-0.5">Email Address</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none flex"><iconify-icon icon="solar:letter-linear" width="18"></iconify-icon></span>
+            <input type="email" placeholder="admin@kodeaura7.in" class="w-full bg-[#18181B] border border-zinc-800 rounded-xl pl-11 pr-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all">
+          </div>
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-xs font-medium text-zinc-400 ml-0.5">Password</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none flex"><iconify-icon icon="solar:lock-password-linear" width="18"></iconify-icon></span>
+            <input type="{{ pwType }}" placeholder="••••••••" class="w-full bg-[#18181B] border border-zinc-800 rounded-xl pl-11 pr-11 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all">
+            <button type="button" onClick="{{ togglePw }}" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors" aria-label="Toggle password">
+              <iconify-icon icon="{{ pwIcon }}" width="18"></iconify-icon>
+            </button>
+          </div>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <label class="flex items-center gap-2 text-zinc-400 cursor-pointer select-none whitespace-nowrap">
+            <input type="checkbox" class="w-3.5 h-3.5 rounded border-zinc-700 bg-[#18181B] accent-indigo-500"> Remember me
+          </label>
+          <a href="#" class="text-indigo-400 hover:text-indigo-300 transition-colors whitespace-nowrap">Forgot password?</a>
+        </div>
+        <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-indigo-500 text-white rounded-xl py-3.5 text-sm font-medium hover:bg-indigo-400 transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+          Sign In <iconify-icon icon="solar:arrow-right-linear" width="16"></iconify-icon>
+        </button>
+      </form>
+
+      <div class="flex items-center gap-4 my-6">
+        <div class="h-px flex-1 bg-zinc-800"></div>
+        <span class="text-xs text-zinc-600 whitespace-nowrap">or continue with</span>
+        <div class="h-px flex-1 bg-zinc-800"></div>
+      </div>
+
+      <button class="w-full bg-[#18181B] border border-zinc-800 rounded-xl py-3 flex items-center justify-center gap-3 hover:border-zinc-600 hover:bg-zinc-800/50 transition-all text-sm text-zinc-300 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+        <iconify-icon icon="logos:google-icon" width="18"></iconify-icon> Sign in with Google
+      </button>
+
+      <div class="text-center mt-6 space-y-0.5">
+        <p class="text-xs text-zinc-600">Having trouble accessing your account?</p>
+        <p class="text-xs text-zinc-600">Contact support at <a href="mailto:info@kodeaura7.in" class="text-zinc-500 hover:text-zinc-300 transition-colors">info@kodeaura7.in</a></p>
+      </div>
+      <div class="flex items-center gap-1.5 justify-center mt-4 text-[10px] font-mono text-zinc-700">
+        <iconify-icon icon="solar:shield-check-linear" width="13"></iconify-icon> Secured with 256-bit encryption
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { showPw: false };
+
+  renderVals() {
+    return {
+      pwType: this.state.showPw ? 'text' : 'password',
+      pwIcon: this.state.showPw ? 'solar:eye-closed-linear' : 'solar:eye-linear',
+      togglePw: () => this.setState(s => ({ showPw: !s.showPw })),
+      onSubmit: (e) => { e.preventDefault(); alert('Sign in submitted (demo).'); },
+    };
+  }
+}
+</script>
+</body>
+</html>

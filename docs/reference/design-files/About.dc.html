@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Syne:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+:root { color-scheme: dark; }
+body { font-family: 'Inter', sans-serif; background-color: #09090B; color: #F4F4F5; }
+h1,h2,h3,h4,h5,h6,.font-display { font-family: 'Syne', sans-serif; }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #09090B; }
+::-webkit-scrollbar-thumb { background: #27272A; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #3F3F46; }
+.text-gradient { background-clip:text; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-image:linear-gradient(135deg,#6366F1 0%,#06B6D4 100%); }
+.glass-panel { background:rgba(9,9,11,0.72); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); }
+.bg-grid { background-size:32px 32px; background-image:linear-gradient(to right,rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,0.03) 1px,transparent 1px); }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.animate-float { animation:float 6s ease-in-out infinite; }
+@keyframes float-d { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.animate-float-delayed { animation:float-d 6s ease-in-out 2s infinite; }
+@keyframes float-dd { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.animate-float-delayed-more { animation:float-dd 6s ease-in-out 4s infinite; }
+@keyframes blob { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(30px,-50px) scale(1.1)} 66%{transform:translate(-20px,20px) scale(0.9)} 100%{transform:translate(0,0) scale(1)} }
+.animate-blob { animation:blob 10s infinite alternate; }
+.animation-delay-2000 { animation-delay:2s; }
+@keyframes fadeUp { from{transform:translateY(20px)} to{transform:translateY(0)} }
+.fade-up { animation:fadeUp .6s cubic-bezier(0.16,1,0.3,1); }
+.delay-1 { animation-delay:.1s; } .delay-2 { animation-delay:.2s; } .delay-3 { animation-delay:.3s; }
+@media (prefers-reduced-motion:reduce){ .animate-float,.animate-blob,.animate-float-delayed,.animate-float-delayed-more,.fade-up{animation:none!important} }
+</style>
+</helmet>
+
+<div class="antialiased selection:bg-indigo-500/30 overflow-x-hidden">
+
+  <div class="fixed inset-0 -z-10 pointer-events-none">
+    <div class="absolute inset-0 bg-grid opacity-[0.05]"></div>
+    <div class="absolute top-[-10%] left-[8%] w-[500px] h-[500px] bg-indigo-600/10 rounded-full filter blur-[120px] animate-blob"></div>
+    <div class="absolute top-[5%] right-[6%] w-[420px] h-[420px] bg-cyan-600/10 rounded-full filter blur-[120px] animate-blob animation-delay-2000"></div>
+  </div>
+
+  <!-- ===== NAV ===== -->
+  <header class="fixed top-0 inset-x-0 z-50 glass-panel border-b border-zinc-800/60">
+    <div class="max-w-7xl mx-auto px-6 h-16 md:h-20 flex items-center justify-between">
+      <a href="Home.dc.html" class="flex items-center gap-2.5">
+        <div class="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.4)]"><div class="w-2.5 h-2.5 bg-[#09090B] rounded-sm"></div></div>
+        <span class="font-display font-semibold tracking-tighter text-lg">KodeAura7</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+        <a href="Services.dc.html" class="text-zinc-400 hover:text-zinc-100 transition-colors">Services</a>
+        <a href="Portfolio.dc.html" class="text-zinc-400 hover:text-zinc-100 transition-colors">Portfolio</a>
+        <a href="About.dc.html" class="text-zinc-100 transition-colors">About</a>
+      </nav>
+      <div class="flex items-center gap-4">
+        <a href="Sign In.dc.html" class="hidden md:inline text-sm font-medium text-zinc-400 hover:text-zinc-100 transition-colors">Sign in</a>
+        <a href="Home.dc.html#contact" class="hidden sm:inline-flex items-center bg-indigo-500 text-white rounded-full px-5 py-2.5 text-sm font-medium shadow-[0_0_20px_rgba(99,102,241,0.25)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all">Start Project</a>
+        <button onClick="{{ toggleMenu }}" class="md:hidden text-zinc-300 hover:text-zinc-100 transition-colors" aria-label="Menu"><iconify-icon icon="solar:hamburger-menu-linear" width="26"></iconify-icon></button>
+      </div>
+    </div>
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+      <div class="md:hidden border-t border-zinc-800/60 px-6 py-5 flex flex-col gap-4 text-sm font-medium bg-[#09090B]/95">
+        <a href="Services.dc.html" class="text-zinc-300 hover:text-zinc-100">Services</a>
+        <a href="Portfolio.dc.html" class="text-zinc-300 hover:text-zinc-100">Portfolio</a>
+        <a href="About.dc.html" class="text-zinc-100">About</a>
+        <a href="Sign In.dc.html" class="text-zinc-300 hover:text-zinc-100">Sign in</a>
+        <a href="Home.dc.html#contact" class="inline-flex w-max items-center bg-indigo-500 text-white rounded-full px-5 py-2.5">Start Project</a>
+      </div>
+    </sc-if>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="pt-32 md:pt-40 pb-20 text-center">
+    <div class="max-w-3xl mx-auto px-6">
+      <p class="fade-up font-mono text-xs text-zinc-500 tracking-widest uppercase mb-5">About KodeAura7</p>
+      <h1 class="fade-up delay-1 font-display font-semibold text-4xl md:text-6xl tracking-tighter leading-[1.05] mb-6">We Engineer <span class="text-gradient">Digital Growth</span> for Ambitious Businesses</h1>
+      <p class="fade-up delay-2 text-zinc-400 text-lg leading-relaxed max-w-2xl mx-auto">KodeAura7 is a full-service digital technology agency from Dehradun, India. We partner with businesses to design, build, and scale their digital infrastructure.</p>
+    </div>
+  </section>
+
+  <!-- ===== ORIGIN STORY ===== -->
+  <section class="py-20 md:py-28 border-t border-zinc-900">
+    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+      <div>
+        <p class="font-mono text-xs text-zinc-500 tracking-widest uppercase mb-4">Our Story</p>
+        <h2 class="font-display font-semibold text-3xl md:text-4xl tracking-tighter leading-tight mb-8">Built From Passion. Driven by Purpose.</h2>
+        <div class="space-y-5 text-zinc-400 leading-relaxed">
+          <p>KodeAura7 was founded with one conviction — that great technology should be accessible to every ambitious business, not just the Fortune 500. Starting from a single desk in Dehradun, we set out to close the gap between enterprise-grade digital experiences and growing Indian businesses.</p>
+          <p>Today, we're a team of developers, designers, CRM specialists, and digital marketers who obsess over the details that turn a good product into a great one. We've delivered over 150 projects across industries — from legal tech portals to e-commerce platforms to AI-driven CRM systems.</p>
+          <p>Our edge is our breadth. We're not a one-trick dev shop or an ads-only agency. We think in systems — how your website, your CRM, your ads, and your automations work together to create compounding growth.</p>
+        </div>
+      </div>
+      <div class="glass-panel border border-zinc-800 rounded-3xl p-8 lg:sticky lg:top-28">
+        <div class="flex items-baseline justify-between py-5 animate-float">
+          <span class="font-display font-semibold text-3xl text-gradient">150+</span>
+          <span class="text-xs uppercase tracking-widest text-zinc-500 font-mono">Projects Delivered</span>
+        </div>
+        <div class="h-px bg-zinc-800"></div>
+        <div class="flex items-baseline justify-between py-5 animate-float-delayed">
+          <span class="font-display font-semibold text-3xl text-gradient">4+</span>
+          <span class="text-xs uppercase tracking-widest text-zinc-500 font-mono">Years of Experience</span>
+        </div>
+        <div class="h-px bg-zinc-800"></div>
+        <div class="flex items-baseline justify-between py-5 animate-float-delayed-more">
+          <span class="font-display font-semibold text-3xl text-gradient">₹2Cr+</span>
+          <span class="text-xs uppercase tracking-widest text-zinc-500 font-mono text-right">Revenue for Clients</span>
+        </div>
+        <div class="h-px bg-zinc-800"></div>
+        <div class="flex items-baseline justify-between py-5 animate-float">
+          <span class="font-display font-semibold text-3xl text-gradient">98%</span>
+          <span class="text-xs uppercase tracking-widest text-zinc-500 font-mono">Client Satisfaction</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== VALUES ===== -->
+  <section class="py-20 md:py-28 border-t border-zinc-900">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-14">
+        <h2 class="font-display font-semibold text-3xl md:text-5xl tracking-tighter mb-4">What Drives Us</h2>
+        <p class="text-zinc-400 text-lg">Four principles we refuse to compromise on.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <sc-for list="{{ values }}" as="v" hint-placeholder-count="4">
+          <div class="bg-[#111113] rounded-2xl p-8 border border-zinc-800 hover:border-indigo-500/30 hover:shadow-[0_0_30px_rgba(99,102,241,0.07)] transition-all duration-500">
+            <div class="w-12 h-12 rounded-2xl bg-[#18181B] border border-zinc-800 flex items-center justify-center mb-6" style="{{ v.iconStyle }}">
+              <iconify-icon icon="{{ v.icon }}" width="24"></iconify-icon>
+            </div>
+            <h3 class="font-display text-xl tracking-tight mb-3">{{ v.title }}</h3>
+            <p class="text-sm text-zinc-400 leading-relaxed font-extralight">{{ v.desc }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TECH STACK ===== -->
+  <section class="py-20 md:py-28 border-t border-zinc-900">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-14">
+        <h2 class="font-display font-semibold text-3xl md:text-5xl tracking-tighter mb-4">Our Technology Stack</h2>
+        <p class="text-zinc-400 text-lg">Built with tools that scale.</p>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <sc-for list="{{ tech }}" as="t" hint-placeholder-count="8">
+          <div class="group bg-[#111113] border border-zinc-800 rounded-2xl p-6 flex flex-col items-center gap-3 hover:border-zinc-600 transition-all duration-300">
+            <iconify-icon icon="{{ t.icon }}" width="32" class="text-zinc-400 group-hover:text-indigo-400 transition-colors"></iconify-icon>
+            <span class="text-xs text-zinc-500 font-mono">{{ t.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="py-20 md:py-28 border-t border-zinc-900">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="relative overflow-hidden bg-[#111113] rounded-3xl p-12 md:p-16 border border-zinc-800 text-center">
+        <div class="absolute -top-20 -right-20 w-72 h-72 bg-indigo-500/15 rounded-full blur-[100px]"></div>
+        <div class="absolute -bottom-20 -left-20 w-72 h-72 bg-cyan-500/15 rounded-full blur-[100px]"></div>
+        <div class="relative">
+          <h2 class="font-display font-semibold text-3xl md:text-5xl tracking-tighter mb-5">Ready to build something extraordinary?</h2>
+          <p class="text-zinc-400 text-lg mb-10">Book a free strategy session. No commitment.</p>
+          <a href="Home.dc.html#contact" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-indigo-500 text-white rounded-full text-sm font-medium hover:bg-indigo-400 transition-all shadow-[0_0_30px_rgba(99,102,241,0.3)] hover:shadow-[0_0_40px_rgba(99,102,241,0.5)] hover:-translate-y-0.5">Get in Touch <iconify-icon icon="solar:arrow-right-linear" width="18"></iconify-icon></a>
+          <p class="text-sm text-zinc-500 mt-6 font-mono">info@kodeaura7.in</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="bg-[#09090B] border-t border-zinc-900 pt-20 pb-8">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid grid-cols-2 md:grid-cols-12 gap-10 mb-16">
+        <div class="col-span-2 md:col-span-5">
+          <a href="Home.dc.html" class="flex items-center gap-2.5 mb-5">
+            <div class="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.4)]"><div class="w-2.5 h-2.5 bg-[#09090B] rounded-sm"></div></div>
+            <span class="font-display font-semibold tracking-tighter text-lg">KodeAura7</span>
+          </a>
+          <p class="font-display text-xl text-zinc-300 tracking-tight mb-6 max-w-xs">We Build the Digital Future.</p>
+          <div class="flex gap-3">
+            <a href="#" class="w-9 h-9 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:border-zinc-600 transition-all"><iconify-icon icon="mdi:linkedin" width="17"></iconify-icon></a>
+            <a href="#" class="w-9 h-9 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:border-zinc-600 transition-all"><iconify-icon icon="mdi:twitter" width="17"></iconify-icon></a>
+            <a href="#" class="w-9 h-9 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:border-zinc-600 transition-all"><iconify-icon icon="mdi:instagram" width="17"></iconify-icon></a>
+          </div>
+        </div>
+        <div class="md:col-span-3">
+          <p class="text-xs uppercase tracking-widest text-zinc-500 font-mono mb-5">Services</p>
+          <ul class="space-y-3 text-sm text-zinc-400">
+            <li><a href="Services.dc.html" class="hover:text-zinc-100 transition-colors">Web Development</a></li>
+            <li><a href="Services.dc.html" class="hover:text-zinc-100 transition-colors">Salesforce CRM</a></li>
+            <li><a href="Services.dc.html" class="hover:text-zinc-100 transition-colors">UI/UX Design</a></li>
+            <li><a href="Services.dc.html" class="hover:text-zinc-100 transition-colors">Meta &amp; Google Ads</a></li>
+          </ul>
+        </div>
+        <div class="md:col-span-2">
+          <p class="text-xs uppercase tracking-widest text-zinc-500 font-mono mb-5">Company</p>
+          <ul class="space-y-3 text-sm text-zinc-400">
+            <li><a href="About.dc.html" class="hover:text-zinc-100 transition-colors">About</a></li>
+            <li><a href="Portfolio.dc.html" class="hover:text-zinc-100 transition-colors">Portfolio</a></li>
+            <li><a href="Home.dc.html#contact" class="hover:text-zinc-100 transition-colors">Contact</a></li>
+          </ul>
+        </div>
+        <div class="col-span-2 md:col-span-2">
+          <p class="text-xs uppercase tracking-widest text-zinc-500 font-mono mb-5">Newsletter</p>
+          <div class="flex flex-col gap-3">
+            <input type="email" placeholder="Your email" class="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all">
+            <button class="bg-indigo-500 text-white rounded-xl py-2.5 text-sm font-medium hover:bg-indigo-400 transition-all">Join</button>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-zinc-900 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-600">
+        <p>© 2025 KodeAura7. All rights reserved. · info@kodeaura7.in</p>
+        <div class="flex gap-6"><a href="#" class="hover:text-zinc-400 transition-colors">Privacy Policy</a><a href="#" class="hover:text-zinc-400 transition-colors">Terms of Service</a></div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { menuOpen: false };
+
+  renderVals() {
+    const tint = (a) => `color:${a};border-color:color-mix(in srgb,${a} 40%,transparent)`;
+    const values = [
+      { title: 'Craft Over Speed', icon: 'solar:palette-linear', desc: "We don't ship fast and fix later. Every pixel and every line of code is intentional." },
+      { title: 'Transparent Partnership', icon: 'solar:hand-shake-linear', desc: 'No black boxes. You get weekly updates, clear timelines, and honest communication.' },
+      { title: 'Systems Thinking', icon: 'solar:cpu-bolt-linear', desc: 'We design every solution to work as part of your wider growth ecosystem.' },
+      { title: 'Results, Not Deliverables', icon: 'solar:graph-up-linear', desc: 'Our success metric is your ROI — not the number of pages or features shipped.' },
+    ];
+    const accents = ['#6366F1', '#06B6D4', '#8B5CF6', '#F59E0B'];
+    const decoratedValues = values.map((v, i) => ({ ...v, iconStyle: tint(accents[i]) }));
+
+    const tech = [
+      { label: 'HTML5', icon: 'solar:code-square-linear' },
+      { label: 'CSS3', icon: 'solar:document-text-linear' },
+      { label: 'Tailwind', icon: 'solar:wind-linear' },
+      { label: 'JavaScript', icon: 'solar:programming-linear' },
+      { label: 'Salesforce', icon: 'solar:cloud-linear' },
+      { label: 'AWS', icon: 'solar:server-linear' },
+      { label: 'Figma', icon: 'solar:pen-new-square-linear' },
+      { label: 'React', icon: 'solar:atom-linear' },
+    ];
+
+    return {
+      menuOpen: this.state.menuOpen,
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      values: decoratedValues,
+      tech,
+    };
+  }
+}
+</script>
+</body>
+</html>

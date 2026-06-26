@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Syne:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+:root { color-scheme: dark; }
+body { font-family: 'Inter', sans-serif; background-color: #09090B; color: #F4F4F5; }
+h1,h2,h3,h4,h5,h6,.font-display { font-family: 'Syne', sans-serif; }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #09090B; }
+::-webkit-scrollbar-thumb { background: #27272A; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #3F3F46; }
+.text-gradient { background-clip:text; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-image:linear-gradient(135deg,#6366F1 0%,#06B6D4 100%); }
+.glass-panel { background:rgba(9,9,11,0.72); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); }
+.bg-grid { background-size:32px 32px; background-image:linear-gradient(to right,rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,0.03) 1px,transparent 1px); }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.animate-float { animation:float 6s ease-in-out infinite; }
+@keyframes float-d { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.animate-float-delayed { animation:float-d 6s ease-in-out 2s infinite; }
+@keyframes float-dd { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.animate-float-delayed-more { animation:float-dd 6s ease-in-out 4s infinite; }
+@keyframes blob { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(30px,-50px) scale(1.1)} 66%{transform:translate(-20px,20px) scale(0.9)} 100%{transform:translate(0,0) scale(1)} }
+.animate-blob { animation:blob 10s infinite alternate; }
+.animation-delay-2000 { animation-delay:2s; }
+@keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+.animate-marquee { animation:marquee 30s linear infinite; width:max-content; }
+@keyframes fadeUp { from{transform:translateY(20px)} to{transform:translateY(0)} }
+.fade-up { animation:fadeUp .6s cubic-bezier(0.16,1,0.3,1); }
+.delay-1 { animation-delay:.1s; } .delay-2 { animation-delay:.2s; } .delay-3 { animation-delay:.3s; }
+@media (prefers-reduced-motion:reduce){ .animate-float,.animate-blob,.animate-marquee,.animate-float-delayed,.animate-float-delayed-more,.fade-up{animation:none!important} }
+.svc-card:hover { border-color:var(--accent)!important; box-shadow:0 0 44px -10px var(--accent); background:rgba(24,24,27,0.6); }
+.svc-card:hover .svc-icon { color:var(--accent); border-color:color-mix(in srgb,var(--accent) 40%,transparent); }
+.svc-card:hover .svc-title { color:var(--accent-light); }
+.svc-card:hover .svc-rule { width:100%; background:color-mix(in srgb,var(--accent) 35%,transparent); }
+.svc-card:hover .svc-cta { color:var(--accent-light); }
+</style>
+</helmet>
+
+<div class="antialiased selection:bg-indigo-500/30 overflow-x-hidden">
+
+  <!-- Ambient background -->
+  <div class="fixed inset-0 -z-10 pointer-events-none">
+    <div class="absolute inset-0 bg-grid opacity-[0.05]"></div>
+    <div class="absolute top-[-10%] left-[8%] w-[500px] h-[500px] bg-indigo-600/10 rounded-full filter blur-[120px] animate-blob"></div>
+    <div class="absolute top-[10%] right-[6%] w-[420px] h-[420px] bg-cyan-600/10 rounded-full filter blur-[120px] animate-blob animation-delay-2000"></div>
+  </div>
+
+  <!-- ===== NAV ===== -->
+  <header class="fixed top-0 inset-x-0 z-50 glass-panel border-b border-zinc-800/60">
+    <div class="max-w-7xl mx-auto px-6 h-16 md:h-20 flex items-center justify-between">
+      <a href="Home.dc.html" class="flex items-center gap-2.5">
+        <div class="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.4)]">
+          <div class="w-2.5 h-2.5 bg-[#09090B] rounded-sm"></div>
+        </div>
+        <span class="font-display font-semibold tracking-tighter text-lg">KodeAura7</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+        <a href="Services.dc.html" class="text-zinc-400 hover:text-zinc-100 transition-colors">Services</a>
+        <a href="Portfolio.dc.html" class="text-zinc-400 hover:text-zinc-100 transition-colors">Portfolio</a>
+        <a href="About.dc.html" class="text-zinc-400 hover:text-zinc-100 transition-colors">About</a>
+      </nav>
+      <div class="flex items-center gap-4">
+        <a href="Sign In.dc.html" class="hidden md:inline text-sm font-medium text-zinc-400 hover:text-zinc-100 transition-colors">Sign in</a>
+        <a href="#contact" class="hidden sm:inline-flex items-center bg-indigo-500 text-white rounded-full px-5 py-2.5 text-sm font-medium shadow-[0_0_20px_rgba(99,102,241,0.25)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all">Start Project</a>
+        <button onClick="{{ toggleMenu }}" class="md:hidden text-zinc-300 hover:text-zinc-100 transition-colors" aria-label="Menu">
+          <iconify-icon icon="solar:hamburger-menu-linear" width="26"></iconify-icon>
+        </button>
+      </div>
+    </div>
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+      <div class="md:hidden border-t border-zinc-800/60 px-6 py-5 flex flex-col gap-4 text-sm font-medium bg-[#09090B]/95">
+        <a href="Services.dc.html" class="text-zinc-300 hover:text-zinc-100">Services</a>
+        <a href="Portfolio.dc.html" class="text-zinc-300 hover:text-zinc-100">Portfolio</a>
+        <a href="About.dc.html" class="text-zinc-300 hover:text-zinc-100">About</a>
+        <a href="Sign In.dc.html" class="text-zinc-300 hover:text-zinc-100">Sign in</a>
+        <a href="#contact" class="inline-flex w-max items-center bg-indigo-500 text-white rounded-full px-5 py-2.5">Start Project</a>
+      </div>
+    </sc-if>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="relative pt-32 md:pt-44 pb-20 md:pb-28">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
+      <div class="fade-up inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/50 border border-zinc-800 text-xs font-medium text-zinc-300 backdrop-blur-sm mb-8">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        Trusted by 150+ businesses across India
+      </div>
+      <h1 class="fade-up delay-1 font-display font-semibold text-5xl md:text-7xl tracking-tighter leading-[1.04] mb-6 max-w-4xl mx-auto">
+        We Build <span class="text-gradient">Growth Systems</span> That Drive Results.
+      </h1>
+      <p class="fade-up delay-2 text-zinc-400 text-lg leading-relaxed max-w-2xl mx-auto mb-10">
+        KodeAura7 is a premium digital technology agency from Dehradun. We design, build, and scale the websites, CRMs, and campaigns that turn ambitious businesses into market leaders.
+      </p>
+      <div class="fade-up delay-3 flex flex-col sm:flex-row gap-4 justify-center mb-16">
+        <a href="#contact" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-indigo-500 text-white rounded-full text-sm font-medium hover:bg-indigo-400 transition-all shadow-[0_0_30px_rgba(99,102,241,0.3)] hover:shadow-[0_0_40px_rgba(99,102,241,0.5)] hover:-translate-y-0.5">
+          Start Your Project <iconify-icon icon="solar:arrow-right-linear" width="18"></iconify-icon>
+        </a>
+        <a href="Portfolio.dc.html" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/5 backdrop-blur-sm text-zinc-100 rounded-full text-sm font-medium hover:bg-white/10 transition-all border border-zinc-800 hover:border-zinc-600">
+          View Our Work <iconify-icon icon="solar:arrow-down-linear" width="18"></iconify-icon>
+        </a>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl w-full mx-auto text-left">
+        <div class="rounded-2xl border border-zinc-800 bg-[#111113] p-6 animate-float">
+          <p class="font-display font-semibold text-3xl text-gradient">{{ stat1Value }}</p>
+          <p class="text-xs uppercase tracking-widest text-zinc-500 mt-2 font-mono">{{ stat1Label }}</p>
+        </div>
+        <div class="rounded-2xl border border-zinc-800 bg-[#111113] p-6 animate-float-delayed">
+          <p class="font-display font-semibold text-3xl text-gradient">{{ stat2Value }}</p>
+          <p class="text-xs uppercase tracking-widest text-zinc-500 mt-2 font-mono">{{ stat2Label }}</p>
+        </div>
+        <div class="rounded-2xl border border-zinc-800 bg-[#111113] p-6 animate-float-delayed-more">
+          <p class="font-display font-semibold text-3xl text-gradient">{{ stat3Value }}</p>
+          <p class="text-xs uppercase tracking-widest text-zinc-500 mt-2 font-mono">{{ stat3Label }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SERVICES (static grid) ===== -->
+  <section class="py-24 md:py-32 border-t border-zinc-900">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
+        <div>
+          <p class="font-mono text-xs text-zinc-500 tracking-widest uppercase mb-4">What We Do</p>
+          <h2 class="font-display font-semibold text-3xl md:text-5xl tracking-tighter leading-tight max-w-2xl">
+            Everything Your Business Needs to <span class="text-gradient">Dominate.</span>
+          </h2>
+          <p class="text-zinc-400 mt-5 max-w-xl leading-relaxed">End-to-end digital solutions crafted for modern enterprises.</p>
+        </div>
+        <a href="Services.dc.html" class="inline-flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-zinc-100 transition-colors shrink-0">
+          View all services <iconify-icon icon="solar:arrow-right-linear" width="16"></iconify-icon>
+        </a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <sc-for list="{{ services }}" as="svc" hint-placeholder-count="4">
+          <a href="Services.dc.html" class="svc-card group block bg-[#111113] rounded-3xl p-8 md:p-10 border border-zinc-800 transition-all duration-500" style="{{ svc.cardStyle }}">
+            <div class="svc-icon w-16 h-16 rounded-2xl bg-[#18181B] border border-zinc-800 flex items-center justify-center mb-8 text-zinc-100 transition-all duration-500 group-hover:scale-110 group-hover:-rotate-3">
+              <iconify-icon icon="{{ svc.icon }}" width="30"></iconify-icon>
+            </div>
+            <h3 class="svc-title font-display font-light text-2xl tracking-tight mb-4 transition-colors">{{ svc.name }}</h3>
+            <p class="text-zinc-400 leading-relaxed mb-6 font-extralight">{{ svc.desc }}</p>
+            <div class="svc-rule h-[2px] w-12 bg-zinc-800 transition-all duration-700 mb-6"></div>
+            <ul class="space-y-2.5 mb-8">
+              <sc-for list="{{ svc.features }}" as="feat" hint-placeholder-count="3">
+                <li class="flex items-center gap-2.5 text-sm text-zinc-400">
+                  <iconify-icon icon="solar:check-circle-linear" width="16" style="{{ svc.checkStyle }}"></iconify-icon>
+                  {{ feat }}
+                </li>
+              </sc-for>
+            </ul>
+            <div class="svc-cta flex items-center gap-2 text-sm font-medium text-zinc-300 transition-colors">
+              Explore Service <iconify-icon icon="solar:arrow-right-linear" width="16"></iconify-icon>
+            </div>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROCESS ===== -->
+  <section class="py-24 md:py-32 border-t border-zinc-900">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-20">
+        <h2 class="font-display font-semibold text-3xl md:text-5xl tracking-tighter">Our 4-Step Process</h2>
+        <p class="text-zinc-400 mt-5 max-w-xl mx-auto leading-relaxed">Predictable delivery. Transparent communication.</p>
+      </div>
+      <div class="relative grid grid-cols-2 md:grid-cols-4 gap-y-14 gap-x-6">
+        <div class="hidden md:block absolute top-7 left-[12.5%] right-[12.5%] h-px bg-zinc-800"></div>
+        <sc-for list="{{ steps }}" as="step" hint-placeholder-count="4">
+          <div class="relative flex flex-col items-center text-center px-2">
+            <div class="w-14 h-14 rounded-2xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-zinc-200 relative z-10">
+              <iconify-icon icon="{{ step.icon }}" width="24"></iconify-icon>
+            </div>
+            <h3 class="font-display text-lg tracking-tight mt-5 mb-2">{{ step.name }}</h3>
+            <p class="text-sm text-zinc-500 leading-relaxed max-w-[220px]">{{ step.desc }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section class="py-24 md:py-32 border-t border-zinc-900">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <p class="font-mono text-xs text-zinc-500 tracking-widest uppercase mb-4">Testimonials</p>
+        <h2 class="font-display font-semibold text-3xl md:text-5xl tracking-tighter">What Our <span class="text-gradient">Clients Say</span></h2>
+        <p class="text-zinc-400 mt-5 max-w-xl mx-auto leading-relaxed">Trusted by businesses across India.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <sc-for list="{{ testimonials }}" as="t" hint-placeholder-count="6">
+          <div class="bg-[#111113] rounded-2xl p-6 border border-zinc-800 hover:border-indigo-500/20 hover:shadow-[0_0_30px_rgba(99,102,241,0.07)] transition-all duration-500" style="{{ t.floatStyle }}">
+            <div class="flex gap-1 mb-4 text-amber-400">
+              <iconify-icon icon="solar:star-bold" width="16"></iconify-icon>
+              <iconify-icon icon="solar:star-bold" width="16"></iconify-icon>
+              <iconify-icon icon="solar:star-bold" width="16"></iconify-icon>
+              <iconify-icon icon="solar:star-bold" width="16"></iconify-icon>
+              <iconify-icon icon="solar:star-bold" width="16"></iconify-icon>
+            </div>
+            <p class="text-sm text-zinc-300 leading-relaxed font-medium italic">{{ t.quote }}</p>
+            <div class="h-px bg-zinc-800 my-5"></div>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500/20 to-cyan-500/20 border border-zinc-700 flex items-center justify-center font-display text-xs font-semibold text-zinc-200 shrink-0">{{ t.initials }}</div>
+              <div>
+                <p class="text-sm text-zinc-100 font-semibold">{{ t.name }}</p>
+                <p class="text-xs text-zinc-500">{{ t.role }}</p>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TECH MARQUEE ===== -->
+  <section class="py-20 border-t border-zinc-900 overflow-hidden">
+    <p class="text-center font-mono text-xs text-zinc-600 tracking-widest uppercase mb-10">Built with a modern stack</p>
+    <div class="relative">
+      <div class="flex gap-12 animate-marquee items-center text-zinc-500">
+        <sc-for list="{{ marquee }}" as="m" hint-placeholder-count="16">
+          <span class="flex items-center gap-3 font-display font-semibold text-xl whitespace-nowrap shrink-0">
+            <iconify-icon icon="{{ m.icon }}" width="24"></iconify-icon>{{ m.label }}
+          </span>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section id="contact" class="py-24 md:py-32 border-t border-zinc-900">
+    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+      <div>
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-6">
+          <iconify-icon icon="solar:letter-linear" width="12"></iconify-icon> Contact Us
+        </div>
+        <h2 class="font-display font-semibold text-3xl md:text-5xl tracking-tighter leading-tight mb-6">Let's Build the <span class="text-gradient">Digital Future.</span></h2>
+        <p class="text-zinc-400 leading-relaxed max-w-md mb-10">Tell us about your project and we'll get back within one business day. No commitment, no pressure — just a conversation about what's possible.</p>
+        <div class="space-y-5">
+          <a href="mailto:info@kodeaura7.in" class="flex items-center gap-4 group">
+            <div class="w-11 h-11 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-indigo-400 group-hover:border-indigo-500/40 transition-all"><iconify-icon icon="solar:letter-linear" width="20"></iconify-icon></div>
+            <div>
+              <p class="text-xs uppercase tracking-widest text-zinc-500 font-mono">Email</p>
+              <p class="text-sm text-zinc-200 group-hover:text-indigo-300 transition-colors">info@kodeaura7.in</p>
+            </div>
+          </a>
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-cyan-400"><iconify-icon icon="solar:map-point-linear" width="20"></iconify-icon></div>
+            <div>
+              <p class="text-xs uppercase tracking-widest text-zinc-500 font-mono">Location</p>
+              <p class="text-sm text-zinc-200">Dehradun, Uttarakhand, India</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <form onSubmit="{{ onSubmit }}" class="bg-[#111113] border border-zinc-800 rounded-3xl p-8 grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div class="space-y-1.5">
+          <label class="text-xs font-medium text-zinc-400 ml-0.5">Full Name</label>
+          <input type="text" placeholder="John Doe" class="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all">
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-xs font-medium text-zinc-400 ml-0.5">Email Address</label>
+          <input type="email" placeholder="john@company.com" class="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all">
+        </div>
+        <div class="space-y-1.5 sm:col-span-2">
+          <label class="text-xs font-medium text-zinc-400 ml-0.5">Service Interested In</label>
+          <input type="text" placeholder="Web Development, Salesforce CRM…" class="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all">
+        </div>
+        <div class="space-y-1.5 sm:col-span-2">
+          <label class="text-xs font-medium text-zinc-400 ml-0.5">Project Details</label>
+          <textarea rows="4" placeholder="Tell us what you're building…" class="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all resize-none"></textarea>
+        </div>
+        <button type="submit" class="sm:col-span-2 inline-flex items-center justify-center gap-2 bg-indigo-500 text-white rounded-xl py-3.5 text-sm font-medium hover:bg-indigo-400 transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)]">
+          Send Message <iconify-icon icon="solar:arrow-right-linear" width="16"></iconify-icon>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="bg-[#09090B] border-t border-zinc-900 pt-20 pb-8">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid grid-cols-2 md:grid-cols-12 gap-10 mb-16">
+        <div class="col-span-2 md:col-span-5">
+          <a href="Home.dc.html" class="flex items-center gap-2.5 mb-5">
+            <div class="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.4)]"><div class="w-2.5 h-2.5 bg-[#09090B] rounded-sm"></div></div>
+            <span class="font-display font-semibold tracking-tighter text-lg">KodeAura7</span>
+          </a>
+          <p class="font-display text-xl text-zinc-300 tracking-tight mb-6 max-w-xs">We Build the Digital Future.</p>
+          <div class="flex gap-3">
+            <a href="#" class="w-9 h-9 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:border-zinc-600 transition-all"><iconify-icon icon="mdi:linkedin" width="17"></iconify-icon></a>
+            <a href="#" class="w-9 h-9 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:border-zinc-600 transition-all"><iconify-icon icon="mdi:twitter" width="17"></iconify-icon></a>
+            <a href="#" class="w-9 h-9 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:border-zinc-600 transition-all"><iconify-icon icon="mdi:instagram" width="17"></iconify-icon></a>
+          </div>
+        </div>
+        <div class="md:col-span-3">
+          <p class="text-xs uppercase tracking-widest text-zinc-500 font-mono mb-5">Services</p>
+          <ul class="space-y-3 text-sm text-zinc-400">
+            <li><a href="Services.dc.html" class="hover:text-zinc-100 transition-colors">Web Development</a></li>
+            <li><a href="Services.dc.html" class="hover:text-zinc-100 transition-colors">Salesforce CRM</a></li>
+            <li><a href="Services.dc.html" class="hover:text-zinc-100 transition-colors">UI/UX Design</a></li>
+            <li><a href="Services.dc.html" class="hover:text-zinc-100 transition-colors">Meta &amp; Google Ads</a></li>
+          </ul>
+        </div>
+        <div class="md:col-span-2">
+          <p class="text-xs uppercase tracking-widest text-zinc-500 font-mono mb-5">Company</p>
+          <ul class="space-y-3 text-sm text-zinc-400">
+            <li><a href="About.dc.html" class="hover:text-zinc-100 transition-colors">About</a></li>
+            <li><a href="Portfolio.dc.html" class="hover:text-zinc-100 transition-colors">Portfolio</a></li>
+            <li><a href="#contact" class="hover:text-zinc-100 transition-colors">Contact</a></li>
+          </ul>
+        </div>
+        <div class="col-span-2 md:col-span-2">
+          <p class="text-xs uppercase tracking-widest text-zinc-500 font-mono mb-5">Newsletter</p>
+          <div class="flex flex-col gap-3">
+            <input type="email" placeholder="Your email" class="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all">
+            <button class="bg-indigo-500 text-white rounded-xl py-2.5 text-sm font-medium hover:bg-indigo-400 transition-all">Join</button>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-zinc-900 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-600">
+        <p>© 2025 KodeAura7. All rights reserved. · info@kodeaura7.in</p>
+        <div class="flex gap-6">
+          <a href="#" class="hover:text-zinc-400 transition-colors">Privacy Policy</a>
+          <a href="#" class="hover:text-zinc-400 transition-colors">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { menuOpen: false };
+
+  renderVals() {
+    const svc = (accent, light) => ({
+      cardStyle: `--a:${accent}`,
+      iconStyle: ``,
+      titleStyle: ``,
+      ruleStyle: ``,
+      checkStyle: `color:${accent}`,
+      ctaStyle: ``,
+      accent, light,
+    });
+
+    const services = [
+      {
+        name: 'Web Development', icon: 'solar:code-square-linear', accent: '#6366F1', light: '#A5B4FC',
+        desc: 'Fast, scalable, beautifully engineered web applications — from marketing sites to SaaS dashboards.',
+        features: ['Full-stack applications', 'SEO & Core Web Vitals', 'Mobile-first responsive design'],
+      },
+      {
+        name: 'Salesforce CRM', icon: 'solar:database-linear', accent: '#06B6D4', light: '#67E8F9',
+        desc: 'Certified Salesforce implementation, customisation, and automation tailored to your exact processes.',
+        features: ['Experience Cloud portals', 'Custom Apex & LWC', 'Automated flows & integrations'],
+      },
+      {
+        name: 'UI/UX Design', icon: 'solar:pallete-2-linear', accent: '#F43F5E', light: '#FDA4AF',
+        desc: 'Research-led interfaces that are intuitive, accessible, and built to convert visitors into customers.',
+        features: ['User research & journeys', 'Scalable design systems', 'Prototyping & usability testing'],
+      },
+      {
+        name: 'Meta & Google Ads', icon: 'solar:graph-up-linear', accent: '#F59E0B', light: '#FCD34D',
+        desc: 'Data-driven advertising across Google, Performance Max, and Meta — every rupee tracked and optimised.',
+        features: ['Search & Performance Max', 'Meta & Instagram campaigns', 'Conversion optimisation'],
+      },
+    ];
+
+    // Build per-card hover styles via inline style strings with CSS vars + a mounted <style>.
+    const decorated = services.map(s => ({
+      ...s,
+      cardStyle: `--accent:${s.accent};--accent-light:${s.light}`,
+      iconStyle: ``,
+      titleStyle: ``,
+      ruleStyle: ``,
+      ctaStyle: ``,
+      checkStyle: `color:${s.accent}`,
+    }));
+
+    const steps = [
+      { num: '01', name: '1. Discovery', icon: 'solar:scanner-linear', desc: 'Deep dive into your business goals, target audience, and technical requirements.' },
+      { num: '02', name: '2. Architecture', icon: 'solar:pen-new-square-linear', desc: 'Wireframing, UI/UX design, and planning the optimal database and system structure.' },
+      { num: '03', name: '3. Development', icon: 'solar:cpu-linear', desc: 'Agile engineering sprints with clean code, weekly updates, and rigorous testing.' },
+      { num: '04', name: '4. Deployment', icon: 'solar:rocket-linear', desc: 'Seamless launch, performance monitoring, team training, and continuous support.' },
+    ];
+
+    const testimonials = [
+      { quote: 'KodeAura7 rebuilt our Salesforce setup and our sales pipeline moved three times faster within a quarter. The automation alone saved our team hours every week.', name: 'Rohan Mehta', role: 'Director, Mehta Legal Associates', initials: 'RM', delay: '0s' },
+      { quote: 'Our new website loads instantly and looks world-class. Bounce rate dropped sharply and enquiries are up. Genuinely the most responsive team we have worked with.', name: 'Ananya Sharma', role: 'Founder, Bloom Interiors', initials: 'AS', delay: '1s' },
+      { quote: 'They treated our ad budget like their own money. ROAS went from break-even to 4x in two months, with weekly reports we could actually understand.', name: 'Vikram Nair', role: 'CMO, SwiftDeliver', initials: 'VN', delay: '2s' },
+      { quote: 'From kickoff to launch in six weeks, on budget, no surprises. The delivery speed was unlike any agency we had hired before.', name: 'Priya Deshpande', role: 'CEO, NovaPay', initials: 'PD', delay: '0.5s' },
+      { quote: 'The UI/UX work transformed how our customers experience the product. Onboarding completion jumped and support tickets fell. Worth every rupee.', name: 'Arjun Reddy', role: 'Product Lead, ZenHR', initials: 'AR', delay: '1.5s' },
+      { quote: 'A true partner, not a vendor. They think about our business outcomes, not just deliverables. We now route every digital project through them.', name: 'Kavya Iyer', role: 'COO, GrowthEngine', initials: 'KI', delay: '2.5s' },
+    ].map(t => ({ ...t, floatStyle: `animation:float 6s ease-in-out ${t.delay} infinite` }));
+
+    const marqueeBase = [
+      { label: 'HTML5', icon: 'solar:code-square-linear' },
+      { label: 'CSS3', icon: 'solar:document-text-linear' },
+      { label: 'Tailwind CSS', icon: 'solar:wind-linear' },
+      { label: 'JavaScript', icon: 'solar:programming-linear' },
+      { label: 'Salesforce', icon: 'solar:cloud-linear' },
+      { label: 'AWS', icon: 'solar:server-linear' },
+      { label: 'Figma', icon: 'solar:pen-new-square-linear' },
+      { label: 'UI/UX', icon: 'solar:pallete-2-linear' },
+    ];
+    const marquee = [...marqueeBase, ...marqueeBase];
+
+    return {
+      menuOpen: this.state.menuOpen,
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      services: decorated,
+      steps,
+      testimonials,
+      marquee,
+      onSubmit: (e) => { e.preventDefault(); alert('Thanks! We will be in touch at info@kodeaura7.in shortly.'); },
+    };
+  }
+}
+</script>
+</body>
+</html>

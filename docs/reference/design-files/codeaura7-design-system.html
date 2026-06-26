@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KodeAura7 — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Syne:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+:root { color-scheme: dark; }
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #09090B;
+  color: #F4F4F5;
+}
+h1,h2,h3,h4,h5,h6,.font-display { font-family: 'Syne', sans-serif; }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #09090B; }
+::-webkit-scrollbar-thumb { background: #27272A; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #3F3F46; }
+
+.text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(135deg, #6366F1 0%, #06B6D4 100%);
+}
+.glass-panel {
+  background: rgba(255,255,255,0.02);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.bg-grid {
+  background-size: 32px 32px;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+}
+
+/* Motion tokens (mirrored from the product) */
+@keyframes float { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-8px);} }
+.animate-float { animation: float 6s ease-in-out infinite; }
+@keyframes blob {
+  0% { transform: translate(0,0) scale(1); }
+  33% { transform: translate(30px,-50px) scale(1.1); }
+  66% { transform: translate(-20px,20px) scale(0.9); }
+  100% { transform: translate(0,0) scale(1); }
+}
+.animate-blob { animation: blob 10s infinite alternate; }
+@keyframes marquee { 0% { transform: translateX(0);} 100% { transform: translateX(-50%);} }
+.animate-marquee { animation: marquee 18s linear infinite; width: max-content; }
+@keyframes scrollx {
+  0%, 12% { transform: translateX(0); }
+  88%, 100% { transform: translateX(calc(-100% + 280px)); }
+}
+.demo-track { animation: scrollx 6s ease-in-out infinite alternate; }
+
+/* Reusable doc helpers */
+.tok { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #A1A1AA; }
+.swatch { aspect-ratio: 16/10; border-radius: 14px; border: 1px solid #27272A; }
+.section-rule { background: linear-gradient(to right, #27272A, transparent); }
+@media (prefers-reduced-motion: reduce) {
+  .animate-float, .animate-blob, .animate-marquee, .demo-track { animation: none !important; }
+}
+</style>
+</head>
+<body class="antialiased selection:bg-indigo-500/30 overflow-x-hidden">
+
+<!-- Ambient background -->
+<div class="fixed inset-0 -z-10 pointer-events-none">
+  <div class="absolute inset-0 bg-grid opacity-[0.05]"></div>
+  <div class="absolute top-[-10%] left-[10%] w-[500px] h-[500px] bg-indigo-600/10 rounded-full filter blur-[120px] animate-blob"></div>
+  <div class="absolute top-[20%] right-[8%] w-[400px] h-[400px] bg-cyan-600/10 rounded-full filter blur-[100px] animate-blob"></div>
+</div>
+
+<!-- Header -->
+<header class="border-b border-zinc-900">
+  <div class="max-w-6xl mx-auto px-6 py-16 md:py-24">
+    <div class="flex items-center gap-2.5 mb-8">
+      <span class="font-display font-semibold tracking-tighter text-lg">KodeAura7</span>
+      <div class="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.4)]">
+        <div class="w-2.5 h-2.5 bg-[#09090B] rounded-sm"></div>
+      </div>
+    </div>
+    <p class="font-mono text-xs text-zinc-500 tracking-widest uppercase mb-5">Design System · v1.0</p>
+    <h1 class="font-display font-semibold text-4xl md:text-6xl tracking-tighter leading-[1.05] mb-6 max-w-3xl">
+      The building blocks behind
+      <span class="text-gradient">KodeAura7.</span>
+    </h1>
+    <p class="text-zinc-400 max-w-xl leading-relaxed">
+      Every color, typeface, surface, and motion rule used across the site, documented in one place. Each token lists its hex value and the Tailwind class that produces it, so the marketing site and any new page stay visually identical.
+    </p>
+  </div>
+</header>
+
+<!-- Table of contents -->
+<nav class="border-b border-zinc-900">
+  <div class="max-w-6xl mx-auto px-6 py-5 flex flex-wrap gap-x-7 gap-y-2 text-sm text-zinc-500 font-medium">
+    <a href="#color" class="hover:text-zinc-100 transition-colors">Color</a>
+    <a href="#type" class="hover:text-zinc-100 transition-colors">Typography</a>
+    <a href="#layout" class="hover:text-zinc-100 transition-colors">Layout &amp; Radius</a>
+    <a href="#elevation" class="hover:text-zinc-100 transition-colors">Elevation &amp; Glow</a>
+    <a href="#components" class="hover:text-zinc-100 transition-colors">Components</a>
+    <a href="#motion" class="hover:text-zinc-100 transition-colors">Motion</a>
+  </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6">
+
+  <!-- ============ COLOR ============ -->
+  <section id="color" class="py-20 border-b border-zinc-900">
+    <div class="flex items-center gap-4 mb-12">
+      <span class="font-mono text-xs text-indigo-400">01</span>
+      <h2 class="font-display font-semibold text-2xl md:text-3xl tracking-tight">Color</h2>
+      <div class="h-px flex-1 section-rule"></div>
+    </div>
+
+    <!-- Brand gradient -->
+    <h3 class="font-display text-lg mb-1">Brand gradient</h3>
+    <p class="text-sm text-zinc-500 mb-6 max-w-2xl">The signature mark. Indigo into cyan, drawn at 135°. Used on the logo, headline highlights, and the services scroll progress bar.</p>
+    <div class="rounded-2xl border border-zinc-800 overflow-hidden mb-4">
+      <div class="h-28 w-full" style="background-image:linear-gradient(135deg,#6366F1 0%,#06B6D4 100%);"></div>
+      <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 bg-[#111113]">
+        <span class="tok">linear-gradient(135deg, #6366F1 0%, #06B6D4 100%)</span>
+        <span class="tok">.text-gradient · from-indigo-500 to-cyan-400</span>
+      </div>
+    </div>
+
+    <!-- Neutrals -->
+    <h3 class="font-display text-lg mt-12 mb-1">Neutrals — the canvas</h3>
+    <p class="text-sm text-zinc-500 mb-6 max-w-2xl">A near-black zinc stack. Three surface levels carry the whole layout; the rest is borders and text.</p>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-4">
+      <div>
+        <div class="swatch" style="background:#09090B"></div>
+        <p class="mt-2 text-xs font-medium text-zinc-300">Base</p>
+        <p class="tok">#09090B</p>
+        <p class="tok text-zinc-600">page bg</p>
+      </div>
+      <div>
+        <div class="swatch" style="background:#111113"></div>
+        <p class="mt-2 text-xs font-medium text-zinc-300">Surface</p>
+        <p class="tok">#111113</p>
+        <p class="tok text-zinc-600">cards</p>
+      </div>
+      <div>
+        <div class="swatch" style="background:#18181B"></div>
+        <p class="mt-2 text-xs font-medium text-zinc-300">Elevated</p>
+        <p class="tok">#18181B · zinc-900</p>
+        <p class="tok text-zinc-600">tiles, inputs</p>
+      </div>
+      <div>
+        <div class="swatch" style="background:#27272A"></div>
+        <p class="mt-2 text-xs font-medium text-zinc-300">Border</p>
+        <p class="tok">#27272A · zinc-800</p>
+        <p class="tok text-zinc-600">hairlines</p>
+      </div>
+      <div>
+        <div class="swatch" style="background:#3F3F46"></div>
+        <p class="mt-2 text-xs font-medium text-zinc-300">Border hi</p>
+        <p class="tok">#3F3F46 · zinc-700</p>
+        <p class="tok text-zinc-600">hover edge</p>
+      </div>
+      <div>
+        <div class="swatch" style="background:#F4F4F5"></div>
+        <p class="mt-2 text-xs font-medium text-zinc-300">Text</p>
+        <p class="tok">#F4F4F5 · zinc-100</p>
+        <p class="tok text-zinc-600">primary</p>
+      </div>
+    </div>
+    <!-- Text ramp -->
+    <div class="rounded-2xl border border-zinc-800 bg-[#111113] p-5 flex flex-wrap gap-x-8 gap-y-3">
+      <span class="text-zinc-100 text-sm">zinc-100 — headings</span>
+      <span class="text-zinc-300 text-sm">zinc-300 — emphasis</span>
+      <span class="text-zinc-400 text-sm">zinc-400 — body</span>
+      <span class="text-zinc-500 text-sm">zinc-500 — muted / captions</span>
+      <span class="text-zinc-600 text-sm">zinc-600 — faint / footer</span>
+    </div>
+
+    <!-- Accents -->
+    <h3 class="font-display text-lg mt-12 mb-1">Service accents</h3>
+    <p class="text-sm text-zinc-500 mb-6 max-w-2xl">Each service owns one hue. They appear as the card's hover border, icon tint, glow, and check marks — categorical, never decorative. Indigo and cyan double as the core brand pair.</p>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div>
+        <div class="swatch" style="background:#6366F1"></div>
+        <p class="mt-2 text-xs font-medium text-zinc-300">Indigo</p>
+        <p class="tok">#6366F1</p>
+        <p class="tok text-zinc-600">Web Dev · brand</p>
+      </div>
+      <div>
+        <div class="swatch" style="background:#06B6D4"></div>
+        <p class="mt-2 text-xs font-medium text-zinc-300">Cyan</p>
+        <p class="tok">#06B6D4</p>
+        <p class="tok text-zinc-600">Salesforce · brand</p>
+      </div>
+      <div>
+        <div class="swatch" style="background:#8B5CF6"></div>
+        <p class="mt-2 text-xs font-medium text-zinc-300">Violet</p>
+        <p class="tok">#8B5CF6</p>
+        <p class="tok text-zinc-600">AI &amp; Automation</p>
+      </div>
+      <div>
+        <div class="swatch" style="background:#F43F5E"></div>
+        <p class="mt-2 text-xs font-medium text-zinc-300">Rose</p>
+        <p class="tok">#F43F5E</p>
+        <p class="tok text-zinc-600">UI/UX Design</p>
+      </div>
+      <div>
+        <div class="swatch" style="background:#10B981"></div>
+        <p class="mt-2 text-xs font-medium text-zinc-300">Emerald</p>
+        <p class="tok">#10B981</p>
+        <p class="tok text-zinc-600">Cloud · status</p>
+      </div>
+      <div>
+        <div class="swatch" style="background:#F59E0B"></div>
+        <p class="mt-2 text-xs font-medium text-zinc-300">Amber</p>
+        <p class="tok">#F59E0B</p>
+        <p class="tok text-zinc-600">Performance Ads</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TYPOGRAPHY ============ -->
+  <section id="type" class="py-20 border-b border-zinc-900">
+    <div class="flex items-center gap-4 mb-12">
+      <span class="font-mono text-xs text-indigo-400">02</span>
+      <h2 class="font-display font-semibold text-2xl md:text-3xl tracking-tight">Typography</h2>
+      <div class="h-px flex-1 section-rule"></div>
+    </div>
+
+    <!-- Families -->
+    <div class="grid md:grid-cols-3 gap-4 mb-12">
+      <div class="rounded-2xl border border-zinc-800 bg-[#111113] p-6">
+        <p class="tok mb-3 text-indigo-400">Display</p>
+        <p class="font-display font-semibold text-4xl tracking-tighter mb-3">Syne</p>
+        <p class="text-sm text-zinc-500">Headlines &amp; numbers. Weights 500–600, set tight (<span class="tok">tracking-tighter</span>). Also used light/extralight on card titles.</p>
+      </div>
+      <div class="rounded-2xl border border-zinc-800 bg-[#111113] p-6">
+        <p class="tok mb-3 text-cyan-400">Body</p>
+        <p class="text-4xl mb-3" style="font-family:'Inter'">Inter</p>
+        <p class="text-sm text-zinc-500">Paragraphs, labels, UI. Weights 400–500. The workhorse — neutral so Syne can carry personality.</p>
+      </div>
+      <div class="rounded-2xl border border-zinc-800 bg-[#111113] p-6">
+        <p class="tok mb-3 text-violet-400">Utility</p>
+        <p class="font-mono text-4xl mb-3">JetBrains</p>
+        <p class="text-sm text-zinc-500">Eyebrows, tags, data. Set uppercase with <span class="tok">tracking-widest</span> for technical signposting.</p>
+      </div>
+    </div>
+
+    <!-- Scale -->
+    <h3 class="font-display text-lg mb-6">Type scale</h3>
+    <div class="rounded-2xl border border-zinc-800 bg-[#111113] divide-y divide-zinc-800/70">
+      <div class="flex items-baseline justify-between gap-4 px-6 py-5">
+        <span class="font-display font-semibold tracking-tighter text-4xl md:text-5xl leading-none">Hero headline</span>
+        <span class="tok shrink-0">text-5xl→7xl · Syne 600</span>
+      </div>
+      <div class="flex items-baseline justify-between gap-4 px-6 py-5">
+        <span class="font-display font-semibold tracking-tighter text-3xl leading-none">Section heading</span>
+        <span class="tok shrink-0">text-3xl→5xl · Syne 600</span>
+      </div>
+      <div class="flex items-baseline justify-between gap-4 px-6 py-5">
+        <span class="font-display font-light tracking-tight text-2xl leading-none">Card title</span>
+        <span class="tok shrink-0">text-2xl · Syne 300</span>
+      </div>
+      <div class="flex items-baseline justify-between gap-4 px-6 py-5">
+        <span class="text-base leading-none">Body copy — the default reading size.</span>
+        <span class="tok shrink-0">text-base · Inter 400</span>
+      </div>
+      <div class="flex items-baseline justify-between gap-4 px-6 py-5">
+        <span class="text-sm text-zinc-400 leading-none">Secondary / supporting text.</span>
+        <span class="tok shrink-0">text-sm · Inter 500</span>
+      </div>
+      <div class="flex items-baseline justify-between gap-4 px-6 py-5">
+        <span class="font-mono text-xs uppercase tracking-widest text-zinc-500 leading-none">Eyebrow label</span>
+        <span class="tok shrink-0">text-xs · JetBrains Mono</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LAYOUT & RADIUS ============ -->
+  <section id="layout" class="py-20 border-b border-zinc-900">
+    <div class="flex items-center gap-4 mb-12">
+      <span class="font-mono text-xs text-indigo-400">03</span>
+      <h2 class="font-display font-semibold text-2xl md:text-3xl tracking-tight">Layout &amp; Radius</h2>
+      <div class="h-px flex-1 section-rule"></div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-12">
+      <div>
+        <h3 class="font-display text-lg mb-1">Container &amp; spacing</h3>
+        <p class="text-sm text-zinc-500 mb-6">Content sits in a centered max-width column with a steady horizontal gutter. Sections breathe with large vertical padding.</p>
+        <div class="rounded-2xl border border-zinc-800 bg-[#111113] divide-y divide-zinc-800/70 text-sm">
+          <div class="flex justify-between px-5 py-3"><span class="text-zinc-300">Page width</span><span class="tok">max-w-7xl (1280px)</span></div>
+          <div class="flex justify-between px-5 py-3"><span class="text-zinc-300">Gutter</span><span class="tok">px-6 (24px)</span></div>
+          <div class="flex justify-between px-5 py-3"><span class="text-zinc-300">Section rhythm</span><span class="tok">py-24 → py-32</span></div>
+          <div class="flex justify-between px-5 py-3"><span class="text-zinc-300">Card grid gap</span><span class="tok">gap-6 (24px)</span></div>
+        </div>
+      </div>
+      <div>
+        <h3 class="font-display text-lg mb-1">Corner radius</h3>
+        <p class="text-sm text-zinc-500 mb-6">Roundness scales with element size — pills for actions, deep curves for cards, gentle ones for inputs.</p>
+        <div class="space-y-3">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-12 rounded-full bg-[#18181B] border border-zinc-700 shrink-0"></div>
+            <div><p class="text-sm text-zinc-300">Pills</p><p class="tok">rounded-full · buttons, badges</p></div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-12 rounded-3xl bg-[#18181B] border border-zinc-700 shrink-0"></div>
+            <div><p class="text-sm text-zinc-300">Cards</p><p class="tok">rounded-3xl (24px)</p></div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-12 rounded-2xl bg-[#18181B] border border-zinc-700 shrink-0"></div>
+            <div><p class="text-sm text-zinc-300">Tiles / stats</p><p class="tok">rounded-2xl (16px)</p></div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-12 rounded-xl bg-[#18181B] border border-zinc-700 shrink-0"></div>
+            <div><p class="text-sm text-zinc-300">Inputs</p><p class="tok">rounded-xl (12px)</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ELEVATION & GLOW ============ -->
+  <section id="elevation" class="py-20 border-b border-zinc-900">
+    <div class="flex items-center gap-4 mb-12">
+      <span class="font-mono text-xs text-indigo-400">04</span>
+      <h2 class="font-display font-semibold text-2xl md:text-3xl tracking-tight">Elevation &amp; Glow</h2>
+      <div class="h-px flex-1 section-rule"></div>
+    </div>
+    <p class="text-sm text-zinc-500 mb-8 max-w-2xl">Depth comes from colored glow, not grey drop-shadow. Indigo glow signals interactivity; the frosted nav and ambient blobs build atmosphere.</p>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="rounded-2xl border border-zinc-800 bg-[#111113] p-6 flex flex-col items-center justify-center text-center gap-4 min-h-[160px]">
+        <div class="w-14 h-14 rounded-2xl bg-indigo-500 shadow-[0_0_30px_rgba(99,102,241,0.5)]"></div>
+        <div><p class="text-sm text-zinc-300">Action glow</p><p class="tok">0 0 30px rgba(99,102,241,.5)</p></div>
+      </div>
+      <div class="rounded-2xl border border-zinc-800 bg-[#111113] p-6 flex flex-col items-center justify-center text-center gap-4 min-h-[160px]">
+        <div class="w-14 h-14 rounded-2xl bg-[#18181B] border border-indigo-500/40 shadow-[0_0_30px_rgba(99,102,241,0.12)]"></div>
+        <div><p class="text-sm text-zinc-300">Card hover</p><p class="tok">border /40 + glow /12</p></div>
+      </div>
+      <div class="glass-panel rounded-2xl border border-zinc-800 p-6 flex flex-col items-center justify-center text-center gap-4 min-h-[160px]">
+        <div class="font-mono text-xs text-zinc-400">blur(16px)</div>
+        <div><p class="text-sm text-zinc-300">Glass nav</p><p class="tok">.glass-panel</p></div>
+      </div>
+      <div class="rounded-2xl border border-zinc-800 bg-[#111113] p-6 flex flex-col items-center justify-center text-center gap-4 min-h-[160px] relative overflow-hidden">
+        <div class="absolute w-24 h-24 bg-cyan-500/20 rounded-full blur-[40px]"></div>
+        <div class="relative"><p class="text-sm text-zinc-300">Ambient blob</p><p class="tok">bg /10 · blur-[120px]</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMPONENTS ============ -->
+  <section id="components" class="py-20 border-b border-zinc-900">
+    <div class="flex items-center gap-4 mb-12">
+      <span class="font-mono text-xs text-indigo-400">05</span>
+      <h2 class="font-display font-semibold text-2xl md:text-3xl tracking-tight">Components</h2>
+      <div class="h-px flex-1 section-rule"></div>
+    </div>
+
+    <!-- Buttons -->
+    <h3 class="font-display text-lg mb-5">Buttons</h3>
+    <div class="rounded-2xl border border-zinc-800 bg-[#111113] p-8 flex flex-wrap items-center gap-4 mb-12">
+      <button class="px-8 py-4 bg-indigo-500 text-white rounded-full text-sm font-medium hover:bg-indigo-400 transition-all shadow-[0_0_30px_rgba(99,102,241,0.3)] hover:shadow-[0_0_40px_rgba(99,102,241,0.5)] flex items-center gap-2">
+        Start Your Project
+        <iconify-icon icon="solar:rocket-linear" width="18"></iconify-icon>
+      </button>
+      <button class="px-8 py-4 bg-white/5 backdrop-blur-sm text-zinc-100 rounded-full text-sm font-medium hover:bg-white/10 transition-all flex items-center gap-2 border border-zinc-800 hover:border-zinc-600">
+        View Our Work
+        <iconify-icon icon="solar:arrow-down-linear" width="18"></iconify-icon>
+      </button>
+      <span class="w-full tok mt-2">Primary: bg-indigo-500 + glow · Secondary: bg-white/5 border-zinc-800 · both rounded-full</span>
+    </div>
+
+    <!-- Badges -->
+    <h3 class="font-display text-lg mb-5">Badges &amp; eyebrows</h3>
+    <div class="rounded-2xl border border-zinc-800 bg-[#111113] p-8 flex flex-wrap items-center gap-4 mb-12">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/50 border border-zinc-800 text-xs font-medium text-zinc-300 backdrop-blur-sm">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        Trusted by 150+ businesses
+      </div>
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-400 uppercase tracking-widest">
+        <iconify-icon icon="solar:letter-linear" width="12"></iconify-icon>
+        Contact Us
+      </div>
+      <span class="w-full tok mt-2">Status pill: live emerald ping · Mono eyebrow: tracking-widest uppercase</span>
+    </div>
+
+    <!-- Service card pattern -->
+    <h3 class="font-display text-lg mb-5">Service card</h3>
+    <div class="grid md:grid-cols-2 gap-6 mb-12">
+      <div class="group bg-[#111113] rounded-3xl p-8 border border-zinc-800 hover:border-indigo-500/40 hover:bg-zinc-900/90 transition-all duration-500 hover:shadow-[0_0_40px_rgba(99,102,241,0.1)]">
+        <div class="w-16 h-16 rounded-2xl bg-[#18181B] border border-zinc-800 flex items-center justify-center mb-8 text-zinc-100 group-hover:text-indigo-400 group-hover:border-indigo-500/40 transition-all duration-500 group-hover:scale-110 group-hover:-rotate-3">
+          <iconify-icon icon="solar:code-square-linear" width="30"></iconify-icon>
+        </div>
+        <h4 class="font-display font-light text-2xl tracking-tight mb-4 group-hover:text-indigo-300 transition-colors">Web Development</h4>
+        <p class="text-zinc-400 leading-relaxed mb-8 font-extralight">Custom, high-performance applications built with Next.js, React, and TypeScript.</p>
+        <div class="h-[2px] w-12 bg-zinc-800 group-hover:w-full group-hover:bg-indigo-500/30 transition-all duration-700"></div>
+      </div>
+      <div class="rounded-3xl border border-dashed border-zinc-800 p-8 flex flex-col justify-center">
+        <p class="tok mb-3 text-zinc-400">Anatomy</p>
+        <ul class="text-sm text-zinc-500 space-y-2 leading-relaxed">
+          <li>· Surface <span class="tok">bg-[#111113]</span> · <span class="tok">rounded-3xl</span> · <span class="tok">border-zinc-800</span></li>
+          <li>· Icon tile <span class="tok">w-16 h-16 rounded-2xl bg-[#18181B]</span></li>
+          <li>· Hover swaps border + icon to the service accent, lifts a glow, and grows the underline rule to full width.</li>
+          <li>· Hover the card to the left to see it.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Inputs -->
+    <h3 class="font-display text-lg mb-5">Form fields</h3>
+    <div class="rounded-2xl border border-zinc-800 bg-[#09090B] p-8 grid md:grid-cols-2 gap-5 mb-2">
+      <div class="space-y-1.5">
+        <label class="text-xs font-medium text-zinc-400 ml-0.5">Full Name</label>
+        <input type="text" placeholder="John Doe" class="w-full bg-[#111113] border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all font-medium">
+      </div>
+      <div class="space-y-1.5">
+        <label class="text-xs font-medium text-zinc-400 ml-0.5">Email Address</label>
+        <input type="email" placeholder="john@company.com" class="w-full bg-[#111113] border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all font-medium">
+      </div>
+    </div>
+    <p class="tok">bg-[#111113] · border-zinc-800 · rounded-xl · focus:border-indigo-500/50 + ring-1</p>
+  </section>
+
+  <!-- ============ MOTION ============ -->
+  <section id="motion" class="py-20">
+    <div class="flex items-center gap-4 mb-12">
+      <span class="font-mono text-xs text-indigo-400">06</span>
+      <h2 class="font-display font-semibold text-2xl md:text-3xl tracking-tight">Motion</h2>
+      <div class="h-px flex-1 section-rule"></div>
+    </div>
+    <p class="text-sm text-zinc-500 mb-8 max-w-2xl">Motion is slow, looping, and atmospheric — nothing demands attention. Transitions ease over 300–700ms; ambient loops run for seconds. All of it respects <span class="tok">prefers-reduced-motion</span>.</p>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="rounded-2xl border border-zinc-800 bg-[#111113] p-6 min-h-[150px] flex flex-col">
+        <div class="flex-1 flex items-center justify-center">
+          <div class="w-12 h-12 rounded-xl bg-indigo-500/80 animate-float"></div>
+        </div>
+        <p class="text-sm text-zinc-300">Float</p>
+        <p class="tok">6s · staggered stats</p>
+      </div>
+      <div class="rounded-2xl border border-zinc-800 bg-[#111113] p-6 min-h-[150px] flex flex-col overflow-hidden">
+        <div class="flex-1 flex items-center justify-center relative">
+          <div class="w-16 h-16 bg-cyan-500/30 rounded-full blur-md animate-blob"></div>
+        </div>
+        <p class="text-sm text-zinc-300">Blob</p>
+        <p class="tok">10s · background drift</p>
+      </div>
+      <div class="rounded-2xl border border-zinc-800 bg-[#111113] p-6 min-h-[150px] flex flex-col overflow-hidden">
+        <div class="flex-1 flex items-center">
+          <div class="flex gap-4 animate-marquee whitespace-nowrap text-zinc-500 font-display font-semibold">
+            <span>Next.js</span><span>AWS</span><span>Figma</span><span>Prisma</span>
+            <span>Next.js</span><span>AWS</span><span>Figma</span><span>Prisma</span>
+          </div>
+        </div>
+        <p class="text-sm text-zinc-300">Marquee</p>
+        <p class="tok">30s linear · tech strip</p>
+      </div>
+      <div class="rounded-2xl border border-zinc-800 bg-[#111113] p-6 min-h-[150px] flex flex-col overflow-hidden">
+        <div class="flex-1 flex items-center">
+          <div class="flex gap-2 demo-track">
+            <div class="w-16 h-16 rounded-lg bg-[#18181B] border border-zinc-700 shrink-0"></div>
+            <div class="w-16 h-16 rounded-lg bg-[#18181B] border border-zinc-700 shrink-0"></div>
+            <div class="w-16 h-16 rounded-lg bg-[#18181B] border border-zinc-700 shrink-0"></div>
+            <div class="w-16 h-16 rounded-lg bg-[#18181B] border border-zinc-700 shrink-0"></div>
+          </div>
+        </div>
+        <p class="text-sm text-zinc-300">Pinned scroll</p>
+        <p class="tok">pause → ease → pause</p>
+      </div>
+    </div>
+
+    <div class="rounded-2xl border border-zinc-800 bg-[#111113] mt-6 divide-y divide-zinc-800/70 text-sm">
+      <div class="flex justify-between px-5 py-3"><span class="text-zinc-300">Hover / color transitions</span><span class="tok">duration-300</span></div>
+      <div class="flex justify-between px-5 py-3"><span class="text-zinc-300">Card reveal / border grow</span><span class="tok">duration-500 → 700</span></div>
+      <div class="flex justify-between px-5 py-3"><span class="text-zinc-300">Services scroll smoothing</span><span class="tok">rAF lerp · factor 0.09</span></div>
+      <div class="flex justify-between px-5 py-3"><span class="text-zinc-300">Scroll pause zones</span><span class="tok">14% start · 14% end</span></div>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-zinc-900">
+  <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-medium text-zinc-600">
+    <p>KodeAura7 Design System — extracted from the marketing site.</p>
+    <p class="font-mono">#09090B · Syne / Inter / JetBrains Mono</p>
+  </div>
+</footer>
+
+</body>
+</html>

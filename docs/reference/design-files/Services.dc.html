@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Syne:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+:root { color-scheme: dark; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; background-color: #09090B; color: #F4F4F5; }
+h1,h2,h3,h4,h5,h6,.font-display { font-family: 'Syne', sans-serif; }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #09090B; }
+::-webkit-scrollbar-thumb { background: #27272A; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #3F3F46; }
+.text-gradient { background-clip:text; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-image:linear-gradient(135deg,#6366F1 0%,#06B6D4 100%); }
+.glass-panel { background:rgba(9,9,11,0.72); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); }
+.bg-grid { background-size:32px 32px; background-image:linear-gradient(to right,rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,0.03) 1px,transparent 1px); }
+@keyframes blob { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(30px,-50px) scale(1.1)} 66%{transform:translate(-20px,20px) scale(0.9)} 100%{transform:translate(0,0) scale(1)} }
+.animate-blob { animation:blob 10s infinite alternate; }
+.animation-delay-2000 { animation-delay:2s; }
+@keyframes fadeUp { from{transform:translateY(20px)} to{transform:translateY(0)} }
+.fade-up { animation:fadeUp .6s cubic-bezier(0.16,1,0.3,1); }
+.delay-1 { animation-delay:.1s; } .delay-2 { animation-delay:.2s; } .delay-3 { animation-delay:.3s; }
+.svc-visual:hover { border-color:color-mix(in srgb,var(--accent) 30%,transparent)!important; box-shadow:0 0 44px -10px var(--accent); }
+.svc-visual:hover .svc-bigicon { color:var(--accent); border-color:color-mix(in srgb,var(--accent) 40%,transparent); transform:scale(1.1) rotate(-3deg); }
+.svc-visual:hover .svc-rule { width:100%; background:color-mix(in srgb,var(--accent) 35%,transparent); }
+@media (prefers-reduced-motion:reduce){ .animate-blob,.fade-up{animation:none!important} }
+.no-sb::-webkit-scrollbar{ display:none; } .no-sb{ scrollbar-width:none; }
+</style>
+</helmet>
+
+<div class="antialiased selection:bg-indigo-500/30 overflow-x-hidden">
+
+  <div class="fixed inset-0 -z-10 pointer-events-none">
+    <div class="absolute inset-0 bg-grid opacity-[0.05]"></div>
+    <div class="absolute top-[-10%] left-[8%] w-[500px] h-[500px] bg-indigo-600/10 rounded-full filter blur-[120px] animate-blob"></div>
+    <div class="absolute top-[5%] right-[6%] w-[420px] h-[420px] bg-cyan-600/10 rounded-full filter blur-[120px] animate-blob animation-delay-2000"></div>
+  </div>
+
+  <!-- ===== NAV ===== -->
+  <header class="fixed top-0 inset-x-0 z-50 glass-panel border-b border-zinc-800/60">
+    <div class="max-w-7xl mx-auto px-6 h-16 md:h-20 flex items-center justify-between">
+      <a href="Home.dc.html" class="flex items-center gap-2.5">
+        <div class="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.4)]"><div class="w-2.5 h-2.5 bg-[#09090B] rounded-sm"></div></div>
+        <span class="font-display font-semibold tracking-tighter text-lg">KodeAura7</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+        <a href="Services.dc.html" class="text-zinc-100 transition-colors">Services</a>
+        <a href="Portfolio.dc.html" class="text-zinc-400 hover:text-zinc-100 transition-colors">Portfolio</a>
+        <a href="About.dc.html" class="text-zinc-400 hover:text-zinc-100 transition-colors">About</a>
+      </nav>
+      <div class="flex items-center gap-4">
+        <a href="Sign In.dc.html" class="hidden md:inline text-sm font-medium text-zinc-400 hover:text-zinc-100 transition-colors">Sign in</a>
+        <a href="Home.dc.html#contact" class="hidden sm:inline-flex items-center bg-indigo-500 text-white rounded-full px-5 py-2.5 text-sm font-medium shadow-[0_0_20px_rgba(99,102,241,0.25)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all">Start Project</a>
+        <button onClick="{{ toggleMenu }}" class="md:hidden text-zinc-300 hover:text-zinc-100 transition-colors" aria-label="Menu"><iconify-icon icon="solar:hamburger-menu-linear" width="26"></iconify-icon></button>
+      </div>
+    </div>
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+      <div class="md:hidden border-t border-zinc-800/60 px-6 py-5 flex flex-col gap-4 text-sm font-medium bg-[#09090B]/95">
+        <a href="Services.dc.html" class="text-zinc-100">Services</a>
+        <a href="Portfolio.dc.html" class="text-zinc-300 hover:text-zinc-100">Portfolio</a>
+        <a href="About.dc.html" class="text-zinc-300 hover:text-zinc-100">About</a>
+        <a href="Sign In.dc.html" class="text-zinc-300 hover:text-zinc-100">Sign in</a>
+        <a href="Home.dc.html#contact" class="inline-flex w-max items-center bg-indigo-500 text-white rounded-full px-5 py-2.5">Start Project</a>
+      </div>
+    </sc-if>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="pt-32 md:pt-40 pb-16 text-center">
+    <div class="max-w-3xl mx-auto px-6">
+      <p class="fade-up font-mono text-xs text-zinc-500 tracking-widest uppercase mb-5">What We Do</p>
+      <h1 class="fade-up delay-1 font-display font-semibold text-4xl md:text-6xl tracking-tighter leading-[1.05] mb-6">Services Designed to <span class="text-gradient">Scale Your Business</span></h1>
+      <p class="fade-up delay-2 text-zinc-400 text-lg leading-relaxed max-w-2xl mx-auto mb-8">Four specialised disciplines. One unified vision. Engineered for growth.</p>
+      <div class="fade-up delay-3 flex flex-wrap items-center justify-center gap-3">
+        <a href="#web-dev" class="rounded-full px-5 py-2 text-sm font-medium bg-[#111113] border border-zinc-800 text-zinc-300 hover:border-zinc-600 transition-all">Web Dev</a>
+        <a href="#salesforce" class="rounded-full px-5 py-2 text-sm font-medium bg-[#111113] border border-zinc-800 text-zinc-300 hover:border-zinc-600 transition-all">Salesforce CRM</a>
+        <a href="#uiux" class="rounded-full px-5 py-2 text-sm font-medium bg-[#111113] border border-zinc-800 text-zinc-300 hover:border-zinc-600 transition-all">UI/UX Design</a>
+        <a href="#ads" class="rounded-full px-5 py-2 text-sm font-medium bg-[#111113] border border-zinc-800 text-zinc-300 hover:border-zinc-600 transition-all">Digital Ads</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SERVICE SECTIONS ===== -->
+  <sc-for list="{{ services }}" as="s" hint-placeholder-count="4">
+    <section id="{{ s.id }}" class="py-20 md:py-28 border-t border-zinc-900 scroll-mt-24">
+      <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <!-- TEXT -->
+        <div class="{{ s.textOrder }}">
+          <span class="font-mono text-xs" style="{{ s.numStyle }}">{{ s.num }}</span>
+          <h2 class="font-display font-semibold text-3xl md:text-4xl tracking-tighter text-zinc-100 mt-3 mb-4">{{ s.name }}</h2>
+          <div class="w-12 h-1 rounded-full mb-6" style="{{ s.underlineStyle }}"></div>
+          <div class="space-y-4 text-zinc-400 leading-relaxed">
+            <p>{{ s.p1 }}</p>
+            <p>{{ s.p2 }}</p>
+          </div>
+          <p class="text-xs font-mono text-zinc-500 uppercase tracking-widest mt-8 mb-4">What's Included:</p>
+          <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-3">
+            <sc-for list="{{ s.features }}" as="feat" hint-placeholder-count="6">
+              <li class="flex items-center gap-3 text-sm text-zinc-300">
+                <span class="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style="{{ s.chipStyle }}"><iconify-icon icon="solar:check-circle-linear" width="14"></iconify-icon></span>
+                {{ feat }}
+              </li>
+            </sc-for>
+          </ul>
+          <a href="Home.dc.html#contact" class="inline-flex items-center gap-2 text-sm font-medium mt-8 transition-opacity hover:opacity-80" style="{{ s.ctaStyle }}"><span>Start a {{ s.name }} Project</span><iconify-icon icon="solar:arrow-right-linear" width="16"></iconify-icon></a>
+        </div>
+        <!-- VISUAL -->
+        <div class="{{ s.cardOrder }}">
+          <div class="svc-visual relative overflow-hidden bg-[#111113] rounded-3xl p-8 border border-zinc-800 transition-all duration-700" style="{{ s.cardStyle }}">
+            <div class="absolute inset-0" style="{{ s.cardGlow }}"></div>
+            <div class="relative">
+              <div class="svc-bigicon w-20 h-20 rounded-2xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-zinc-100 mb-8 transition-all duration-500">
+                <iconify-icon icon="{{ s.icon }}" width="40"></iconify-icon>
+              </div>
+              <div class="grid grid-cols-3 gap-3 mb-8">
+                <sc-for list="{{ s.metrics }}" as="m" hint-placeholder-count="3">
+                  <div class="bg-[#18181B] border border-zinc-800 rounded-xl px-3 py-3 text-center">
+                    <p class="font-display text-lg md:text-xl font-semibold text-zinc-100 leading-tight">{{ m.value }}</p>
+                    <p class="text-[11px] text-zinc-500 mt-1 leading-tight">{{ m.label }}</p>
+                  </div>
+                </sc-for>
+              </div>
+              <div class="svc-rule h-[2px] w-12 bg-zinc-800 transition-all duration-700"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </sc-for>
+
+  <!-- ===== BOTTOM CTA ===== -->
+  <section class="py-20 md:py-28 border-t border-zinc-900">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="relative overflow-hidden bg-[#111113] rounded-3xl p-12 md:p-16 border border-zinc-800 text-center">
+        <div class="absolute -top-20 -right-20 w-72 h-72 bg-indigo-500/15 rounded-full blur-[80px]"></div>
+        <div class="absolute -bottom-20 -left-20 w-72 h-72 bg-cyan-500/15 rounded-full blur-[80px]"></div>
+        <div class="relative">
+          <h2 class="font-display font-semibold text-3xl md:text-5xl tracking-tighter mb-5">Not Sure Which Service You Need?</h2>
+          <p class="text-zinc-400 text-lg mb-10 max-w-xl mx-auto">Book a free 30-minute consultation. We'll map out exactly what your business needs.</p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="Home.dc.html#contact" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-indigo-500 text-white rounded-full text-sm font-medium hover:bg-indigo-400 transition-all shadow-[0_0_30px_rgba(99,102,241,0.3)] hover:shadow-[0_0_40px_rgba(99,102,241,0.5)] hover:-translate-y-0.5">Book a Free Call <iconify-icon icon="solar:arrow-right-linear" width="18"></iconify-icon></a>
+            <a href="Portfolio.dc.html" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/5 backdrop-blur-sm text-zinc-100 rounded-full text-sm font-medium hover:bg-white/10 transition-all border border-zinc-800 hover:border-zinc-600">See Our Work</a>
+          </div>
+          <p class="text-sm text-zinc-500 mt-6 font-mono">info@kodeaura7.in</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="bg-[#09090B] border-t border-zinc-900 pt-20 pb-8">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid grid-cols-2 md:grid-cols-12 gap-10 mb-16">
+        <div class="col-span-2 md:col-span-5">
+          <a href="Home.dc.html" class="flex items-center gap-2.5 mb-5">
+            <div class="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.4)]"><div class="w-2.5 h-2.5 bg-[#09090B] rounded-sm"></div></div>
+            <span class="font-display font-semibold tracking-tighter text-lg">KodeAura7</span>
+          </a>
+          <p class="font-display text-xl text-zinc-300 tracking-tight mb-6 max-w-xs">We Build the Digital Future.</p>
+          <div class="flex gap-3">
+            <a href="#" class="w-9 h-9 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:border-zinc-600 transition-all"><iconify-icon icon="mdi:linkedin" width="17"></iconify-icon></a>
+            <a href="#" class="w-9 h-9 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:border-zinc-600 transition-all"><iconify-icon icon="mdi:twitter" width="17"></iconify-icon></a>
+            <a href="#" class="w-9 h-9 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:border-zinc-600 transition-all"><iconify-icon icon="mdi:instagram" width="17"></iconify-icon></a>
+          </div>
+        </div>
+        <div class="md:col-span-3">
+          <p class="text-xs uppercase tracking-widest text-zinc-500 font-mono mb-5">Services</p>
+          <ul class="space-y-3 text-sm text-zinc-400">
+            <li><a href="#web-dev" class="hover:text-zinc-100 transition-colors">Web Development</a></li>
+            <li><a href="#salesforce" class="hover:text-zinc-100 transition-colors">Salesforce CRM</a></li>
+            <li><a href="#uiux" class="hover:text-zinc-100 transition-colors">UI/UX Design</a></li>
+            <li><a href="#ads" class="hover:text-zinc-100 transition-colors">Meta &amp; Google Ads</a></li>
+          </ul>
+        </div>
+        <div class="md:col-span-2">
+          <p class="text-xs uppercase tracking-widest text-zinc-500 font-mono mb-5">Company</p>
+          <ul class="space-y-3 text-sm text-zinc-400">
+            <li><a href="About.dc.html" class="hover:text-zinc-100 transition-colors">About</a></li>
+            <li><a href="Portfolio.dc.html" class="hover:text-zinc-100 transition-colors">Portfolio</a></li>
+            <li><a href="Home.dc.html#contact" class="hover:text-zinc-100 transition-colors">Contact</a></li>
+          </ul>
+        </div>
+        <div class="col-span-2 md:col-span-2">
+          <p class="text-xs uppercase tracking-widest text-zinc-500 font-mono mb-5">Newsletter</p>
+          <div class="flex flex-col gap-3">
+            <input type="email" placeholder="Your email" class="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all">
+            <button class="bg-indigo-500 text-white rounded-xl py-2.5 text-sm font-medium hover:bg-indigo-400 transition-all">Join</button>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-zinc-900 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-600">
+        <p>© 2025 KodeAura7. All rights reserved. · info@kodeaura7.in</p>
+        <div class="flex gap-6"><a href="#" class="hover:text-zinc-400 transition-colors">Privacy Policy</a><a href="#" class="hover:text-zinc-400 transition-colors">Terms of Service</a></div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { menuOpen: false };
+
+  renderVals() {
+    const raw = [
+      {
+        id: 'web-dev', num: '01', name: 'Web Development', icon: 'lucide:code', accent: '#6366F1',
+        p1: 'We build fast, scalable, and beautifully designed web applications using modern technology stacks. Every project starts with understanding your users and ends with a product that converts visitors into customers.',
+        p2: 'Whether you need a marketing site, a SaaS dashboard, or a full e-commerce platform, our engineering team delivers pixel-perfect results with SEO and performance baked in.',
+        features: ['Full-Stack Web Applications', 'Responsive & Mobile-First Design', 'SEO Optimisation & Core Web Vitals', 'Progressive Web Apps (PWA)', 'Headless CMS Integrations', 'Performance Audits & Refactoring'],
+        metrics: [{ value: '50ms', label: 'Avg Load' }, { value: '100', label: 'Lighthouse' }, { value: '5× ROI', label: 'Returns' }],
+      },
+      {
+        id: 'salesforce', num: '02', name: 'Salesforce CRM', icon: 'lucide:database', accent: '#06B6D4',
+        p1: 'We implement and customise Salesforce to match your exact business processes. From Experience Cloud portals to custom Apex development and automated workflows, we turn Salesforce into your most powerful business tool.',
+        p2: 'Our certified Salesforce specialists have delivered CRM systems for legal, financial, and professional services firms — handling everything from setup to ongoing optimisation.',
+        features: ['Salesforce Experience Cloud Portals', 'Custom APEX & LWC Development', 'Sales Cloud & Service Cloud Setup', 'Automated Flows & Process Builder', 'Third-Party Integrations & APIs', 'CRM Audits & Health Checks'],
+        metrics: [{ value: '3× Faster', label: 'Pipeline' }, { value: '60%', label: 'Less Manual' }, { value: '40% More', label: 'Conversion' }],
+      },
+      {
+        id: 'uiux', num: '03', name: 'UI/UX Design', icon: 'lucide:layout', accent: '#F43F5E',
+        p1: "Great design isn't just how something looks — it's how it works. We design interfaces that are intuitive, accessible, and built to convert. Every decision we make is grounded in user research and validated through testing.",
+        p2: 'From early wireframes to a complete design system, we create the visual foundation your product needs to stand out in competitive markets.',
+        features: ['User Research & Journey Mapping', 'Wireframing & Interactive Prototyping', 'Scalable Design Systems', 'Accessibility (WCAG) Compliance', 'Brand Identity & Visual Language', 'Usability Testing & Iteration'],
+        metrics: [{ value: '2× Higher', label: 'Conversion' }, { value: '45% Lower', label: 'Bounce Rate' }, { value: 'NPS 90+', label: 'Satisfaction' }],
+      },
+      {
+        id: 'ads', num: '04', name: 'Meta & Google Ads', icon: 'lucide:megaphone', accent: '#F59E0B',
+        p1: 'We manage data-driven advertising campaigns across Google Search, Performance Max, Meta (Facebook & Instagram), and beyond. Every rupee of your ad spend is tracked, tested, and optimised for maximum return.',
+        p2: "Our campaigns aren't set-and-forget — they're actively managed, A/B tested, and continually refined as we gather conversion data specific to your audience.",
+        features: ['Google Search & Performance Max', 'Meta (Facebook & Instagram) Ads', 'Social Media Retargeting', 'Conversion Rate Optimisation', 'Monthly Performance Reporting', 'Landing Page Strategy & Design'],
+        metrics: [{ value: '4× ROAS', label: 'Average' }, { value: '35% Lower', label: 'CPC' }, { value: '₹50L+', label: 'Managed Spend' }],
+      },
+    ];
+
+    const services = raw.map((s, i) => {
+      const reverse = i % 2 === 1;
+      return {
+        ...s,
+        textOrder: reverse ? 'lg:order-2' : 'lg:order-1',
+        cardOrder: reverse ? 'lg:order-1' : 'lg:order-2',
+        numStyle: `color:${s.accent}`,
+        underlineStyle: `background:linear-gradient(to right,${s.accent},transparent)`,
+        chipStyle: `background:color-mix(in srgb,${s.accent} 12%,transparent);border:1px solid color-mix(in srgb,${s.accent} 22%,transparent);color:${s.accent}`,
+        ctaStyle: `color:${s.accent}`,
+        cardStyle: `--accent:${s.accent}`,
+        cardGlow: `background:linear-gradient(to bottom right,color-mix(in srgb,${s.accent} 6%,transparent),transparent 60%)`,
+      };
+    });
+
+    return {
+      menuOpen: this.state.menuOpen,
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      services,
+    };
+  }
+}
+</script>
+</body>
+</html>
