@@ -9,6 +9,7 @@ import { steps, testimonials } from '../constants/content';
 export default function Home() {
   const marquee = [...tech, ...tech];
   return (
+    
     <SiteLayout>
       <SEO title="KodeAura7" path="/" description="KodeAura7 builds websites, CRMs, design systems, and campaigns that drive measurable business growth." />
       <section className="relative pt-32 md:pt-44 pb-20 md:pb-28">
