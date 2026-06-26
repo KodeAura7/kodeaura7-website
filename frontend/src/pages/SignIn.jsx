@@ -107,7 +107,7 @@ export default function SignIn() {
                 />
                 Remember me
               </label>
-              <a href="#" className="text-indigo-400 hover:text-indigo-300 transition-colors whitespace-nowrap">Forgot password?</a>
+              <Link to="/forgot-password" className="text-indigo-400 hover:text-indigo-300 transition-colors whitespace-nowrap">Forgot password?</Link>
             </div>
             {error ? (
               <p className="text-xs text-rose-400 flex items-center gap-1.5">

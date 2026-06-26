@@ -16,5 +16,7 @@ async function postJson(path, payload) {
 
 export const api = {
   contact: (payload) => postJson('/api/contact', payload),
-  newsletter: (payload) => postJson('/api/newsletter', payload)
+  newsletter: (payload) => postJson('/api/newsletter', payload),
+  forgotPassword: (payload) => postJson('/api/auth/forgot-password', payload),
+  resetPassword: (payload) => postJson('/api/auth/reset-password', payload)
 };

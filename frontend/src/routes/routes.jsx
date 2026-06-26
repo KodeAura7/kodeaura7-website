@@ -8,6 +8,8 @@ const Services = lazy(() => import('../pages/Services.jsx'));
 const Portfolio = lazy(() => import('../pages/Portfolio.jsx'));
 const About = lazy(() => import('../pages/About.jsx'));
 const SignIn = lazy(() => import('../pages/SignIn.jsx'));
+const ForgotPassword = lazy(() => import('../pages/ForgotPassword.jsx'));
+const ResetPassword = lazy(() => import('../pages/ResetPassword.jsx'));
 
 const Dashboard = lazy(() => import('../pages/admin/Dashboard.jsx'));
 const Contacts = lazy(() => import('../pages/admin/Contacts.jsx'));
@@ -24,6 +26,22 @@ export const routes = [
     element: (
       <AlreadyAuthed>
         <SignIn />
+      </AlreadyAuthed>
+    )
+  },
+  {
+    path: '/forgot-password',
+    element: (
+      <AlreadyAuthed>
+        <ForgotPassword />
+      </AlreadyAuthed>
+    )
+  },
+  {
+    path: '/reset-password/:token',
+    element: (
+      <AlreadyAuthed>
+        <ResetPassword />
       </AlreadyAuthed>
     )
   },

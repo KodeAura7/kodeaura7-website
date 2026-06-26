@@ -10,5 +10,6 @@ export const env = {
   rateLimitWindowMs: Number(process.env.RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000),
   rateLimitMax: Number(process.env.RATE_LIMIT_MAX || 100),
   jwtSecret: process.env.JWT_SECRET,
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d'
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173'
 };

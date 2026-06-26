@@ -1,9 +1,17 @@
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import validator from 'validator';
 import { env } from '../config/env.js';
 import { query } from '../database/pool.js';
 import { sanitize } from '../utils/sanitize.js';
+
+const SALT_ROUNDS = 12;
+const RESET_EXPIRY_MS = 30 * 60 * 1000;
+
+function sha256(raw) {
+  return crypto.createHash('sha256').update(raw).digest('hex');
+}
 
 export async function loginUser(payload) {
   const email = sanitize(payload.email || '').toLowerCase();
@@ -72,4 +80,102 @@ export async function getMe(userId) {
   }
 
   return user;
+}
+
+export async function forgotPassword(email) {
+  const normalizedEmail = sanitize(email || '').toLowerCase();
+
+  // Always return silently — never reveal whether an account exists.
+  if (!validator.isEmail(normalizedEmail)) return;
+
+  const result = await query(
+    `SELECT id, name, email FROM admin_users
+     WHERE email = $1 AND status = 'active'`,
+    [normalizedEmail]
+  );
+
+  const user = result.rows[0];
+  if (!user) return;
+
+  const rawToken = crypto.randomBytes(32).toString('hex');
+  const hashedToken = sha256(rawToken);
+  const expiry = new Date(Date.now() + RESET_EXPIRY_MS);
+
+  await query(
+    `UPDATE admin_users
+     SET reset_token = $1, reset_token_expiry = $2, updated_at = NOW()
+     WHERE id = $3`,
+    [hashedToken, expiry, user.id]
+  );
+
+  const resetUrl = `${env.frontendUrl}/reset-password/${rawToken}`;
+
+  // Structured log — swap `console.log` call below for your SMTP client when ready.
+  console.log('[Password Reset] Email would be sent:', {
+    to: user.email,
+    name: user.name,
+    resetUrl,
+    expiresAt: expiry.toISOString()
+  });
+
+  /*
+  // SMTP example (e.g. nodemailer):
+  await transporter.sendMail({
+    from: '"KodeAura7" <noreply@kodeaura7.in>',
+    to: user.email,
+    subject: 'Reset your KodeAura7 admin password',
+    html: `<p>Hi ${user.name},</p>
+           <p>Click the link below to reset your password (expires in 30 minutes):</p>
+           <p><a href="${resetUrl}">${resetUrl}</a></p>`,
+  });
+  */
+}
+
+export async function resetPassword(rawToken, newPassword, confirmPassword) {
+  if (!rawToken || typeof rawToken !== 'string' || rawToken.length !== 64) {
+    const error = new Error('Invalid or expired reset link.');
+    error.status = 400;
+    throw error;
+  }
+
+  if (!newPassword || newPassword.length < 8) {
+    const error = new Error('Password must be at least 8 characters.');
+    error.status = 400;
+    throw error;
+  }
+
+  if (newPassword !== confirmPassword) {
+    const error = new Error('Passwords do not match.');
+    error.status = 400;
+    throw error;
+  }
+
+  const hashedToken = sha256(rawToken);
+
+  const result = await query(
+    `SELECT id FROM admin_users
+     WHERE reset_token = $1
+       AND reset_token_expiry > NOW()
+       AND status = 'active'`,
+    [hashedToken]
+  );
+
+  const user = result.rows[0];
+  if (!user) {
+    const error = new Error('Invalid or expired reset link. Please request a new one.');
+    error.status = 400;
+    throw error;
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+
+  await query(
+    `UPDATE admin_users
+     SET password_hash = $1,
+         reset_token = NULL,
+         reset_token_expiry = NULL,
+         updated_at = NOW()
+     WHERE id = $2`,
+    [passwordHash, user.id]
+  );
 }
