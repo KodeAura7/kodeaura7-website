@@ -3,6 +3,28 @@ import Icon from '../../components/Icon';
 import { useAuth } from '../../hooks/useAuth';
 import { adminApi } from '../../services/adminApi';
 
+function RollupCard({ label, total, active, icon, color }) {
+  const colors = {
+    indigo: 'bg-indigo-500/10 text-indigo-400',
+    amber: 'bg-amber-500/10 text-amber-400',
+    cyan: 'bg-cyan-500/10 text-cyan-400'
+  };
+  return (
+    <div className="bg-[#111113] border border-zinc-800 rounded-2xl p-5 flex items-center gap-4">
+      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${colors[color]}`}>
+        <Icon icon={icon} width={18} />
+      </div>
+      <div>
+        <p className="text-xs text-zinc-500 font-mono uppercase tracking-wider mb-0.5">{label}</p>
+        <p className="font-display font-semibold text-xl text-zinc-100">
+          {total ?? <span className="text-zinc-600">—</span>}
+          {total != null ? <span className="text-xs text-zinc-500 font-normal ml-2 font-sans">{active} active</span> : null}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 const ROLES = ['customer', 'admin', 'super_admin'];
 const STATUSES = ['active', 'inactive'];
 
@@ -165,6 +187,7 @@ function StatusDot({ status }) {
 export default function Users() {
   const { user: me } = useAuth();
   const [users, setUsers] = useState(null);
+  const [rollup, setRollup] = useState(null);
   const [modal, setModal] = useState(null); // null | 'create' | user object
   const [deleting, setDeleting] = useState(null);
   const [error, setError] = useState('');
@@ -172,6 +195,7 @@ export default function Users() {
   const load = () => {
     setError('');
     adminApi.users().then(setUsers).catch((err) => setError(err.message));
+    adminApi.userRollup().then(setRollup).catch(() => null);
   };
 
   useEffect(() => { load(); }, []);
@@ -204,11 +228,17 @@ export default function Users() {
         />
       ) : null}
 
+      <div className="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <RollupCard label="Super Admins" total={rollup?.super_admin?.total} active={rollup?.super_admin?.active} icon="solar:shield-user-linear" color="indigo" />
+        <RollupCard label="Admins" total={rollup?.admin?.total} active={rollup?.admin?.active} icon="solar:user-check-linear" color="amber" />
+        <RollupCard label="Customers" total={rollup?.customer?.total} active={rollup?.customer?.active} icon="solar:users-group-two-rounded-linear" color="cyan" />
+      </div>
+
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-display font-semibold text-2xl text-zinc-100">Users</h1>
           <p className="text-sm text-zinc-500 mt-1">
-            {users ? `${users.length} admin user${users.length !== 1 ? 's' : ''}` : '—'}
+            {users ? `${users.length} user${users.length !== 1 ? 's' : ''}` : '—'}
           </p>
         </div>
         <button

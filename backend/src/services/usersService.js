@@ -7,6 +7,23 @@ const SALT_ROUNDS = 12;
 const VALID_ROLES = new Set(['super_admin', 'admin', 'customer']);
 const VALID_STATUSES = new Set(['active', 'inactive']);
 
+export async function getUserRollup() {
+  const result = await query(
+    `SELECT role,
+            COUNT(*) AS total,
+            COUNT(*) FILTER (WHERE status = 'active') AS active
+     FROM admin_users
+     GROUP BY role`
+  );
+  const out = { super_admin: { total: 0, active: 0 }, admin: { total: 0, active: 0 }, customer: { total: 0, active: 0 } };
+  for (const row of result.rows) {
+    if (out[row.role] !== undefined) {
+      out[row.role] = { total: parseInt(row.total), active: parseInt(row.active) };
+    }
+  }
+  return out;
+}
+
 export async function listUsers() {
   const result = await query(
     `SELECT id, name, email, role, status, last_login, created_at, updated_at

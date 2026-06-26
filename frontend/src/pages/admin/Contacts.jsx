@@ -1,4 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import ContactStatusBadge from '../../components/ContactStatusBadge';
+import { CONTACT_STATUSES } from '../../utils/contactStatusConfig';
 import Icon from '../../components/Icon';
 import { adminApi } from '../../services/adminApi';
 
@@ -13,51 +16,23 @@ function useDebounce(value, delay = 300) {
   return debounced;
 }
 
-function Modal({ contact, onClose }) {
-  if (!contact) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70" onClick={onClose}>
-      <div
-        className="bg-[#111113] border border-zinc-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-start justify-between mb-5">
-          <h3 className="font-display font-semibold text-lg text-zinc-100">Contact Details</h3>
-          <button onClick={onClose} className="text-zinc-500 hover:text-zinc-200 transition-colors">
-            <Icon icon="solar:close-circle-linear" width={20} />
-          </button>
-        </div>
-        <dl className="space-y-3 text-sm">
-          {[
-            { label: 'Name', value: contact.name },
-            { label: 'Email', value: contact.email },
-            { label: 'Service', value: contact.service },
-            { label: 'Status', value: contact.status },
-            { label: 'Source', value: contact.source },
-            { label: 'Date', value: new Date(contact.created_at).toLocaleString() }
-          ].map(({ label, value }) => (
-            <div key={label} className="flex gap-3">
-              <dt className="w-20 shrink-0 text-zinc-500 font-mono text-xs pt-0.5">{label}</dt>
-              <dd className="text-zinc-200 flex-1 break-words">{value}</dd>
-            </div>
-          ))}
-          <div className="flex gap-3">
-            <dt className="w-20 shrink-0 text-zinc-500 font-mono text-xs pt-0.5">Message</dt>
-            <dd className="text-zinc-200 flex-1 break-words whitespace-pre-wrap">{contact.message}</dd>
-          </div>
-        </dl>
-      </div>
-    </div>
-  );
+function SortIcon({ col, sort, dir }) {
+  if (sort !== col) return <Icon icon="solar:sort-linear" width={13} className="text-zinc-600" />;
+  return <Icon icon={dir === 'asc' ? 'solar:sort-from-bottom-to-top-linear' : 'solar:sort-from-top-to-bottom-linear'} width={13} className="text-indigo-400" />;
 }
 
+const STATUS_LABEL = { new: 'New', in_progress: 'In Progress', completed: 'Completed', closed: 'Closed' };
+
 export default function Contacts() {
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState('created_at');
   const [dir, setDir] = useState('desc');
-  const [selected, setSelected] = useState(null);
+  const [checkedIds, setCheckedIds] = useState(new Set());
+  const [bulkStatus, setBulkStatus] = useState('in_progress');
+  const [bulkLoading, setBulkLoading] = useState(false);
   const [deleting, setDeleting] = useState(null);
   const [error, setError] = useState('');
   const [exporting, setExporting] = useState(false);
@@ -67,7 +42,7 @@ export default function Contacts() {
     setError('');
     adminApi
       .contacts({ page, limit: LIMIT, search: debouncedSearch, sort, dir })
-      .then(setData)
+      .then((d) => { setData(d); setCheckedIds(new Set()); })
       .catch((err) => setError(err.message));
   }, [page, debouncedSearch, sort, dir]);
 
@@ -80,17 +55,42 @@ export default function Contacts() {
     setPage(1);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this contact? This cannot be undone.')) return;
-    setDeleting(id);
+  // Multi-select
+  const rows = data?.data ?? [];
+  const allChecked = rows.length > 0 && rows.every((r) => checkedIds.has(r.id));
+  const someChecked = rows.some((r) => checkedIds.has(r.id)) && !allChecked;
+
+  const toggleAll = () => {
+    if (allChecked) {
+      setCheckedIds((prev) => { const next = new Set(prev); rows.forEach((r) => next.delete(r.id)); return next; });
+    } else {
+      setCheckedIds((prev) => { const next = new Set(prev); rows.forEach((r) => next.add(r.id)); return next; });
+    }
+  };
+
+  const toggleOne = (id) => {
+    setCheckedIds((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
+  };
+
+  const handleBulkStatus = async () => {
+    setBulkLoading(true);
     try {
-      await adminApi.deleteContact(id);
+      await adminApi.bulkUpdateContactStatus(Array.from(checkedIds), bulkStatus);
       load();
     } catch (err) {
       setError(err.message);
     } finally {
-      setDeleting(null);
+      setBulkLoading(false);
     }
+  };
+
+  const handleDelete = async (e, id) => {
+    e.stopPropagation();
+    if (!window.confirm('Delete this contact? This cannot be undone.')) return;
+    setDeleting(id);
+    try { await adminApi.deleteContact(id); load(); }
+    catch (err) { setError(err.message); }
+    finally { setDeleting(null); }
   };
 
   const handleExport = async () => {
@@ -100,23 +100,21 @@ export default function Contacts() {
     finally { setExporting(false); }
   };
 
-  const SortIcon = ({ col }) =>
-    sort === col ? (
-      <Icon icon={dir === 'asc' ? 'solar:sort-from-bottom-to-top-linear' : 'solar:sort-from-top-to-bottom-linear'} width={13} className="text-indigo-400" />
-    ) : (
-      <Icon icon="solar:sort-linear" width={13} className="text-zinc-600" />
-    );
+  const COLS = [
+    { col: 'name', label: 'Name' },
+    { col: 'email', label: 'Email' },
+    { col: 'service', label: 'Service' },
+    { col: 'status', label: 'Status' },
+    { col: 'created_at', label: 'Date' },
+    { col: 'updated_at', label: 'Updated' }
+  ];
 
   return (
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
-      {selected ? <Modal contact={selected} onClose={() => setSelected(null)} /> : null}
-
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-display font-semibold text-2xl text-zinc-100">Contacts</h1>
-          <p className="text-sm text-zinc-500 mt-1">
-            {data ? `${data.pagination.total} total` : '—'}
-          </p>
+          <p className="text-sm text-zinc-500 mt-1">{data ? `${data.pagination.total} total` : '—'}</p>
         </div>
         <button
           onClick={handleExport}
@@ -130,6 +128,37 @@ export default function Contacts() {
 
       {error ? (
         <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div>
+      ) : null}
+
+      {/* Bulk toolbar */}
+      {checkedIds.size > 0 ? (
+        <div className="mb-4 flex flex-wrap items-center gap-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3">
+          <span className="text-xs text-indigo-400 font-medium">{checkedIds.size} selected</span>
+          <div className="flex items-center gap-2 ml-auto">
+            <select
+              value={bulkStatus}
+              onChange={(e) => setBulkStatus(e.target.value)}
+              className="bg-[#18181B] border border-zinc-700 rounded-lg px-3 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500/50"
+            >
+              {CONTACT_STATUSES.map((s) => (
+                <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+              ))}
+            </select>
+            <button
+              onClick={handleBulkStatus}
+              disabled={bulkLoading}
+              className="px-3 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white text-xs font-medium transition-all disabled:opacity-60"
+            >
+              {bulkLoading ? 'Applying…' : 'Apply'}
+            </button>
+            <button
+              onClick={() => setCheckedIds(new Set())}
+              className="px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-zinc-500 text-zinc-400 text-xs transition-all"
+            >
+              Deselect all
+            </button>
+          </div>
+        </div>
       ) : null}
 
       {/* Search */}
@@ -152,19 +181,23 @@ export default function Contacts() {
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-[#18181B] border-b border-zinc-800">
-                {[
-                  { col: 'name', label: 'Name' },
-                  { col: 'email', label: 'Email' },
-                  { col: 'service', label: 'Service' },
-                  { col: 'created_at', label: 'Date' }
-                ].map(({ col, label }) => (
+                <th className="w-10 px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={allChecked}
+                    ref={(el) => { if (el) el.indeterminate = someChecked; }}
+                    onChange={toggleAll}
+                    className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer"
+                  />
+                </th>
+                {COLS.map(({ col, label }) => (
                   <th
                     key={col}
                     onClick={() => handleSort(col)}
                     className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider cursor-pointer hover:text-zinc-300 transition-colors select-none"
                   >
                     <span className="flex items-center gap-1.5">
-                      {label} <SortIcon col={col} />
+                      {label} <SortIcon col={col} sort={sort} dir={dir} />
                     </span>
                   </th>
                 ))}
@@ -173,40 +206,43 @@ export default function Contacts() {
             </thead>
             <tbody className="divide-y divide-zinc-800/60">
               {!data ? (
-                <tr>
-                  <td colSpan={5} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td>
-                </tr>
-              ) : data.data.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-4 py-10 text-center text-sm text-zinc-600">No contacts found.</td>
-                </tr>
+                <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
+              ) : rows.length === 0 ? (
+                <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-zinc-600">No contacts found.</td></tr>
               ) : (
-                data.data.map((c) => (
-                  <tr key={c.id} className="hover:bg-zinc-800/30 transition-colors">
+                rows.map((c) => (
+                  <tr
+                    key={c.id}
+                    onClick={() => navigate(`/admin/contacts/${c.id}`)}
+                    className="hover:bg-zinc-800/30 transition-colors cursor-pointer"
+                  >
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={checkedIds.has(c.id)}
+                        onChange={() => toggleOne(c.id)}
+                        className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer"
+                      />
+                    </td>
                     <td className="px-4 py-3 text-zinc-200 font-medium whitespace-nowrap">{c.name}</td>
                     <td className="px-4 py-3 text-zinc-400 whitespace-nowrap">{c.email}</td>
-                    <td className="px-4 py-3 text-zinc-400 whitespace-nowrap max-w-[160px] truncate">{c.service}</td>
+                    <td className="px-4 py-3 text-zinc-400 whitespace-nowrap max-w-[140px] truncate">{c.service}</td>
+                    <td className="px-4 py-3 whitespace-nowrap"><ContactStatusBadge status={c.status} /></td>
                     <td className="px-4 py-3 text-zinc-500 whitespace-nowrap font-mono text-xs">
                       {new Date(c.created_at).toLocaleDateString()}
                     </td>
-                    <td className="px-4 py-3 text-right whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => setSelected(c)}
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all"
-                          title="View details"
-                        >
-                          <Icon icon="solar:eye-linear" width={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(c.id)}
-                          disabled={deleting === c.id}
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-40"
-                          title="Delete"
-                        >
-                          <Icon icon="solar:trash-bin-minimalistic-linear" width={16} />
-                        </button>
-                      </div>
+                    <td className="px-4 py-3 text-zinc-500 whitespace-nowrap font-mono text-xs">
+                      {c.updated_at ? new Date(c.updated_at).toLocaleDateString() : '—'}
+                    </td>
+                    <td className="px-4 py-3 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={(e) => handleDelete(e, c.id)}
+                        disabled={deleting === c.id}
+                        className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-40"
+                        title="Delete"
+                      >
+                        <Icon icon="solar:trash-bin-minimalistic-linear" width={16} />
+                      </button>
                     </td>
                   </tr>
                 ))

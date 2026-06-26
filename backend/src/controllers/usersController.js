@@ -1,4 +1,9 @@
-import { createUser, deleteUser, listUsers, updateUser } from '../services/usersService.js';
+import { createUser, deleteUser, getUserRollup, listUsers, updateUser } from '../services/usersService.js';
+
+export async function rollup(_request, response) {
+  const data = await getUserRollup();
+  response.status(200).json(data);
+}
 
 export async function list(_request, response) {
   const users = await listUsers();

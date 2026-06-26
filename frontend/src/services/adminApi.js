@@ -55,9 +55,16 @@ export const adminApi = {
 
   contacts: (params = {}) =>
     request(`/api/admin/contacts?${new URLSearchParams(params)}`),
+  getContact: (id) => request(`/api/admin/contacts/${id}`),
+  updateContactStatus: (id, status) =>
+    request(`/api/admin/contacts/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+  bulkUpdateContactStatus: (ids, status) =>
+    request('/api/admin/contacts/bulk-status', { method: 'PATCH', body: JSON.stringify({ ids, status }) }),
   deleteContact: (id) =>
     request(`/api/admin/contacts/${id}`, { method: 'DELETE' }),
   exportContacts: () => downloadCsv('/api/admin/contacts/export', 'contacts.csv'),
+
+  userRollup: () => request('/api/admin/users/rollup'),
 
   newsletter: (params = {}) =>
     request(`/api/admin/newsletter?${new URLSearchParams(params)}`),
