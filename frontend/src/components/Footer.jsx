@@ -7,7 +7,7 @@ import { useSiteData } from '../contexts/SiteDataContext';
 export default function Footer() {
   const { services, socialLinks } = useSiteData();
   const enabledServices = services.filter((s) => s.enabled !== false);
-  const enabledSocials = socialLinks.filter((s) => s.enabled).sort((a, b) => a.sort_order - b.sort_order);
+  const enabledSocials = [...socialLinks].sort((a, b) => a.sort_order - b.sort_order);
 
   return (
     <footer className="bg-[#09090B] border-t border-zinc-900 pt-20 pb-8">
