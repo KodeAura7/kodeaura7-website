@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Icon from '../../components/Icon';
 import { adminApi } from '../../services/adminApi';
 import { useToast } from '../../contexts/ToastContext';
+import PageHistorySidebar from '../../components/admin/PageHistorySidebar';
 
 const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all';
 const TEXTAREA = INPUT + ' resize-none';
@@ -251,50 +252,6 @@ function CtaEditor({ data, onChange }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-function HistoryPanel({ page }) {
-  const [history, setHistory] = useState(null);
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (open && !history) {
-      adminApi.getPageHistory(page).then(setHistory).catch(() => setHistory([]));
-    }
-  }, [open, page, history]);
-
-  return (
-    <div className="border-t border-zinc-800 mt-8 pt-6">
-      <button onClick={() => setOpen(v => !v)}
-        className="flex items-center gap-2 text-xs font-medium text-zinc-500 hover:text-zinc-300 transition-colors">
-        <Icon icon={open ? 'solar:alt-arrow-up-linear' : 'solar:alt-arrow-down-linear'} width={14} />
-        Change History
-        {history ? <span className="text-zinc-700">({history.length})</span> : null}
-      </button>
-      {open && (
-        <div className="mt-4 space-y-2">
-          {!history ? (
-            <p className="text-xs text-zinc-600"><Icon icon="solar:loading-linear" width={12} className="animate-spin inline mr-1" />Loading…</p>
-          ) : history.length === 0 ? (
-            <p className="text-xs text-zinc-600">No history yet.</p>
-          ) : (
-            history.map((h) => (
-              <div key={h.id} className="flex items-start gap-3 py-2.5 border-b border-zinc-800/60 last:border-0">
-                <Icon icon="solar:history-linear" width={14} className="text-zinc-600 mt-0.5 shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-zinc-400">
-                    {h.changed_by_name ? <span className="text-zinc-200 font-medium">{h.changed_by_name}</span> : <span className="text-zinc-600">Unknown</span>}
-                    {' '}saved changes
-                  </p>
-                  <p className="text-[10px] text-zinc-600 font-mono mt-0.5">{new Date(h.created_at).toLocaleString()}</p>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function AdminAbout() {
   const { success, error: toastError } = useToast();
   const [content, setContent] = useState(null);
@@ -371,9 +328,11 @@ export default function AdminAbout() {
           {activeTab === 3 && <TechEditor data={content.tech || {}} onChange={v => setSection('tech', v)} />}
           {activeTab === 4 && <CtaEditor data={content.cta || {}} onChange={v => setSection('cta', v)} />}
 
-          <HistoryPanel key={historyKey} page="about" />
         </div>
       </div>
+
+      {/* History sidebar */}
+      <PageHistorySidebar page="about" historyKey={historyKey} actionLabel="saved about page" />
     </div>
   );
 }

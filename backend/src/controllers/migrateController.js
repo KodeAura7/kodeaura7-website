@@ -2,7 +2,6 @@ import { query } from '../database/pool.js';
 
 const MIGRATION_TOKEN = process.env.MIGRATION_TOKEN || '';
 
-// Determine the URL of each environment from env vars
 function getEnvUrl(env) {
   if (env === 'production') return process.env.PRODUCTION_URL || 'https://kodeaura7.in';
   if (env === 'staging')    return process.env.STAGING_URL    || 'https://staging.kodeaura7.in';
@@ -37,14 +36,23 @@ async function fetchNewsletterSubscribers(ids) {
   return rows;
 }
 
+async function fetchTestimonials(ids) {
+  if (!ids.length) return [];
+  const { rows } = await query(
+    `SELECT id, name, designation, rating, review, visible, sort_order
+     FROM testimonials
+     WHERE id = ANY($1::uuid[])`,
+    [ids]
+  );
+  return rows;
+}
+
 // ── Update source on migrated records ─────────────────────────────────────────
 
 async function markContactsMigrated(ids, targetEnv) {
   if (!ids.length) return;
   await query(
-    `UPDATE contact_messages
-     SET source = $1, updated_at = NOW()
-     WHERE id = ANY($2::uuid[])`,
+    `UPDATE contact_messages SET source = $1, updated_at = NOW() WHERE id = ANY($2::uuid[])`,
     [`Migrated to ${targetEnv}`, ids]
   );
 }
@@ -52,9 +60,7 @@ async function markContactsMigrated(ids, targetEnv) {
 async function markNewsletterMigrated(ids, targetEnv) {
   if (!ids.length) return;
   await query(
-    `UPDATE newsletter_subscribers
-     SET source = $1
-     WHERE id = ANY($2::uuid[])`,
+    `UPDATE newsletter_subscribers SET source = $1 WHERE id = ANY($2::uuid[])`,
     [`Migrated to ${targetEnv}`, ids]
   );
 }
@@ -67,8 +73,8 @@ export async function initiateMigration(req, res) {
   if (!Array.isArray(ids) || ids.length === 0) {
     return res.status(400).json({ message: 'ids array is required.' });
   }
-  if (!['contacts', 'newsletter'].includes(objectName)) {
-    return res.status(400).json({ message: 'objectName must be contacts or newsletter.' });
+  if (!['contacts', 'newsletter', 'testimonials'].includes(objectName)) {
+    return res.status(400).json({ message: 'objectName must be contacts, newsletter, or testimonials.' });
   }
   if (!['production', 'staging'].includes(targetEnv)) {
     return res.status(400).json({ message: 'targetEnv must be production or staging.' });
@@ -78,7 +84,6 @@ export async function initiateMigration(req, res) {
   if (targetEnv === currentEnv) {
     return res.status(400).json({ message: 'Target environment must differ from current environment.' });
   }
-
   if (!MIGRATION_TOKEN) {
     return res.status(503).json({ message: 'Migration is not configured on this server. Set the MIGRATION_TOKEN environment variable.' });
   }
@@ -88,19 +93,19 @@ export async function initiateMigration(req, res) {
     return res.status(503).json({ message: `No URL configured for environment: ${targetEnv}` });
   }
 
-  // Fetch records
   let records;
   if (objectName === 'contacts') {
     records = await fetchContacts(ids);
-  } else {
+  } else if (objectName === 'newsletter') {
     records = await fetchNewsletterSubscribers(ids);
+  } else {
+    records = await fetchTestimonials(ids);
   }
 
   if (!records.length) {
     return res.status(404).json({ message: 'No matching records found.' });
   }
 
-  // POST to target environment's receive endpoint
   let receiveResult;
   try {
     const response = await fetch(`${targetUrl}/api/migrate/receive`, {
@@ -122,13 +127,13 @@ export async function initiateMigration(req, res) {
     return res.status(502).json({ message: `Could not reach ${targetEnv} environment: ${err.message}` });
   }
 
-  // Mark migrated records in the current environment
   const migratedIds = records.map((r) => r.id);
   if (objectName === 'contacts') {
     await markContactsMigrated(migratedIds, targetEnv);
-  } else {
+  } else if (objectName === 'newsletter') {
     await markNewsletterMigrated(migratedIds, targetEnv);
   }
+  // testimonials: no source field to update
 
   res.json({
     migrated: receiveResult.created + receiveResult.updated,
@@ -197,6 +202,31 @@ export async function receiveMigration(req, res) {
         await query(
           `INSERT INTO newsletter_subscribers (email, source) VALUES ($1, $2)`,
           [r.email, source]
+        );
+        created++;
+      }
+    }
+  } else if (objectName === 'testimonials') {
+    for (const r of records) {
+      // Upsert by name + designation (closest to a natural key)
+      const existing = await query(
+        `SELECT id FROM testimonials WHERE name = $1 AND designation = $2 LIMIT 1`,
+        [r.name, r.designation]
+      );
+      if (existing.rows.length > 0) {
+        await query(
+          `UPDATE testimonials
+           SET rating = $1, review = $2, visible = $3, sort_order = $4, updated_at = NOW()
+           WHERE id = $5`,
+          [r.rating, r.review, r.visible ?? false, r.sort_order ?? 0, existing.rows[0].id]
+        );
+        updated++;
+      } else {
+        // user_id is nullable (migration 020), so migrated testimonials have no linked user
+        await query(
+          `INSERT INTO testimonials (name, designation, rating, review, visible, sort_order)
+           VALUES ($1, $2, $3, $4, $5, $6)`,
+          [r.name, r.designation, r.rating, r.review, r.visible ?? false, r.sort_order ?? 0]
         );
         created++;
       }
