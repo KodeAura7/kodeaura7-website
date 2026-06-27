@@ -23,7 +23,12 @@ export default function Home() {
   return (
     
     <SiteLayout>
-      <SEO title="KodeAura7" path="/" description="KodeAura7 builds websites, CRMs, design systems, and campaigns that drive measurable business growth." />
+      <SEO
+        title="KodeAura7"
+        path="/"
+        description="KodeAura7 builds websites, CRM systems, design systems, and campaigns that drive measurable business growth. Software development company based in Dehradun, India."
+        keywords="software development company, web development India, Salesforce CRM, UI/UX design, digital marketing, Dehradun, KodeAura7"
+      />
       <section className="relative pt-32 md:pt-44 pb-20 md:pb-28">
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
           <div className="fade-up inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/50 border border-zinc-800 text-xs font-medium text-zinc-300 backdrop-blur-sm mb-8">

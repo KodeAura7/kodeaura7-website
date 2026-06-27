@@ -20,7 +20,12 @@ export default function Portfolio() {
 
   return (
     <SiteLayout>
-      <SEO title="Portfolio" path="/portfolio" description="A curated portfolio of KodeAura7 websites, CRM systems, dashboards, and advertising projects." />
+      <SEO
+        title="Portfolio | Web, CRM & Design Projects"
+        path="/portfolio"
+        description="A curated portfolio of 150+ KodeAura7 projects — websites, Salesforce CRM systems, dashboards, and performance advertising campaigns for ambitious businesses."
+        keywords="web development portfolio, Salesforce projects, UI/UX case studies, digital marketing results, KodeAura7 portfolio, India software agency"
+      />
       <SectionHero eyebrow="Our Work" title="Projects That" gradient="Move the Needle" description="A curated selection of websites, CRM systems, and digital experiences we've built for ambitious brands.">
         <div className="fade-up delay-3 flex flex-wrap items-center justify-center gap-3">
           {['150+ Projects', '4 Service Categories', '98% On-Time Delivery'].map((item) => <span key={item} className="bg-[#111113] border border-zinc-800 rounded-full px-5 py-2 text-sm font-medium text-zinc-300">{item}</span>)}

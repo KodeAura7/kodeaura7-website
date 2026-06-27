@@ -1,17 +1,51 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import CTA from '../components/CTA';
 import Icon from '../components/Icon';
 import SEO from '../components/SEO';
+import { removeJsonLd, upsertJsonLd } from '../components/SEO';
 import SectionHero from '../components/SectionHero';
 import SiteLayout from '../layouts/SiteLayout';
 import { useSiteData } from '../contexts/SiteDataContext';
+import { site } from '../constants/site';
 
 export default function Services() {
   const { services } = useSiteData();
 
+  useEffect(() => {
+    if (!services.length) return;
+    upsertJsonLd('services', {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: `Services by ${site.name}`,
+      url: `${site.productionUrl}/services`,
+      itemListElement: services.map((svc, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'Service',
+          name: svc.name,
+          description: svc.desc || svc.description || '',
+          provider: {
+            '@type': 'Organization',
+            name: site.name,
+            url: site.productionUrl,
+          },
+          url: `${site.productionUrl}/services#${svc.slug || svc.id}`,
+        },
+      })),
+    });
+    return () => removeJsonLd('services');
+  }, [services]);
+
   return (
     <SiteLayout>
-      <SEO title="Services" path="/services" description="Web development, Salesforce CRM, UI/UX design, and digital advertising services by KodeAura7." />
+      <SEO
+        title="Services | Web Development, Salesforce, UI/UX & Digital Ads"
+        path="/services"
+        description="Web development, Salesforce CRM implementation, UI/UX design, and performance advertising by KodeAura7. End-to-end digital solutions for modern businesses."
+        keywords="web development services, Salesforce CRM India, UI UX design agency, Google Ads management, Meta ads agency, digital marketing Dehradun"
+      />
       <SectionHero eyebrow="What We Do" title="Services Designed to" gradient="Scale Your Business" description="Four specialised disciplines. One unified vision. Engineered for growth.">
         <div className="fade-up delay-3 flex flex-wrap items-center justify-center gap-3">
           {services.map((svc) => (

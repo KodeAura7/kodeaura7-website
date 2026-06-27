@@ -61,7 +61,12 @@ export default function About() {
 
   return (
     <SiteLayout>
-      <SEO title="About" path="/about" description="Learn about KodeAura7, a Dehradun digital technology agency building growth systems for ambitious businesses." />
+      <SEO
+        title="About Us | Digital Agency, Dehradun"
+        path="/about"
+        description="KodeAura7 is a full-service digital technology agency from Dehradun, India. We design, build, and scale digital infrastructure — websites, CRMs, and campaigns — for ambitious businesses worldwide."
+        keywords="about KodeAura7, digital agency Dehradun, software company India, web development team, Salesforce partner India"
+      />
 
       <SectionHero
         eyebrow={hero.eyebrow}
