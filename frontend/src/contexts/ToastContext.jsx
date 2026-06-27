@@ -52,7 +52,7 @@ export function ToastProvider({ children }) {
 
   const toast = useCallback(
     ({ type = 'info', title, message, duration = 4000 }) => {
-      const id = crypto.randomUUID();
+      const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
       setToasts((prev) => [...prev.slice(-4), { id, type, title, message }]);
       if (duration > 0) {
         timers.current[id] = setTimeout(() => dismiss(id), duration);
@@ -76,6 +76,7 @@ export function ToastProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useToast() {
   const toast = useContext(ToastCtx);
   if (!toast) throw new Error('useToast must be used inside ToastProvider');
