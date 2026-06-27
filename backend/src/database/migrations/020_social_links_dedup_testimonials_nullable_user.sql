@@ -6,9 +6,17 @@ WITH ranked AS (
 )
 DELETE FROM social_links WHERE id IN (SELECT id FROM ranked WHERE rn > 1);
 
--- 2. Add unique constraint so future migrations / seed runs cannot insert duplicates
-ALTER TABLE social_links
-  ADD CONSTRAINT IF NOT EXISTS social_links_name_key UNIQUE (name);
+-- 2. Add unique constraint (IF NOT EXISTS is not valid for ADD CONSTRAINT — use DO block)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.table_constraints
+    WHERE constraint_name = 'social_links_name_key'
+      AND table_name = 'social_links'
+  ) THEN
+    ALTER TABLE social_links ADD CONSTRAINT social_links_name_key UNIQUE (name);
+  END IF;
+END $$;
 
 -- 3. Make testimonials.user_id nullable so testimonials can be migrated across
 --    environments where the original submitting user may not exist.
