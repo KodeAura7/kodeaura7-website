@@ -54,6 +54,12 @@ export const api = {
     return Array.isArray(data) ? data : [];
   },
 
+  contactFormFields: async () => {
+    const r = await fetch(`${API_BASE_URL}/api/contact-form`);
+    const data = await r.json().catch(() => []);
+    return Array.isArray(data) ? data : [];
+  },
+
   testimonials: () => authRequest('/api/testimonials'),
   myTestimonials: () => authGet('/api/testimonials/mine'),
   submitTestimonial: (payload) => authRequest('/api/testimonials', { method: 'POST', body: JSON.stringify(payload) }),

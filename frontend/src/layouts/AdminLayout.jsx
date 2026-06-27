@@ -29,15 +29,17 @@ const NAV_GROUPS = [
   {
     label: 'Site',
     items: [
-      { to: '/admin/about', label: 'About Page', icon: 'solar:document-text-linear' },
-      { to: '/admin/branding', label: 'Branding', icon: 'solar:palette-bold-duotone' },
+      { to: '/admin/about',        label: 'About Page',    icon: 'solar:document-text-linear' },
+      { to: '/admin/branding',     label: 'Branding',      icon: 'solar:palette-bold-duotone' },
+      { to: '/admin/contact-form', label: 'Contact Form',  icon: 'solar:chat-round-dots-linear' },
     ],
   },
   {
     label: 'Administration',
     roles: ['super_admin'],
     items: [
-      { to: '/admin/users', label: 'Users', icon: 'solar:user-circle-linear' },
+      { to: '/admin/users',       label: 'Users',       icon: 'solar:user-circle-linear' },
+      { to: '/admin/permissions', label: 'Permissions', icon: 'solar:shield-keyhole-linear' },
     ],
   },
 ];

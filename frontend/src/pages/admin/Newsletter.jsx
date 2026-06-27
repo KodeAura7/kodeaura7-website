@@ -3,6 +3,7 @@ import Icon from '../../components/Icon';
 import { adminApi } from '../../services/adminApi';
 import { TableToolbar } from '../../components/admin/TableToolbar';
 import { useColumnVisibility } from '../../hooks/useColumnVisibility';
+import { useToast } from '../../contexts/ToastContext';
 
 const COLS = [
   { key: 'email', label: 'Email' },
@@ -26,6 +27,7 @@ function useDebounce(value, delay = 300) {
 }
 
 export default function Newsletter() {
+  const { success, error: toastError } = useToast();
   const [data, setData] = useState(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -59,9 +61,10 @@ export default function Newsletter() {
     setDeleting(id);
     try {
       await adminApi.deleteNewsletter(id);
+      success('Subscriber removed');
       load();
     } catch (err) {
-      setError(err.message);
+      setError(err.message); toastError('Delete failed', err.message);
     } finally {
       setDeleting(null);
     }
@@ -69,8 +72,8 @@ export default function Newsletter() {
 
   const handleExport = async () => {
     setExporting(true);
-    try { await adminApi.exportNewsletter(); }
-    catch (err) { setError(err.message); }
+    try { await adminApi.exportNewsletter(); success('Exported', 'CSV downloaded.'); }
+    catch (err) { setError(err.message); toastError('Export failed', err.message); }
     finally { setExporting(false); }
   };
 

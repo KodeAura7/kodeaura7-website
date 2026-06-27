@@ -12,8 +12,10 @@ import { getDashboard } from '../controllers/dashboardController.js';
 import { adminList as listTestimonials, exportCsv as exportTestimonials, importCsv as importTestimonials, updateSortOrder as updateTestimonialOrder, updateVisibility as updateTestimonialVisibility } from '../controllers/testimonialsController.js';
 import { adminCreate as createService, adminDelete as deleteService, adminExportCsv as exportServicesCsv, adminGetHistory as getServiceHistory, adminGetOne as getService, adminImportCsv as importServicesCsv, adminListAll as listServices, adminSetEnabled as setServiceEnabled, adminSetOrder as setServiceOrder, adminUpdate as updateService } from '../controllers/servicesController.js';
 import { adminCreate as createSocialLink, adminDelete as deleteSocialLink, adminExportCsv as exportSocialLinksCsv, adminListAll as listSocialLinks, adminSetEnabled as setSocialLinkEnabled, adminUpdate as updateSocialLink } from '../controllers/socialLinksController.js';
-import { adminGetPage, adminSetPage } from '../controllers/pageContentController.js';
-import { listLogoAssets } from '../controllers/assetsController.js';
+import { adminGetPage, adminGetPageHistory, adminSetPage } from '../controllers/pageContentController.js';
+import { listLogoAssets, uploadLogoAsset, uploadMiddleware } from '../controllers/assetsController.js';
+import { getPermissions, setPermission, bulkSetPermissions } from '../controllers/permissionsController.js';
+import { adminGetFields as getContactFormFields, adminUpdateField as updateContactFormField, adminCreateField as createContactFormField, adminDeleteField as deleteContactFormField, adminBulkReorder as reorderContactFormFields } from '../controllers/contactFormController.js';
 import { create as createUser, list as listUsers, remove as removeUser, rollup as userRollup, update as updateUser } from '../controllers/usersController.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { authorize } from '../middleware/authorize.js';
@@ -62,9 +64,21 @@ router.delete('/social-links/:id', asyncHandler(deleteSocialLink));
 router.patch('/social-links/:id/enabled', asyncHandler(setSocialLinkEnabled));
 
 router.get('/assets/logos', asyncHandler(listLogoAssets));
+router.post('/assets/logos', uploadMiddleware, asyncHandler(uploadLogoAsset));
 
+router.get('/pages/:page/history', asyncHandler(adminGetPageHistory));
 router.get('/pages/:page', asyncHandler(adminGetPage));
 router.put('/pages/:page', asyncHandler(adminSetPage));
+
+router.get('/permissions', authorize('super_admin'), asyncHandler(getPermissions));
+router.put('/permissions', authorize('super_admin'), asyncHandler(setPermission));
+router.put('/permissions/bulk', authorize('super_admin'), asyncHandler(bulkSetPermissions));
+
+router.get('/contact-form', asyncHandler(getContactFormFields));
+router.post('/contact-form', asyncHandler(createContactFormField));
+router.post('/contact-form/reorder', asyncHandler(reorderContactFormFields));
+router.put('/contact-form/:id', asyncHandler(updateContactFormField));
+router.delete('/contact-form/:id', asyncHandler(deleteContactFormField));
 
 router.get('/users/rollup', asyncHandler(userRollup));
 router.get('/users', asyncHandler(listUsers));

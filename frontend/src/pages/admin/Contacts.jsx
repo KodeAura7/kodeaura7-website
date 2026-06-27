@@ -6,6 +6,7 @@ import Icon from '../../components/Icon';
 import { adminApi } from '../../services/adminApi';
 import { TableToolbar } from '../../components/admin/TableToolbar';
 import { useColumnVisibility } from '../../hooks/useColumnVisibility';
+import { useToast } from '../../contexts/ToastContext';
 
 const LIMIT = 20;
 
@@ -57,6 +58,7 @@ const FILTER_GROUPS = [
 
 export default function Contacts() {
   const navigate = useNavigate();
+  const { success, error: toastError } = useToast();
   const [data, setData] = useState(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -112,9 +114,10 @@ export default function Contacts() {
     setBulkLoading(true);
     try {
       await adminApi.bulkUpdateContactStatus(Array.from(checkedIds), bulkStatus);
+      success('Status updated', `${checkedIds.size} contact${checkedIds.size !== 1 ? 's' : ''} updated.`);
       load();
     } catch (err) {
-      setError(err.message);
+      setError(err.message); toastError('Update failed', err.message);
     } finally {
       setBulkLoading(false);
     }
@@ -124,15 +127,15 @@ export default function Contacts() {
     e.stopPropagation();
     if (!window.confirm('Delete this contact? This cannot be undone.')) return;
     setDeleting(id);
-    try { await adminApi.deleteContact(id); load(); }
-    catch (err) { setError(err.message); }
+    try { await adminApi.deleteContact(id); success('Contact deleted'); load(); }
+    catch (err) { setError(err.message); toastError('Delete failed', err.message); }
     finally { setDeleting(null); }
   };
 
   const handleExport = async () => {
     setExporting(true);
-    try { await adminApi.exportContacts(); }
-    catch (err) { setError(err.message); }
+    try { await adminApi.exportContacts(); success('Exported', 'CSV downloaded.'); }
+    catch (err) { setError(err.message); toastError('Export failed', err.message); }
     finally { setExporting(false); }
   };
 

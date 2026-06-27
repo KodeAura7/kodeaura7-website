@@ -3,6 +3,7 @@ import Icon from '../../components/Icon';
 import { adminApi } from '../../services/adminApi';
 import { TableToolbar } from '../../components/admin/TableToolbar';
 import { useColumnVisibility } from '../../hooks/useColumnVisibility';
+import { useToast } from '../../contexts/ToastContext';
 
 const SL_COLS = [
   { key: 'icon', label: 'Icon' },
@@ -94,6 +95,7 @@ function IconPicker({ value, onChange }) {
 }
 
 export default function SocialLinks() {
+  const { success, error: toastError } = useToast();
   const [view, setView] = useState('list');
   const [items, setItems] = useState(null);
   const [editItem, setEditItem] = useState(null);
@@ -126,8 +128,12 @@ export default function SocialLinks() {
 
   const handleToggleEnabled = async (id, current) => {
     setToggling(id);
-    try { await adminApi.setSocialLinkEnabled(id, !current); setItems((prev) => prev.map((s) => s.id === id ? { ...s, enabled: !current } : s)); }
-    catch (e) { setError(e.message); }
+    try {
+      await adminApi.setSocialLinkEnabled(id, !current);
+      setItems((prev) => prev.map((s) => s.id === id ? { ...s, enabled: !current } : s));
+      success(!current ? 'Link enabled' : 'Link disabled');
+    }
+    catch (e) { toastError('Failed', e.message); }
     finally { setToggling(null); }
   };
 
@@ -137,12 +143,14 @@ export default function SocialLinks() {
       if (editItem) {
         const updated = await adminApi.updateSocialLink(editItem.id, form);
         setItems((prev) => prev.map((s) => s.id === editItem.id ? updated : s));
+        success('Link updated', `${form.name} saved.`);
       } else {
         const created = await adminApi.createSocialLink(form);
         setItems((prev) => [...(prev || []), created]);
+        success('Link created', `${form.name} added.`);
       }
       back();
-    } catch (e) { setError(e.message); }
+    } catch (e) { setError(e.message); toastError('Save failed', e.message); }
     finally { setSaving(false); }
   };
 
@@ -152,16 +160,17 @@ export default function SocialLinks() {
     try {
       await adminApi.deleteSocialLink(id);
       setItems((prev) => prev.filter((s) => s.id !== id));
+      success('Deleted', `"${name}" removed.`);
       if (view === 'edit') back();
     }
-    catch (e) { setError(e.message); }
+    catch (e) { toastError('Delete failed', e.message); }
     finally { setDeleting(false); }
   };
 
   const handleExport = async () => {
     setExporting(true);
-    try { await adminApi.exportSocialLinks(); }
-    catch (e) { setError(e.message); }
+    try { await adminApi.exportSocialLinks(); success('Exported', 'CSV downloaded.'); }
+    catch (e) { toastError('Export failed', e.message); }
     finally { setExporting(false); }
   };
 

@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Icon from '../../components/Icon';
 import { adminApi } from '../../services/adminApi';
 import { useSiteData } from '../../contexts/SiteDataContext';
+import { useToast } from '../../contexts/ToastContext';
 
 const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all';
 
@@ -73,13 +74,34 @@ function AssetPickerModal({ onSelect, onClose }) {
   const [assets, setAssets] = useState(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef(null);
+  const { success, error: toastError } = useToast();
 
-  useEffect(() => {
-    adminApi.listLogoAssets()
-      .then(setAssets)
-      .catch((e) => setErr(e.message))
-      .finally(() => setLoading(false));
-  }, []);
+  const reload = () => {
+    setLoading(true); setErr('');
+    adminApi.listLogoAssets().then(setAssets).catch((e) => setErr(e.message)).finally(() => setLoading(false));
+  };
+
+  useEffect(() => { reload(); }, []);
+
+  const handleUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (fileRef.current) fileRef.current.value = '';
+    if (!file) return;
+    setUploading(true);
+    try {
+      const uploaded = await adminApi.uploadLogoAsset(file);
+      success('Uploaded', file.name);
+      reload();
+      onSelect(uploaded.url);
+      onClose();
+    } catch (ex) {
+      toastError('Upload failed', ex.message);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
@@ -89,9 +111,20 @@ function AssetPickerModal({ onSelect, onClose }) {
             <h3 className="text-sm font-semibold text-zinc-100">Project Assets</h3>
             <p className="text-[10px] text-zinc-600 font-mono mt-0.5">backend/assets/logos/</p>
           </div>
-          <button onClick={onClose} className="p-1.5 text-zinc-500 hover:text-zinc-200 transition-colors">
-            <Icon icon="solar:close-square-linear" width={18} />
-          </button>
+          <div className="flex items-center gap-2">
+            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
+            <button
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-zinc-500 text-xs text-zinc-300 hover:text-zinc-100 disabled:opacity-50 transition-all"
+            >
+              <Icon icon={uploading ? 'solar:loading-linear' : 'solar:upload-linear'} width={13} className={uploading ? 'animate-spin' : ''} />
+              {uploading ? 'Uploading…' : 'Upload'}
+            </button>
+            <button onClick={onClose} className="p-1.5 text-zinc-500 hover:text-zinc-200 transition-colors">
+              <Icon icon="solar:close-square-linear" width={18} />
+            </button>
+          </div>
         </div>
         <div className="p-5 min-h-[180px]">
           {loading && (
@@ -105,7 +138,7 @@ function AssetPickerModal({ onSelect, onClose }) {
             <div className="text-center py-8">
               <Icon icon="solar:folder-open-linear" width={32} className="text-zinc-700 mx-auto mb-3" />
               <p className="text-sm text-zinc-500">No logo files found.</p>
-              <p className="text-xs text-zinc-700 mt-1 font-mono">Drop images into backend/assets/logos/</p>
+              <p className="text-xs text-zinc-700 mt-1">Upload one above or drop images into backend/assets/logos/</p>
             </div>
           )}
           {assets && assets.length > 0 && (
@@ -205,12 +238,58 @@ function LogoSlot({ label, hint, value, onChange }) {
   );
 }
 
+function BrandingHistoryPanel({ historyKey }) {
+  const [history, setHistory] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setHistory(null);
+      adminApi.getPageHistory('branding').then(setHistory).catch(() => setHistory([]));
+    }
+  }, [open, historyKey]);
+
+  return (
+    <div className="border-t border-zinc-800 pt-6 mt-2">
+      <button onClick={() => setOpen(v => !v)}
+        className="flex items-center gap-2 text-xs font-medium text-zinc-500 hover:text-zinc-300 transition-colors">
+        <Icon icon={open ? 'solar:alt-arrow-up-linear' : 'solar:alt-arrow-down-linear'} width={14} />
+        Change History
+        {history ? <span className="text-zinc-700">({history.length})</span> : null}
+      </button>
+      {open && (
+        <div className="mt-4 space-y-2">
+          {!history ? (
+            <p className="text-xs text-zinc-600"><Icon icon="solar:loading-linear" width={12} className="animate-spin inline mr-1" />Loading…</p>
+          ) : history.length === 0 ? (
+            <p className="text-xs text-zinc-600">No history yet.</p>
+          ) : (
+            history.map((h) => (
+              <div key={h.id} className="flex items-start gap-3 py-2.5 border-b border-zinc-800/60 last:border-0">
+                <Icon icon="solar:history-linear" width={14} className="text-zinc-600 mt-0.5 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-zinc-400">
+                    {h.changed_by_name ? <span className="text-zinc-200 font-medium">{h.changed_by_name}</span> : <span className="text-zinc-600">Unknown</span>}
+                    {' '}saved branding
+                  </p>
+                  <p className="text-[10px] text-zinc-600 font-mono mt-0.5">{new Date(h.created_at).toLocaleString()}</p>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AdminBranding() {
   const { refresh } = useSiteData();
+  const { success, error: toastError } = useToast();
   const [data, setData] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
+  const [historyKey, setHistoryKey] = useState(0);
 
   useEffect(() => {
     adminApi.getPageContent('branding')
@@ -223,10 +302,9 @@ export default function AdminBranding() {
   const setColor = (key, val) => setData((d) => ({ ...d, colors: { ...d.colors, [key]: val } }));
 
   const handleSave = async () => {
-    setSaving(true); setError(''); setSaved(false);
+    setSaving(true); setError('');
     try {
       await adminApi.setPageContent('branding', data);
-      // apply colors immediately to the page
       const root = document.documentElement;
       if (data.colors?.primary) {
         root.style.setProperty('--brand-primary', data.colors.primary);
@@ -240,9 +318,9 @@ export default function AdminBranding() {
       if (data.colors?.secondary) root.style.setProperty('--brand-secondary', data.colors.secondary);
       if (data.colors?.accent) root.style.setProperty('--brand-accent', data.colors.accent);
       await refresh();
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
-    } catch (e) { setError(e.message); }
+      success('Branding saved', 'Colors and logos are now live.');
+      setHistoryKey(k => k + 1);
+    } catch (e) { setError(e.message); toastError('Save failed', e.message); }
     finally { setSaving(false); }
   };
 
@@ -263,21 +341,14 @@ export default function AdminBranding() {
           <h1 className="font-display font-semibold text-2xl text-zinc-100">Branding</h1>
           <p className="text-sm text-zinc-500 mt-1">Logos, company name, and brand colors.</p>
         </div>
-        <div className="flex items-center gap-3">
-          {saved ? (
-            <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400">
-              <Icon icon="solar:check-circle-linear" width={14} />Saved
-            </span>
-          ) : null}
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(99,102,241,0.2)]"
-          >
-            <Icon icon={saving ? 'solar:loading-linear' : 'solar:floppy-disk-linear'} width={15} className={saving ? 'animate-spin' : ''} />
-            {saving ? 'Saving…' : 'Save'}
-          </button>
-        </div>
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(99,102,241,0.2)]"
+        >
+          <Icon icon={saving ? 'solar:loading-linear' : 'solar:floppy-disk-linear'} width={15} className={saving ? 'animate-spin' : ''} />
+          {saving ? 'Saving…' : 'Save'}
+        </button>
       </div>
 
       {error ? (
@@ -397,6 +468,8 @@ export default function AdminBranding() {
           </div>
         </SectionCard>
       </div>
+
+      <BrandingHistoryPanel historyKey={historyKey} />
     </div>
   );
 }

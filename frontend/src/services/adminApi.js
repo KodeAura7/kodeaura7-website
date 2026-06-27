@@ -110,9 +110,34 @@ export const adminApi = {
     request(`/api/admin/testimonials/${id}/order`, { method: 'PATCH', body: JSON.stringify({ sort_order }) }),
 
   listLogoAssets: () => request('/api/admin/assets/logos'),
+  uploadLogoAsset: (file) => {
+    const token = getToken();
+    const fd = new FormData();
+    fd.append('logo', file);
+    return fetch(`${API_BASE_URL}/api/admin/assets/logos`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: fd,
+    }).then(async (r) => {
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.message || 'Upload failed.');
+      return d;
+    });
+  },
 
   getPageContent: (page) => request(`/api/admin/pages/${page}`),
   setPageContent: (page, content) => request(`/api/admin/pages/${page}`, { method: 'PUT', body: JSON.stringify(content) }),
+  getPageHistory: (page) => request(`/api/admin/pages/${page}/history`),
+
+  getPermissions: (role) => request(`/api/admin/permissions${role ? `?role=${role}` : ''}`),
+  setPermission: (role, action, enabled) => request('/api/admin/permissions', { method: 'PUT', body: JSON.stringify({ role, action, enabled }) }),
+  bulkSetPermissions: (permissions) => request('/api/admin/permissions/bulk', { method: 'PUT', body: JSON.stringify({ permissions }) }),
+
+  getContactFormFields: () => request('/api/admin/contact-form'),
+  createContactFormField: (data) => request('/api/admin/contact-form', { method: 'POST', body: JSON.stringify(data) }),
+  updateContactFormField: (id, data) => request(`/api/admin/contact-form/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteContactFormField: (id) => request(`/api/admin/contact-form/${id}`, { method: 'DELETE' }),
+  reorderContactFormFields: (order) => request('/api/admin/contact-form/reorder', { method: 'POST', body: JSON.stringify({ order }) }),
 
   users: () => request('/api/admin/users'),
   createUser: (data) =>

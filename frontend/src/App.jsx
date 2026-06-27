@@ -4,6 +4,7 @@ import Loader from './components/Loader.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 import { SiteDataProvider, useSiteData } from './contexts/SiteDataContext.jsx';
+import { ToastProvider } from './contexts/ToastContext.jsx';
 import { routes } from './routes/routes.jsx';
 
 function BrandingApplier() {
@@ -47,11 +48,13 @@ export default function App() {
   return (
     <AuthProvider>
       <SiteDataProvider>
-        <BrandingApplier />
-        <ScrollToTop />
-        <Suspense fallback={<Loader />}>
-          <Routes>{routes.map(renderRoute)}</Routes>
-        </Suspense>
+        <ToastProvider>
+          <BrandingApplier />
+          <ScrollToTop />
+          <Suspense fallback={<Loader />}>
+            <Routes>{routes.map(renderRoute)}</Routes>
+          </Suspense>
+        </ToastProvider>
       </SiteDataProvider>
     </AuthProvider>
   );

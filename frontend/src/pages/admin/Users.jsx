@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { adminApi } from '../../services/adminApi';
 import { TableToolbar } from '../../components/admin/TableToolbar';
 import { useColumnVisibility } from '../../hooks/useColumnVisibility';
+import { useToast } from '../../contexts/ToastContext';
 
 const COLS = [
   { key: 'name', label: 'Name' },
@@ -93,7 +94,7 @@ function UserModal({ initial, onClose, onSaved }) {
       } else {
         await adminApi.createUser(payload);
       }
-      onSaved();
+      onSaved(!isEdit, values.name);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -224,6 +225,7 @@ function StatusDot({ status }) {
 
 export default function Users() {
   const { user: me } = useAuth();
+  const { success, error: toastError } = useToast();
   const isSuperAdmin = me?.role === 'super_admin';
   const [users, setUsers] = useState(null);
   const [rollup, setRollup] = useState(null);
@@ -251,16 +253,18 @@ export default function Users() {
     setDeleting(user.id);
     try {
       await adminApi.deleteUser(user.id);
+      success('User deleted', `${user.name} removed.`);
       load();
     } catch (err) {
-      setError(err.message);
+      setError(err.message); toastError('Delete failed', err.message);
     } finally {
       setDeleting(null);
     }
   };
 
-  const handleSaved = () => {
+  const handleSaved = (isNew, name) => {
     setModal(null);
+    success(isNew ? 'User created' : 'User updated', name ? `${name} saved.` : undefined);
     load();
   };
 

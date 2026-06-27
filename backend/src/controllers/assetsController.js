@@ -1,4 +1,5 @@
 import { readdir } from 'fs/promises';
+import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -22,4 +23,39 @@ export async function listLogoAssets(req, res) {
   } catch {
     res.json([]);
   }
+}
+
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, LOGOS_DIR),
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const base = path.basename(file.originalname, path.extname(file.originalname))
+      .replace(/[^a-zA-Z0-9_-]/g, '-')
+      .toLowerCase()
+      .slice(0, 60);
+    cb(null, `${base}-${Date.now()}${ext}`);
+  }
+});
+
+const fileFilter = (_req, file, cb) => {
+  if (ALLOWED_EXT.has(path.extname(file.originalname).toLowerCase())) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only image files are allowed.'));
+  }
+};
+
+export const uploadMiddleware = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 2 * 1024 * 1024 } // 2 MB
+}).single('logo');
+
+export async function uploadLogoAsset(req, res) {
+  if (!req.file) return res.status(400).json({ message: 'No file uploaded.' });
+  const base = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || 4000}`;
+  res.status(201).json({
+    name: req.file.filename,
+    url: `${base}/assets/logos/${encodeURIComponent(req.file.filename)}`
+  });
 }

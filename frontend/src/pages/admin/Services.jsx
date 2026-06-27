@@ -3,6 +3,7 @@ import Icon from '../../components/Icon';
 import { adminApi } from '../../services/adminApi';
 import { TableToolbar } from '../../components/admin/TableToolbar';
 import { useColumnVisibility } from '../../hooks/useColumnVisibility';
+import { useToast } from '../../contexts/ToastContext';
 
 const SVC_COLS = [
   { key: 'num', label: '#' },
@@ -242,6 +243,7 @@ function HistorySidebar({ serviceId, editMode, onRevert, open, onToggle, history
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function AdminServices() {
+  const { success, error: toastError } = useToast();
   const [view, setView] = useState('list');
   const [editMode, setEditMode] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(true);
@@ -314,8 +316,12 @@ export default function AdminServices() {
 
   const handleToggleEnabled = async (id, current) => {
     setToggling(id);
-    try { await adminApi.setServiceEnabled(id, !current); setItems(prev => prev.map(s => s.id === id ? { ...s, enabled: !current } : s)); }
-    catch (e) { setError(e.message); }
+    try {
+      await adminApi.setServiceEnabled(id, !current);
+      setItems(prev => prev.map(s => s.id === id ? { ...s, enabled: !current } : s));
+      success(!current ? 'Service enabled' : 'Service disabled');
+    }
+    catch (e) { setError(e.message); toastError('Failed', e.message); }
     finally { setToggling(null); }
   };
 
@@ -333,6 +339,7 @@ export default function AdminServices() {
         setItems(prev => prev ? prev.map(s => s.id === currentItem.id ? updated : s) : prev);
         setHistoryKey(k => k + 1);
         setEditMode(false);
+        success('Service updated', `${updated.name} saved.`);
       } else {
         const created = await adminApi.createService(payload);
         setItems(prev => [...(prev || []), created].sort((a, b) => a.sort_order - b.sort_order));
@@ -340,23 +347,29 @@ export default function AdminServices() {
         setForm(formFromItem(created));
         setHistoryKey(k => k + 1);
         setEditMode(false);
+        success('Service created', `${created.name} added.`);
       }
-    } catch (e) { setError(e.message); }
+    } catch (e) { setError(e.message); toastError('Save failed', e.message); }
     finally { setSaving(false); }
   };
 
   const handleDelete = async () => {
     if (!currentItem || !window.confirm(`Delete "${currentItem.name}"? This cannot be undone.`)) return;
     setDeleting(true);
-    try { await adminApi.deleteService(currentItem.id); setItems(prev => prev.filter(s => s.id !== currentItem.id)); backToList(); }
-    catch (e) { setError(e.message); }
+    try {
+      await adminApi.deleteService(currentItem.id);
+      setItems(prev => prev.filter(s => s.id !== currentItem.id));
+      success('Service deleted', `"${currentItem.name}" removed.`);
+      backToList();
+    }
+    catch (e) { setError(e.message); toastError('Delete failed', e.message); }
     finally { setDeleting(false); }
   };
 
   const handleExport = async () => {
     setExporting(true);
-    try { await adminApi.exportServices([...selected]); }
-    catch (e) { setError(e.message); }
+    try { await adminApi.exportServices([...selected]); success('Exported', 'CSV downloaded.'); }
+    catch (e) { setError(e.message); toastError('Export failed', e.message); }
     finally { setExporting(false); }
   };
 
@@ -369,8 +382,9 @@ export default function AdminServices() {
       const csv = await file.text();
       const result = await adminApi.importServices(csv);
       setImportMsg({ type: 'success', text: `Imported ${result.imported} service${result.imported !== 1 ? 's' : ''}.` });
+      success('Import complete', `${result.imported} service${result.imported !== 1 ? 's' : ''} imported.`);
       loadAll();
-    } catch (e) { setImportMsg({ type: 'error', text: e.message }); }
+    } catch (e) { setImportMsg({ type: 'error', text: e.message }); toastError('Import failed', e.message); }
     finally { setImporting(false); }
   };
 
