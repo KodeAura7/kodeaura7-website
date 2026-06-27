@@ -21,6 +21,7 @@ const Testimonials = lazy(() => import('../pages/admin/Testimonials.jsx'));
 const Users = lazy(() => import('../pages/admin/Users.jsx'));
 const AdminServices = lazy(() => import('../pages/admin/Services.jsx'));
 const AdminSocialLinks = lazy(() => import('../pages/admin/SocialLinks.jsx'));
+const AdminAbout = lazy(() => import('../pages/admin/About.jsx'));
 
 export const routes = [
   { path: '/', element: <Home /> },
@@ -59,6 +60,7 @@ export const routes = [
       { path: 'testimonials', element: <Testimonials /> },
       { path: 'services', element: <AdminServices /> },
       { path: 'social-links', element: <AdminSocialLinks /> },
+      { path: 'about', element: <AdminAbout /> },
       { path: 'users', element: <Users /> }
     ]
   }

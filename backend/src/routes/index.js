@@ -9,6 +9,7 @@ import customerRoutes from './customer.js';
 import testimonialsRoutes from './testimonials.js';
 import servicesRoutes from './services.js';
 import socialLinksRoutes from './socialLinks.js';
+import pagesRoutes from './pages.js';
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use('/customer', customerRoutes);
 router.use('/testimonials', testimonialsRoutes);
 router.use('/services', servicesRoutes);
 router.use('/social-links', socialLinksRoutes);
+router.use('/pages', pagesRoutes);
 
 export default router;

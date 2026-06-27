@@ -106,6 +106,9 @@ export const adminApi = {
   updateTestimonialOrder: (id, sort_order) =>
     request(`/api/admin/testimonials/${id}/order`, { method: 'PATCH', body: JSON.stringify({ sort_order }) }),
 
+  getPageContent: (page) => request(`/api/admin/pages/${page}`),
+  setPageContent: (page, content) => request(`/api/admin/pages/${page}`, { method: 'PUT', body: JSON.stringify(content) }),
+
   users: () => request('/api/admin/users'),
   createUser: (data) =>
     request('/api/admin/users', { method: 'POST', body: JSON.stringify(data) }),

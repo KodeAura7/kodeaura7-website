@@ -11,6 +11,7 @@ const NAV = [
   { to: '/admin/testimonials', label: 'Testimonials', icon: 'solar:star-linear' },
   { to: '/admin/services', label: 'Services', icon: 'solar:layers-linear' },
   { to: '/admin/social-links', label: 'Social Links', icon: 'solar:share-linear' },
+  { to: '/admin/about', label: 'About Page', icon: 'solar:document-text-linear' },
   { to: '/admin/users', label: 'Users', icon: 'solar:user-circle-linear' }
 ];
 
