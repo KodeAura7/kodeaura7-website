@@ -35,7 +35,7 @@ export default function Header() {
   return (
     <header className="fixed top-0 inset-x-0 z-50 glass-panel border-b border-zinc-800/60">
       <div className="max-w-7xl mx-auto px-6 h-16 md:h-20 flex items-center justify-between gap-6">
-        <Logo />
+        <Logo variant="header" />
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-7 text-sm font-medium flex-1">
@@ -80,7 +80,7 @@ export default function Header() {
           )}
           <Link
             to="/#contact"
-            className="inline-flex items-center bg-indigo-500 text-white rounded-full px-5 py-2.5 text-sm font-medium shadow-[0_0_20px_rgba(99,102,241,0.25)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all"
+            className="inline-flex items-center text-white rounded-full px-5 py-2.5 text-sm font-medium brand-shadow hover:-translate-y-0.5 transition-all brand-gradient-bg"
           >
             Start Project
           </Link>
@@ -136,7 +136,7 @@ export default function Header() {
           <Link
             to="/#contact"
             onClick={close}
-            className="inline-flex w-max items-center bg-indigo-500 text-white rounded-full px-5 py-2.5"
+            className="inline-flex w-max items-center text-white rounded-full px-5 py-2.5 brand-gradient-bg"
           >
             Start Project
           </Link>

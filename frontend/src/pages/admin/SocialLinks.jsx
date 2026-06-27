@@ -113,10 +113,14 @@ export default function SocialLinks() {
     finally { setSaving(false); }
   };
 
-  const handleDelete = async () => {
-    if (!editItem || !window.confirm(`Delete "${editItem.name}"?`)) return;
+  const handleDelete = async (id, name) => {
+    if (!window.confirm(`Delete "${name}"?`)) return;
     setDeleting(true);
-    try { await adminApi.deleteSocialLink(editItem.id); setItems((prev) => prev.filter((s) => s.id !== editItem.id)); back(); }
+    try {
+      await adminApi.deleteSocialLink(id);
+      setItems((prev) => prev.filter((s) => s.id !== id));
+      if (view === 'edit') back();
+    }
     catch (e) { setError(e.message); }
     finally { setDeleting(false); }
   };
@@ -141,7 +145,7 @@ export default function SocialLinks() {
           </h1>
           <div className="flex items-center gap-2">
             {editItem ? (
-              <button onClick={handleDelete} disabled={deleting} className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-rose-500/30 text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-50">
+              <button onClick={() => handleDelete(editItem.id, editItem.name)} disabled={deleting} className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-rose-500/30 text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-50">
                 <Icon icon={deleting ? 'solar:loading-linear' : 'solar:trash-bin-minimalistic-linear'} width={15} className={deleting ? 'animate-spin' : ''} />
                 Delete
               </button>
@@ -257,6 +261,9 @@ export default function SocialLinks() {
                 </button>
                 <button onClick={() => openEdit(link)} className="p-1.5 rounded-lg text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all shrink-0">
                   <Icon icon="solar:pen-linear" width={15} />
+                </button>
+                <button onClick={() => handleDelete(link.id, link.name)} disabled={deleting} className="p-1.5 rounded-lg text-zinc-600 hover:text-rose-400 hover:bg-rose-500/10 transition-all shrink-0 disabled:opacity-40">
+                  <Icon icon="solar:trash-bin-minimalistic-linear" width={15} />
                 </button>
               </div>
             ))

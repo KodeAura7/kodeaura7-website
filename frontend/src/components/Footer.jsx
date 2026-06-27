@@ -15,7 +15,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-12 gap-10 mb-16">
           <div className="col-span-2 md:col-span-5">
             <div className="mb-5">
-              <Logo />
+              <Logo variant="footer" />
             </div>
             <p className="font-display text-xl text-zinc-300 tracking-tight mb-6 max-w-xs">We Build the Digital Future.</p>
             <div className="flex gap-3">

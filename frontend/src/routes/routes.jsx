@@ -22,6 +22,7 @@ const Users = lazy(() => import('../pages/admin/Users.jsx'));
 const AdminServices = lazy(() => import('../pages/admin/Services.jsx'));
 const AdminSocialLinks = lazy(() => import('../pages/admin/SocialLinks.jsx'));
 const AdminAbout = lazy(() => import('../pages/admin/About.jsx'));
+const AdminBranding = lazy(() => import('../pages/admin/Branding.jsx'));
 
 export const routes = [
   { path: '/', element: <Home /> },
@@ -61,6 +62,7 @@ export const routes = [
       { path: 'services', element: <AdminServices /> },
       { path: 'social-links', element: <AdminSocialLinks /> },
       { path: 'about', element: <AdminAbout /> },
+      { path: 'branding', element: <AdminBranding /> },
       { path: 'users', element: <Users /> }
     ]
   }

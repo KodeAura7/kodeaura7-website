@@ -13,7 +13,7 @@ export async function adminGetPage(req, res) {
 }
 
 export async function adminSetPage(req, res) {
-  const ALLOWED = ['about'];
+  const ALLOWED = ['about', 'branding'];
   if (!ALLOWED.includes(req.params.page)) {
     return res.status(400).json({ message: 'Unknown page.' });
   }

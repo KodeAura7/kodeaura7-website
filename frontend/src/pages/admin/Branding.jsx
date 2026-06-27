@@ -1,0 +1,321 @@
+import { useEffect, useState } from 'react';
+import Icon from '../../components/Icon';
+import { adminApi } from '../../services/adminApi';
+import { useSiteData } from '../../contexts/SiteDataContext';
+
+const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all';
+
+const DEFAULT = {
+  name: 'KodeAura7',
+  tagline: 'We Build the Digital Future.',
+  logos: {
+    header: { url: '', alt: 'KodeAura7' },
+    footer: { url: '', alt: 'KodeAura7' },
+    universal: { url: '', alt: 'KodeAura7' },
+  },
+  colors: {
+    primary: '#6366F1',
+    secondary: '#06B6D4',
+    accent: '#8B5CF6',
+  },
+};
+
+function SectionCard({ title, subtitle, children }) {
+  return (
+    <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
+      <div className="px-6 py-5 border-b border-zinc-800/60">
+        <h2 className="text-sm font-semibold text-zinc-200">{title}</h2>
+        {subtitle ? <p className="text-xs text-zinc-600 mt-0.5">{subtitle}</p> : null}
+      </div>
+      <div className="p-6 space-y-5">{children}</div>
+    </div>
+  );
+}
+
+function Field({ label, hint, children }) {
+  return (
+    <div className="space-y-1.5">
+      <label className="text-xs font-medium text-zinc-400">{label}</label>
+      {children}
+      {hint ? <p className="text-[10px] text-zinc-700">{hint}</p> : null}
+    </div>
+  );
+}
+
+function ColorSwatch({ label, value, onChange }) {
+  return (
+    <div className="space-y-1.5">
+      <label className="text-xs font-medium text-zinc-400">{label}</label>
+      <div className="flex items-center gap-2">
+        <label className="relative w-9 h-9 rounded-xl border border-zinc-700 overflow-hidden cursor-pointer shrink-0">
+          <div className="w-full h-full" style={{ background: value }} />
+          <input
+            type="color"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+          />
+        </label>
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={INPUT + ' font-mono text-xs'}
+          placeholder="#6366F1"
+          maxLength={7}
+        />
+      </div>
+    </div>
+  );
+}
+
+function LogoSlot({ label, hint, value, onChange }) {
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => { setImgError(false); }, [value.url]);
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-start gap-4">
+        {/* Preview box */}
+        <div className="w-28 h-16 rounded-xl border border-zinc-800 bg-[#18181B] flex items-center justify-center shrink-0 overflow-hidden p-2">
+          {value.url && !imgError ? (
+            <img
+              src={value.url}
+              alt={value.alt}
+              className="max-w-full max-h-full object-contain"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <div className="flex flex-col items-center gap-1 text-zinc-700">
+              <Icon icon="solar:gallery-linear" width={20} />
+              <span className="text-[9px] font-mono">{label}</span>
+            </div>
+          )}
+        </div>
+        <div className="flex-1 space-y-2">
+          <Field label="Image URL" hint={hint}>
+            <input
+              type="url"
+              value={value.url}
+              onChange={(e) => onChange({ ...value, url: e.target.value })}
+              placeholder="https://example.com/logo.svg"
+              className={INPUT}
+            />
+          </Field>
+          <Field label="Alt text">
+            <input
+              type="text"
+              value={value.alt}
+              onChange={(e) => onChange({ ...value, alt: e.target.value })}
+              placeholder="Company name"
+              className={INPUT}
+            />
+          </Field>
+        </div>
+      </div>
+      {value.url && imgError ? (
+        <p className="text-xs text-rose-400 flex items-center gap-1.5">
+          <Icon icon="solar:close-circle-linear" width={13} />
+          Image failed to load — check the URL
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+export default function AdminBranding() {
+  const { refresh } = useSiteData();
+  const [data, setData] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    adminApi.getPageContent('branding')
+      .then((d) => setData({ ...DEFAULT, ...d }))
+      .catch(() => setData({ ...DEFAULT }));
+  }, []);
+
+  const set = (key, val) => setData((d) => ({ ...d, [key]: val }));
+  const setLogo = (variant, val) => setData((d) => ({ ...d, logos: { ...d.logos, [variant]: val } }));
+  const setColor = (key, val) => setData((d) => ({ ...d, colors: { ...d.colors, [key]: val } }));
+
+  const handleSave = async () => {
+    setSaving(true); setError(''); setSaved(false);
+    try {
+      await adminApi.setPageContent('branding', data);
+      // apply colors immediately to the page
+      const root = document.documentElement;
+      if (data.colors?.primary) {
+        root.style.setProperty('--brand-primary', data.colors.primary);
+        const hex = data.colors.primary;
+        const r = parseInt(hex.slice(1, 3), 16) || 99;
+        const g = parseInt(hex.slice(3, 5), 16) || 102;
+        const b = parseInt(hex.slice(5, 7), 16) || 241;
+        root.style.setProperty('--brand-primary-glow', `rgba(${r},${g},${b},0.4)`);
+        root.style.setProperty('--brand-primary-glow-soft', `rgba(${r},${g},${b},0.25)`);
+      }
+      if (data.colors?.secondary) root.style.setProperty('--brand-secondary', data.colors.secondary);
+      if (data.colors?.accent) root.style.setProperty('--brand-accent', data.colors.accent);
+      await refresh();
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (e) { setError(e.message); }
+    finally { setSaving(false); }
+  };
+
+  if (!data) {
+    return (
+      <div className="p-8 flex items-center gap-3 text-zinc-500">
+        <Icon icon="solar:loading-linear" width={18} className="animate-spin" />
+        <span className="text-sm">Loading…</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 md:p-8 max-w-2xl mx-auto">
+      {/* Header */}
+      <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="font-display font-semibold text-2xl text-zinc-100">Branding</h1>
+          <p className="text-sm text-zinc-500 mt-1">Logos, company name, and brand colors.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          {saved ? (
+            <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400">
+              <Icon icon="solar:check-circle-linear" width={14} />Saved
+            </span>
+          ) : null}
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(99,102,241,0.2)]"
+          >
+            <Icon icon={saving ? 'solar:loading-linear' : 'solar:floppy-disk-linear'} width={15} className={saving ? 'animate-spin' : ''} />
+            {saving ? 'Saving…' : 'Save'}
+          </button>
+        </div>
+      </div>
+
+      {error ? (
+        <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-6">{error}</div>
+      ) : null}
+
+      <div className="space-y-6">
+        {/* Identity */}
+        <SectionCard title="Identity">
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Company Name" hint="Used as fallback text if no logo image is set.">
+              <input
+                type="text"
+                value={data.name}
+                onChange={(e) => set('name', e.target.value)}
+                placeholder="KodeAura7"
+                className={INPUT}
+              />
+            </Field>
+            <Field label="Tagline" hint="Shown in the footer below the logo.">
+              <input
+                type="text"
+                value={data.tagline || ''}
+                onChange={(e) => set('tagline', e.target.value)}
+                placeholder="We Build the Digital Future."
+                className={INPUT}
+              />
+            </Field>
+          </div>
+        </SectionCard>
+
+        {/* Logos */}
+        <SectionCard
+          title="Header Logo"
+          subtitle="Shown in the top navigation bar."
+        >
+          <LogoSlot
+            label="Header"
+            hint="Recommended: SVG or PNG with transparent background, max height ~40px."
+            value={data.logos?.header || { url: '', alt: data.name }}
+            onChange={(v) => setLogo('header', v)}
+          />
+        </SectionCard>
+
+        <SectionCard
+          title="Footer Logo"
+          subtitle="Shown in the site footer."
+        >
+          <LogoSlot
+            label="Footer"
+            hint="Can be a lighter/inverted version of your logo."
+            value={data.logos?.footer || { url: '', alt: data.name }}
+            onChange={(v) => setLogo('footer', v)}
+          />
+        </SectionCard>
+
+        <SectionCard
+          title="Universal Logo"
+          subtitle="Fallback used when no header or footer specific logo is set. Also used in meta/OG tags."
+        >
+          <LogoSlot
+            label="Universal"
+            hint="Square format recommended for OG/social previews."
+            value={data.logos?.universal || { url: '', alt: data.name }}
+            onChange={(v) => setLogo('universal', v)}
+          />
+        </SectionCard>
+
+        {/* Colors */}
+        <SectionCard
+          title="Brand Colors"
+          subtitle="These colors are applied to buttons, gradients, glows, and accent elements across the site."
+        >
+          <div className="grid grid-cols-3 gap-4">
+            <ColorSwatch
+              label="Primary"
+              value={data.colors?.primary || '#6366F1'}
+              onChange={(v) => setColor('primary', v)}
+            />
+            <ColorSwatch
+              label="Secondary"
+              value={data.colors?.secondary || '#06B6D4'}
+              onChange={(v) => setColor('secondary', v)}
+            />
+            <ColorSwatch
+              label="Accent"
+              value={data.colors?.accent || '#8B5CF6'}
+              onChange={(v) => setColor('accent', v)}
+            />
+          </div>
+
+          {/* Live preview */}
+          <div className="mt-2 bg-[#0A0A0C] rounded-xl p-5 space-y-4 border border-zinc-800/40">
+            <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">Live preview</p>
+            <div className="flex items-center gap-3 flex-wrap">
+              <button
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-white text-sm font-medium brand-gradient-bg brand-shadow"
+              >
+                CTA Button
+              </button>
+              <div
+                className="font-display font-semibold text-2xl text-gradient"
+              >
+                Gradient Text
+              </div>
+              <div className="flex gap-1.5">
+                <div className="w-5 h-5 rounded-full" style={{ background: data.colors?.primary }} />
+                <div className="w-5 h-5 rounded-full" style={{ background: data.colors?.secondary }} />
+                <div className="w-5 h-5 rounded-full" style={{ background: data.colors?.accent }} />
+              </div>
+            </div>
+            <div
+              className="w-7 h-7 rounded-md brand-gradient-bg flex items-center justify-center shadow-[0_0_15px_var(--brand-primary-glow)]"
+            >
+              <div className="w-3 h-3 bg-[#09090B] rounded-sm" />
+            </div>
+          </div>
+        </SectionCard>
+      </div>
+    </div>
+  );
+}

@@ -12,6 +12,7 @@ const NAV = [
   { to: '/admin/services', label: 'Services', icon: 'solar:layers-linear' },
   { to: '/admin/social-links', label: 'Social Links', icon: 'solar:share-linear' },
   { to: '/admin/about', label: 'About Page', icon: 'solar:document-text-linear' },
+  { to: '/admin/branding', label: 'Branding', icon: 'solar:palette-bold-duotone' },
   { to: '/admin/users', label: 'Users', icon: 'solar:user-circle-linear' }
 ];
 

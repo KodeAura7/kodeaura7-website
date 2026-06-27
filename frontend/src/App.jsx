@@ -1,10 +1,30 @@
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Loader from './components/Loader.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
 import { AuthProvider } from './contexts/AuthContext.jsx';
-import { SiteDataProvider } from './contexts/SiteDataContext.jsx';
+import { SiteDataProvider, useSiteData } from './contexts/SiteDataContext.jsx';
 import { routes } from './routes/routes.jsx';
+
+function BrandingApplier() {
+  const { branding } = useSiteData();
+  useEffect(() => {
+    if (!branding?.colors) return;
+    const root = document.documentElement;
+    const { primary, secondary, accent } = branding.colors;
+    if (primary) {
+      root.style.setProperty('--brand-primary', primary);
+      const r = parseInt(primary.slice(1, 3), 16) || 99;
+      const g = parseInt(primary.slice(3, 5), 16) || 102;
+      const b = parseInt(primary.slice(5, 7), 16) || 241;
+      root.style.setProperty('--brand-primary-glow', `rgba(${r},${g},${b},0.4)`);
+      root.style.setProperty('--brand-primary-glow-soft', `rgba(${r},${g},${b},0.25)`);
+    }
+    if (secondary) root.style.setProperty('--brand-secondary', secondary);
+    if (accent) root.style.setProperty('--brand-accent', accent);
+  }, [branding]);
+  return null;
+}
 
 function renderRoute(route) {
   if (route.children) {
@@ -27,6 +47,7 @@ export default function App() {
   return (
     <AuthProvider>
       <SiteDataProvider>
+        <BrandingApplier />
         <ScrollToTop />
         <Suspense fallback={<Loader />}>
           <Routes>{routes.map(renderRoute)}</Routes>
