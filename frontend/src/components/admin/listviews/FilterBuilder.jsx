@@ -181,6 +181,7 @@ function FilterRow({ index, filter, fields, onChange, onRemove }) {
 
 // ── Filter builder ────────────────────────────────────────────────────────────
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function emptyFilter(fields) {
   const first = fields[0];
   return {

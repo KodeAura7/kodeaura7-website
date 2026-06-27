@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Icon from '../../Icon';
-import FilterBuilder, { emptyFilter } from './FilterBuilder';
+import FilterBuilder from './FilterBuilder';
 
 export default function SaveListViewModal({ mode = 'create', initialData = null, fieldConfig, onSave, onClose }) {
   const [name, setName] = useState(initialData?.name ?? '');

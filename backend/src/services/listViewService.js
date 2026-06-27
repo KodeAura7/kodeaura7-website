@@ -276,7 +276,6 @@ async function saveFilters(listViewId, filters) {
   await query('DELETE FROM list_view_filters WHERE list_view_id = $1', [listViewId]);
   if (!Array.isArray(filters) || !filters.length) return;
 
-  const config = OBJECT_CONFIGS;
   const values = [];
   const rows = [];
 
