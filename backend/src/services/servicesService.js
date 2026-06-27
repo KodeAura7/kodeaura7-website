@@ -1,7 +1,5 @@
 import { query } from '../database/pool.js';
 
-const TRACKED_FIELDS = ['slug', 'name', 'icon', 'accent', 'light', 'description', 'p1', 'p2',
-  'sort_order', 'enabled', 'show_on_home', 'cta_label', 'features', 'metrics'];
 
 function mapRow(r, index) {
   const pos = r.position != null ? Number(r.position) : (index != null ? index + 1 : 1);
