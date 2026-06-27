@@ -6,10 +6,20 @@ import {
   listContacts,
   updateContactStatus
 } from '../services/adminContactService.js';
+import { getListView, buildWhereClause } from '../services/listViewService.js';
+
+async function resolveLvWhere(listViewId, userId, objectName) {
+  if (!listViewId) return null;
+  try {
+    const lv = await getListView(listViewId, userId);
+    return buildWhereClause(lv.filters, lv.filter_logic, objectName);
+  } catch { return null; }
+}
 
 export async function list(request, response) {
-  const { page, limit, search, sort, dir, status } = request.query;
-  const result = await listContacts({ page, limit, search, sort, dir, status });
+  const { page, limit, search, sort, dir, status, list_view_id } = request.query;
+  const lvWhere = await resolveLvWhere(list_view_id, request.user?.sub, 'contacts');
+  const result = await listContacts({ page, limit, search, sort, dir, status, lvWhere });
   response.status(200).json(result);
 }
 

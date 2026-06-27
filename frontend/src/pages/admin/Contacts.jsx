@@ -8,6 +8,8 @@ import { TableToolbar } from '../../components/admin/TableToolbar';
 import { useColumnVisibility } from '../../hooks/useColumnVisibility';
 import { useToast } from '../../contexts/ToastContext';
 import { usePermissions } from '../../contexts/PermissionsContext';
+import { useListViews } from '../../hooks/useListViews';
+import ListViewSelector from '../../components/admin/listviews/ListViewSelector';
 
 const LIMIT = 20;
 
@@ -61,6 +63,7 @@ export default function Contacts() {
   const navigate = useNavigate();
   const { success, error: toastError } = useToast();
   const { canDo } = usePermissions();
+  const lv = useListViews('contacts');
   const [data, setData] = useState(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -79,13 +82,13 @@ export default function Contacts() {
   const load = useCallback(() => {
     setError('');
     adminApi
-      .contacts({ page, limit: LIMIT, search: debouncedSearch, sort, dir, status: filters.status || '' })
+      .contacts({ page, limit: LIMIT, search: debouncedSearch, sort, dir, status: filters.status || '', list_view_id: lv.activeId || '' })
       .then((d) => { setData(d); setCheckedIds(new Set()); })
       .catch((err) => setError(err.message));
-  }, [page, debouncedSearch, sort, dir, filters]);
+  }, [page, debouncedSearch, sort, dir, filters, lv.activeId]);
 
   useEffect(() => { load(); }, [load]);
-  useEffect(() => { setPage(1); }, [debouncedSearch, filters]);
+  useEffect(() => { setPage(1); }, [debouncedSearch, filters, lv.activeId]);
 
   const handleSort = (col) => {
     if (sort === col) setDir((d) => (d === 'asc' ? 'desc' : 'asc'));
@@ -151,6 +154,21 @@ export default function Contacts() {
           <p className="text-sm text-zinc-500 mt-1">{data ? `${data.pagination.total} total` : '—'}</p>
         </div>
       </div>
+
+      {/* List View Selector */}
+      <ListViewSelector
+        views={lv.views}
+        activeId={lv.activeId}
+        fieldConfig={lv.fieldConfig}
+        loading={lv.loading}
+        onSelect={lv.setActiveView}
+        onCreate={lv.createView}
+        onEdit={(id, data) => lv.updateView(id, data)}
+        onDuplicate={lv.duplicateView}
+        onDelete={lv.deleteView}
+        onSetDefault={lv.setDefault}
+        onFavorite={lv.toggleFavorite}
+      />
 
       {error ? (
         <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div>

@@ -24,10 +24,17 @@ export async function getUserRollup() {
   return out;
 }
 
-export async function listUsers() {
+export async function listUsers({ lvWhere = null } = {}) {
+  const conditions = [];
+  const params = lvWhere ? [...lvWhere.params] : [];
+  if (lvWhere?.sql) conditions.push(lvWhere.sql);
+
+  const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
   const result = await query(
     `SELECT id, name, email, role, status, last_login, created_at, updated_at
-     FROM admin_users ORDER BY created_at ASC`
+     FROM admin_users ${where} ORDER BY created_at ASC`,
+    params
   );
   return result.rows;
 }

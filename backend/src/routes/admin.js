@@ -17,6 +17,17 @@ import { listLogoAssets, uploadLogoAsset, uploadMiddleware } from '../controller
 import { getPermissions, getMyPermissions, setPermission, bulkSetPermissions } from '../controllers/permissionsController.js';
 import { adminGetFields as getContactFormFields, adminUpdateField as updateContactFormField, adminCreateField as createContactFormField, adminDeleteField as deleteContactFormField, adminBulkReorder as reorderContactFormFields } from '../controllers/contactFormController.js';
 import { create as createUser, list as listUsers, remove as removeUser, rollup as userRollup, update as updateUser } from '../controllers/usersController.js';
+import {
+  list as listListViews,
+  getOne as getListView,
+  create as createListView,
+  update as updateListView,
+  remove as deleteListView,
+  duplicate as duplicateListView,
+  makeDefault as setListViewDefault,
+  favorite as favoriteListView,
+  getFieldConfig as getListViewFields,
+} from '../controllers/listViewController.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { authorize } from '../middleware/authorize.js';
 import { requirePermission } from '../middleware/requirePermission.js';
@@ -105,6 +116,17 @@ router.post('/contact-form/reorder', requirePermission('contact_form.edit'), asy
 router.post('/contact-form',         requirePermission('contact_form.edit'), asyncHandler(createContactFormField));
 router.put('/contact-form/:id',      requirePermission('contact_form.edit'), asyncHandler(updateContactFormField));
 router.delete('/contact-form/:id',   requirePermission('contact_form.edit'), asyncHandler(deleteContactFormField));
+
+// ── List Views ────────────────────────────────────────────────────────────────
+router.get('/list-views/fields',           asyncHandler(getListViewFields));
+router.get('/list-views',                  asyncHandler(listListViews));
+router.post('/list-views',                 asyncHandler(createListView));
+router.get('/list-views/:id',              asyncHandler(getListView));
+router.put('/list-views/:id',              asyncHandler(updateListView));
+router.delete('/list-views/:id',           asyncHandler(deleteListView));
+router.post('/list-views/:id/duplicate',   asyncHandler(duplicateListView));
+router.patch('/list-views/:id/default',    asyncHandler(setListViewDefault));
+router.patch('/list-views/:id/favorite',   asyncHandler(favoriteListView));
 
 // ── Users (super_admin only) ──────────────────────────────────────────────────
 router.get('/users/rollup', asyncHandler(userRollup));

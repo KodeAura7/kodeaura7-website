@@ -5,6 +5,8 @@ import { adminApi } from '../../services/adminApi';
 import { TableToolbar } from '../../components/admin/TableToolbar';
 import { useColumnVisibility } from '../../hooks/useColumnVisibility';
 import { useToast } from '../../contexts/ToastContext';
+import { useListViews } from '../../hooks/useListViews';
+import ListViewSelector from '../../components/admin/listviews/ListViewSelector';
 
 const COLS = [
   { key: 'name', label: 'Name' },
@@ -226,6 +228,7 @@ function StatusDot({ status }) {
 export default function Users() {
   const { user: me } = useAuth();
   const { success, error: toastError } = useToast();
+  const lv = useListViews('users');
   const isSuperAdmin = me?.role === 'super_admin';
   const [users, setUsers] = useState(null);
   const [rollup, setRollup] = useState(null);
@@ -242,11 +245,13 @@ export default function Users() {
 
   const load = () => {
     setError('');
-    adminApi.users().then(setUsers).catch((err) => setError(err.message));
+    const params = {};
+    if (lv.activeId) params.list_view_id = lv.activeId;
+    adminApi.users(params).then(setUsers).catch((err) => setError(err.message));
     adminApi.userRollup().then(setRollup).catch(() => null);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [lv.activeId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDelete = async (user) => {
     if (!window.confirm(`Delete ${user.name}? This cannot be undone.`)) return;
@@ -298,6 +303,20 @@ export default function Users() {
           </button>
         ) : <span className="text-xs text-zinc-600 font-mono">View only</span>}
       </div>
+
+      <ListViewSelector
+        views={lv.views}
+        activeId={lv.activeId}
+        fieldConfig={lv.fieldConfig}
+        loading={lv.loading}
+        onSelect={lv.setActiveView}
+        onCreate={lv.createView}
+        onEdit={(id, data) => lv.updateView(id, data)}
+        onDuplicate={lv.duplicateView}
+        onDelete={lv.deleteView}
+        onSetDefault={lv.setDefault}
+        onFavorite={lv.toggleFavorite}
+      />
 
       {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div> : null}
 

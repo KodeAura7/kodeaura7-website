@@ -56,6 +56,7 @@ export const adminApi = {
   contacts: (params = {}) => {
     const p = { ...params };
     if (!p.status) delete p.status;
+    if (!p.list_view_id) delete p.list_view_id;
     return request(`/api/admin/contacts?${new URLSearchParams(p)}`);
   },
   getContact: (id) => request(`/api/admin/contacts/${id}`),
@@ -129,6 +130,17 @@ export const adminApi = {
   setPageContent: (page, content) => request(`/api/admin/pages/${page}`, { method: 'PUT', body: JSON.stringify(content) }),
   getPageHistory: (page) => request(`/api/admin/pages/${page}/history`),
 
+  // ── List Views ──────────────────────────────────────────────────────────────
+  getListViews: (objectName) => request(`/api/admin/list-views?object=${objectName}`),
+  getListView: (id) => request(`/api/admin/list-views/${id}`),
+  getListViewFields: (objectName) => request(`/api/admin/list-views/fields?object=${objectName}`),
+  createListView: (data) => request('/api/admin/list-views', { method: 'POST', body: JSON.stringify(data) }),
+  updateListView: (id, data) => request(`/api/admin/list-views/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteListView: (id) => request(`/api/admin/list-views/${id}`, { method: 'DELETE' }),
+  duplicateListView: (id) => request(`/api/admin/list-views/${id}/duplicate`, { method: 'POST' }),
+  setListViewDefault: (id) => request(`/api/admin/list-views/${id}/default`, { method: 'PATCH' }),
+  toggleListViewFavorite: (id) => request(`/api/admin/list-views/${id}/favorite`, { method: 'PATCH' }),
+
   getMyPermissions: () => request('/api/admin/permissions/my'),
   getPermissions: (role) => request(`/api/admin/permissions${role ? `?role=${role}` : ''}`),
   setPermission: (role, action, enabled) => request('/api/admin/permissions', { method: 'PUT', body: JSON.stringify({ role, action, enabled }) }),
@@ -140,7 +152,12 @@ export const adminApi = {
   deleteContactFormField: (id) => request(`/api/admin/contact-form/${id}`, { method: 'DELETE' }),
   reorderContactFormFields: (order) => request('/api/admin/contact-form/reorder', { method: 'POST', body: JSON.stringify({ order }) }),
 
-  users: () => request('/api/admin/users'),
+  users: (params = {}) => {
+    const p = { ...params };
+    if (!p.list_view_id) delete p.list_view_id;
+    const qs = new URLSearchParams(p).toString();
+    return request(`/api/admin/users${qs ? `?${qs}` : ''}`);
+  },
   createUser: (data) =>
     request('/api/admin/users', { method: 'POST', body: JSON.stringify(data) }),
   updateUser: (id, data) =>

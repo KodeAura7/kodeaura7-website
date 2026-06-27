@@ -5,6 +5,8 @@ import { TableToolbar } from '../../components/admin/TableToolbar';
 import { useColumnVisibility } from '../../hooks/useColumnVisibility';
 import { useToast } from '../../contexts/ToastContext';
 import { usePermissions } from '../../contexts/PermissionsContext';
+import { useListViews } from '../../hooks/useListViews';
+import ListViewSelector from '../../components/admin/listviews/ListViewSelector';
 
 const COLS = [
   { key: 'email', label: 'Email' },
@@ -30,6 +32,7 @@ function useDebounce(value, delay = 300) {
 export default function Newsletter() {
   const { success, error: toastError } = useToast();
   const { canDo } = usePermissions();
+  const lv = useListViews('newsletter');
   const [data, setData] = useState(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -44,13 +47,13 @@ export default function Newsletter() {
   const load = useCallback(() => {
     setError('');
     adminApi
-      .newsletter({ page, limit: LIMIT, search: debouncedSearch, sort, dir })
+      .newsletter({ page, limit: LIMIT, search: debouncedSearch, sort, dir, list_view_id: lv.activeId || '' })
       .then(setData)
       .catch((err) => setError(err.message));
-  }, [page, debouncedSearch, sort, dir]);
+  }, [page, debouncedSearch, sort, dir, lv.activeId]);
 
   useEffect(() => { load(); }, [load]);
-  useEffect(() => { setPage(1); }, [debouncedSearch]);
+  useEffect(() => { setPage(1); }, [debouncedSearch, lv.activeId]);
 
   const handleSort = (col) => {
     if (sort === col) setDir((d) => (d === 'asc' ? 'desc' : 'asc'));
@@ -94,6 +97,20 @@ export default function Newsletter() {
           <p className="text-sm text-zinc-500 mt-1">{data ? `${data.pagination.total} subscribers` : '—'}</p>
         </div>
       </div>
+
+      <ListViewSelector
+        views={lv.views}
+        activeId={lv.activeId}
+        fieldConfig={lv.fieldConfig}
+        loading={lv.loading}
+        onSelect={lv.setActiveView}
+        onCreate={lv.createView}
+        onEdit={(id, data) => lv.updateView(id, data)}
+        onDuplicate={lv.duplicateView}
+        onDelete={lv.deleteView}
+        onSetDefault={lv.setDefault}
+        onFavorite={lv.toggleFavorite}
+      />
 
       {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div> : null}
 

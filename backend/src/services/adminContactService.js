@@ -15,13 +15,15 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 const SELECT_COLS = 'id, name, email, service, message, source, status, created_at, updated_at';
 
-export async function listContacts({ page = 1, limit = 20, search = '', sort = 'created_at', dir = 'desc', status = '' }) {
+export async function listContacts({ page = 1, limit = 20, search = '', sort = 'created_at', dir = 'desc', status = '', lvWhere = null }) {
   const offset = (Number(page) - 1) * Number(limit);
   const sortCol = SORT_COLS[sort] ?? 'created_at';
   const sortDir = dir === 'asc' ? 'ASC' : 'DESC';
 
   const conditions = ['deleted_at IS NULL'];
-  const params = [];
+  // LV params must come first so their $N indices are correct
+  const params = lvWhere ? [...lvWhere.params] : [];
+  if (lvWhere?.sql) conditions.push(lvWhere.sql);
 
   if (search) {
     const term = `%${sanitize(search)}%`;
