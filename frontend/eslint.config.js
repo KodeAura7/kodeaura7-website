@@ -21,7 +21,13 @@ export default [
         window: 'readonly',
         fetch: 'readonly',
         FormData: 'readonly',
-        HTMLInputElement: 'readonly'
+        HTMLInputElement: 'readonly',
+        localStorage: 'readonly',
+        sessionStorage: 'readonly',
+        URL: 'readonly',
+        URLSearchParams: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly'
       }
     },
     plugins: {
