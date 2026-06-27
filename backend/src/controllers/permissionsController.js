@@ -1,5 +1,6 @@
 import { query } from '../database/pool.js';
 import { invalidatePermissionsCache, getRolePermissions } from '../services/permissionsService.js';
+import { auditLog } from '../services/auditLogService.js';
 
 const VALID_ROLES = new Set(['admin', 'customer']);
 
@@ -39,6 +40,13 @@ export async function setPermission(req, res) {
     [role, action.trim(), enabled]
   );
   invalidatePermissionsCache(role);
+  auditLog({
+    userId: req.user?.sub, userName: req.user?.name, userEmail: req.user?.email, ipAddress: req.ip,
+    action: 'permission.update',
+    objectType: 'permission',
+    objectLabel: `${role} — ${action.trim()}`,
+    details: { role, action: action.trim(), enabled },
+  });
   res.json({ role, action, enabled });
 }
 
@@ -56,7 +64,12 @@ export async function bulkSetPermissions(req, res) {
       [role, action, enabled]
     );
   }
-  // Invalidate entire cache so all roles pick up new rules immediately
   invalidatePermissionsCache();
+  auditLog({
+    userId: req.user?.sub, userName: req.user?.name, userEmail: req.user?.email, ipAddress: req.ip,
+    action: 'permission.bulk_update',
+    objectType: 'permission',
+    details: { count: permissions.length },
+  });
   res.json({ ok: true });
 }

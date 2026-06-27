@@ -174,5 +174,10 @@ export const adminApi = {
   updateUser: (id, data) =>
     request(`/api/admin/users/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteUser: (id) =>
-    request(`/api/admin/users/${id}`, { method: 'DELETE' })
+    request(`/api/admin/users/${id}`, { method: 'DELETE' }),
+
+  auditLogs: (params = {}) => {
+    const qs = new URLSearchParams(Object.fromEntries(Object.entries(params).filter(([, v]) => v))).toString();
+    return request(`/api/admin/audit-logs${qs ? `?${qs}` : ''}`);
+  },
 };

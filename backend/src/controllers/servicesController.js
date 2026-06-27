@@ -12,6 +12,11 @@ import {
   updateServiceOrder
 } from '../services/servicesService.js';
 import { buildWhereClause, getListView } from '../services/listViewService.js';
+import { auditLog } from '../services/auditLogService.js';
+
+function actor(req) {
+  return { userId: req.user?.sub, userName: req.user?.name, userEmail: req.user?.email, ipAddress: req.ip };
+}
 
 async function resolveLvWhere(listViewId, userId) {
   if (!listViewId) return null;
@@ -40,11 +45,13 @@ export async function adminGetOne(req, res) {
 
 export async function adminCreate(req, res) {
   const item = await createService(req.body);
+  auditLog({ ...actor(req), action: 'service.create', objectType: 'service', objectId: item.id, objectLabel: item.name });
   res.status(201).json(item);
 }
 
 export async function adminUpdate(req, res) {
   const item = await updateService(req.params.id, req.body, req.user.sub);
+  auditLog({ ...actor(req), action: 'service.update', objectType: 'service', objectId: item.id, objectLabel: item.name });
   res.status(200).json(item);
 }
 
@@ -54,12 +61,22 @@ export async function adminGetHistory(req, res) {
 }
 
 export async function adminDelete(req, res) {
+  const item = await getServiceById(req.params.id).catch(() => null);
   await deleteService(req.params.id);
+  auditLog({ ...actor(req), action: 'service.delete', objectType: 'service', objectId: req.params.id, objectLabel: item?.name });
   res.status(204).end();
 }
 
 export async function adminSetEnabled(req, res) {
   const result = await setServiceEnabled(req.params.id, req.body.enabled);
+  auditLog({
+    ...actor(req),
+    action: 'service.toggle_enabled',
+    objectType: 'service',
+    objectId: result.id,
+    objectLabel: result.name,
+    details: { enabled: req.body.enabled },
+  });
   res.status(200).json(result);
 }
 

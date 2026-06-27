@@ -32,6 +32,14 @@ export async function listSubscribers({ page = 1, limit = 20, search = '', sort 
   return buildPage(dataRes.rows, countRes.rows[0].count, page, limit);
 }
 
+export async function getSubscriber(id) {
+  const result = await query(
+    `SELECT id, email FROM newsletter_subscribers WHERE id = $1 AND deleted_at IS NULL`,
+    [id],
+  );
+  return result.rows[0] ?? null;
+}
+
 export async function deleteSubscriber(id) {
   const result = await query(
     `UPDATE newsletter_subscribers SET deleted_at = NOW()

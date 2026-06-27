@@ -32,6 +32,7 @@ import {
   getFieldConfig as getListViewFields,
 } from '../controllers/listViewController.js';
 import { initiateMigration } from '../controllers/migrateController.js';
+import { list as listAuditLogs } from '../controllers/auditLogController.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { authorize } from '../middleware/authorize.js';
 import { requirePermission } from '../middleware/requirePermission.js';
@@ -137,6 +138,9 @@ router.post('/list-views/:id/recent',      asyncHandler(recordRecentListView));
 
 // ── Migrate Records ───────────────────────────────────────────────────────────
 router.post('/migrate', requirePermission('contacts.view'), asyncHandler(initiateMigration));
+
+// ── Audit Log ─────────────────────────────────────────────────────────────────
+router.get('/audit-logs', authorize('super_admin'), asyncHandler(listAuditLogs));
 
 // ── Users (super_admin only) ──────────────────────────────────────────────────
 router.get('/users/rollup', asyncHandler(userRollup));

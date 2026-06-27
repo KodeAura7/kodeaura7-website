@@ -7,6 +7,14 @@ const SALT_ROUNDS = 12;
 const VALID_ROLES = new Set(['super_admin', 'admin', 'customer']);
 const VALID_STATUSES = new Set(['active', 'inactive']);
 
+export async function getUserById(id) {
+  const result = await query(
+    `SELECT id, name, email, role, status FROM admin_users WHERE id = $1 AND deleted_at IS NULL`,
+    [id],
+  );
+  return result.rows[0] ?? null;
+}
+
 export async function getUserRollup() {
   const result = await query(
     `SELECT role,
