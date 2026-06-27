@@ -87,6 +87,15 @@ export const adminApi = {
     ),
   importServices: (csv) =>
     request('/api/admin/services/import', { method: 'POST', body: JSON.stringify({ csv }) }),
+  getServiceHistory: (id) => request(`/api/admin/services/${id}/history`),
+
+  socialLinks: () => request('/api/admin/social-links'),
+  createSocialLink: (data) => request('/api/admin/social-links', { method: 'POST', body: JSON.stringify(data) }),
+  updateSocialLink: (id, data) => request(`/api/admin/social-links/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteSocialLink: (id) => request(`/api/admin/social-links/${id}`, { method: 'DELETE' }),
+  setSocialLinkEnabled: (id, enabled) =>
+    request(`/api/admin/social-links/${id}/enabled`, { method: 'PATCH', body: JSON.stringify({ enabled }) }),
+  exportSocialLinks: () => downloadCsv('/api/admin/social-links/export', 'social-links.csv'),
 
   testimonials: () => request('/api/admin/testimonials'),
   exportTestimonials: () => downloadCsv('/api/admin/testimonials/export', 'testimonials.csv'),

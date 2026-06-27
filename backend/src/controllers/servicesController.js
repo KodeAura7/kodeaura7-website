@@ -4,6 +4,7 @@ import {
   exportServices,
   getPublicServices,
   getServiceById,
+  getServiceHistory,
   importServices,
   listAllServices,
   setServiceEnabled,
@@ -32,8 +33,13 @@ export async function adminCreate(req, res) {
 }
 
 export async function adminUpdate(req, res) {
-  const item = await updateService(req.params.id, req.body);
+  const item = await updateService(req.params.id, req.body, req.user.sub);
   res.status(200).json(item);
+}
+
+export async function adminGetHistory(req, res) {
+  const history = await getServiceHistory(req.params.id);
+  res.status(200).json(history);
 }
 
 export async function adminDelete(req, res) {

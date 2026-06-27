@@ -6,12 +6,12 @@ const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2
 const TEXTAREA = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all resize-none';
 
 const EMPTY_FORM = {
-  slug: '', num: '', name: '', icon: 'solar:code-square-linear',
+  slug: '', name: '', icon: 'solar:code-square-linear',
   accent: '#6366F1', light: '#A5B4FC', description: '',
-  p1: '', p2: '',
+  p1: '', p2: '', cta_label: '',
   features: [],
   metrics: [{ value: '', label: '' }, { value: '', label: '' }, { value: '', label: '' }],
-  sort_order: 0, enabled: true
+  sort_order: 0, enabled: true, show_on_home: true
 };
 
 function toSlug(name) {
@@ -31,20 +31,9 @@ function ColorInput({ label, value, onChange }) {
       <div className="flex items-center gap-2">
         <label className="relative w-10 h-10 rounded-xl border border-zinc-700 overflow-hidden cursor-pointer shrink-0">
           <div className="w-full h-full rounded-xl" style={{ background: value }} />
-          <input
-            type="color"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          />
+          <input type="color" value={value} onChange={(e) => onChange(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
         </label>
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className={INPUT + ' font-mono text-xs'}
-          placeholder="#000000"
-        />
+        <input type="text" value={value} onChange={(e) => onChange(e.target.value)} className={INPUT + ' font-mono text-xs'} placeholder="#000000" />
       </div>
     </div>
   );
@@ -54,36 +43,84 @@ function OrderCell({ id, initialOrder, onSaved, onError }) {
   const [val, setVal] = useState(String(initialOrder ?? 0));
   const [saving, setSaving] = useState(false);
   const inputRef = useRef(null);
-
   const commit = async () => {
     const num = parseInt(val);
     if (isNaN(num) || num === (initialOrder ?? 0)) return;
     setSaving(true);
-    try {
-      await adminApi.setServiceOrder(id, num);
-      onSaved(id, num);
-    } catch (err) {
-      onError(err.message);
-      setVal(String(initialOrder ?? 0));
-    } finally {
-      setSaving(false);
-    }
+    try { await adminApi.setServiceOrder(id, num); onSaved(id, num); }
+    catch (e) { onError(e.message); setVal(String(initialOrder ?? 0)); }
+    finally { setSaving(false); }
   };
-
   return (
     <div className="flex items-center gap-1.5">
-      <input
-        ref={inputRef}
-        type="number"
-        min="0"
-        value={val}
-        onChange={(e) => setVal(e.target.value)}
-        onBlur={commit}
-        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); commit(); inputRef.current?.blur(); } }}
+      <input ref={inputRef} type="number" min="0" value={val} onChange={(e) => setVal(e.target.value)}
+        onBlur={commit} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); commit(); inputRef.current?.blur(); } }}
         disabled={saving}
-        className="w-14 bg-[#18181B] border border-zinc-800 rounded-lg px-2 py-1 text-xs text-zinc-200 text-center focus:outline-none focus:border-indigo-500/50 transition-all disabled:opacity-50"
-      />
+        className="w-14 bg-[#18181B] border border-zinc-800 rounded-lg px-2 py-1 text-xs text-zinc-200 text-center focus:outline-none focus:border-indigo-500/50 disabled:opacity-50" />
       {saving ? <Icon icon="solar:loading-linear" width={12} className="text-zinc-600 animate-spin shrink-0" /> : null}
+    </div>
+  );
+}
+
+const FIELD_LABELS = {
+  slug: 'Slug', name: 'Name', icon: 'Icon', accent: 'Accent color', light: 'Light color',
+  description: 'Short description', p1: 'Paragraph 1', p2: 'Paragraph 2',
+  cta_label: 'CTA label', sort_order: 'Sort order', enabled: 'Enabled',
+  show_on_home: 'Show on home', features: 'Features', metrics: 'Metrics'
+};
+
+function HistoryPanel({ serviceId }) {
+  const [history, setHistory] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (open && !history) {
+      adminApi.getServiceHistory(serviceId).then(setHistory).catch(() => setHistory([]));
+    }
+  }, [open, serviceId, history]);
+
+  return (
+    <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-zinc-800/20 transition-colors"
+      >
+        <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Edit History</h2>
+        <Icon icon={open ? 'solar:alt-arrow-up-linear' : 'solar:alt-arrow-down-linear'} width={14} className="text-zinc-600" />
+      </button>
+      {open ? (
+        <div className="border-t border-zinc-800 divide-y divide-zinc-800/60 max-h-96 overflow-y-auto">
+          {!history ? (
+            <p className="px-6 py-4 text-xs text-zinc-600">Loading…</p>
+          ) : history.length === 0 ? (
+            <p className="px-6 py-4 text-xs text-zinc-600">No edit history yet.</p>
+          ) : (
+            history.map((entry) => (
+              <div key={entry.id} className="px-6 py-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs font-medium text-zinc-300">{entry.updated_by_name}</span>
+                  <span className="text-[10px] text-zinc-600 font-mono">{entry.updated_by_email}</span>
+                  <span className="ml-auto text-[10px] text-zinc-600 font-mono whitespace-nowrap">
+                    {new Date(entry.updated_at).toLocaleString()}
+                  </span>
+                </div>
+                <div className="space-y-1.5">
+                  {(entry.changes || []).map((c, i) => (
+                    <div key={i} className="rounded-lg bg-zinc-900/60 border border-zinc-800/60 px-3 py-2">
+                      <p className="text-[10px] font-mono text-zinc-500 mb-1">{FIELD_LABELS[c.field] || c.field}</p>
+                      <div className="flex items-start gap-2 text-xs">
+                        <span className="text-rose-400 line-through break-all max-w-[45%]">{c.from || '(empty)'}</span>
+                        <Icon icon="solar:arrow-right-linear" width={10} className="text-zinc-600 mt-0.5 shrink-0" />
+                        <span className="text-emerald-400 break-all max-w-[45%]">{c.to || '(empty)'}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -114,7 +151,7 @@ export default function AdminServices() {
 
   const openEdit = (item) => {
     setEditItem(item);
-    setForm({ ...item, metrics: padMetrics(item.metrics), features: item.features || [] });
+    setForm({ ...item, metrics: padMetrics(item.metrics), features: item.features || [], cta_label: item.cta_label || '', show_on_home: item.show_on_home !== false });
     setError('');
     setView('edit');
   };
@@ -126,24 +163,17 @@ export default function AdminServices() {
     setView('edit');
   };
 
-  const backToList = () => {
-    setView('list');
-    setEditItem(null);
-    setError('');
-  };
+  const backToList = () => { setView('list'); setEditItem(null); setError(''); };
 
-  // Feature helpers
   const addFeature = () => setForm((f) => ({ ...f, features: [...f.features, { label: '', enabled: true }] }));
   const removeFeature = (i) => setForm((f) => ({ ...f, features: f.features.filter((_, idx) => idx !== i) }));
   const setFeatureLabel = (i, label) =>
     setForm((f) => ({ ...f, features: f.features.map((feat, idx) => idx === i ? { ...feat, label } : feat) }));
   const toggleFeature = (i) =>
     setForm((f) => ({ ...f, features: f.features.map((feat, idx) => idx === i ? { ...feat, enabled: !feat.enabled } : feat) }));
-
   const setMetric = (i, key, val) =>
     setForm((f) => ({ ...f, metrics: f.metrics.map((m, idx) => idx === i ? { ...m, [key]: val } : m) }));
 
-  // Selection
   const toggleSelect = (id) =>
     setSelected((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
   const allSelected = !!(items && items.length > 0 && selected.size === items.length);
@@ -151,31 +181,18 @@ export default function AdminServices() {
 
   const handleToggleEnabled = async (id, current) => {
     setToggling(id);
-    try {
-      await adminApi.setServiceEnabled(id, !current);
-      setItems((prev) => prev.map((s) => s.id === id ? { ...s, enabled: !current } : s));
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setToggling(null);
-    }
+    try { await adminApi.setServiceEnabled(id, !current); setItems((prev) => prev.map((s) => s.id === id ? { ...s, enabled: !current } : s)); }
+    catch (e) { setError(e.message); }
+    finally { setToggling(null); }
   };
 
-  const handleOrderSaved = (id, newOrder) => {
-    setItems((prev) =>
-      [...prev.map((s) => s.id === id ? { ...s, sort_order: newOrder } : s)].sort((a, b) => a.sort_order - b.sort_order)
-    );
-  };
+  const handleOrderSaved = (id, newOrder) =>
+    setItems((prev) => [...prev.map((s) => s.id === id ? { ...s, sort_order: newOrder } : s)].sort((a, b) => a.sort_order - b.sort_order));
 
   const handleSave = async () => {
-    setSaving(true);
-    setError('');
+    setSaving(true); setError('');
     try {
-      const payload = {
-        ...form,
-        metrics: form.metrics.filter((m) => m.value || m.label),
-        features: form.features.filter((f) => f.label)
-      };
+      const payload = { ...form, metrics: form.metrics.filter((m) => m.value || m.label), features: form.features.filter((f) => f.label) };
       if (editItem) {
         const updated = await adminApi.updateService(editItem.id, payload);
         setItems((prev) => prev.map((s) => s.id === editItem.id ? updated : s));
@@ -184,98 +201,68 @@ export default function AdminServices() {
         setItems((prev) => [...(prev || []), created].sort((a, b) => a.sort_order - b.sort_order));
       }
       backToList();
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setSaving(false);
-    }
+    } catch (e) { setError(e.message); }
+    finally { setSaving(false); }
   };
 
   const handleDelete = async () => {
     if (!editItem || !window.confirm(`Delete "${editItem.name}"? This cannot be undone.`)) return;
     setDeleting(true);
-    try {
-      await adminApi.deleteService(editItem.id);
-      setItems((prev) => prev.filter((s) => s.id !== editItem.id));
-      backToList();
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setDeleting(false);
-    }
+    try { await adminApi.deleteService(editItem.id); setItems((prev) => prev.filter((s) => s.id !== editItem.id)); backToList(); }
+    catch (e) { setError(e.message); }
+    finally { setDeleting(false); }
   };
 
   const handleExport = async () => {
     setExporting(true);
-    try {
-      await adminApi.exportServices([...selected]);
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setExporting(false);
-    }
+    try { await adminApi.exportServices([...selected]); }
+    catch (e) { setError(e.message); }
+    finally { setExporting(false); }
   };
 
   const handleImportFile = async (e) => {
     const file = e.target.files?.[0];
     if (importInputRef.current) importInputRef.current.value = '';
     if (!file) return;
-    setImporting(true);
-    setImportMsg({ type: '', text: '' });
+    setImporting(true); setImportMsg({ type: '', text: '' });
     try {
       const csv = await file.text();
       const result = await adminApi.importServices(csv);
       setImportMsg({ type: 'success', text: `Imported ${result.imported} service${result.imported !== 1 ? 's' : ''}.` });
       loadAll();
-    } catch (e) {
-      setImportMsg({ type: 'error', text: e.message });
-    } finally {
-      setImporting(false);
-    }
+    } catch (e) { setImportMsg({ type: 'error', text: e.message }); }
+    finally { setImporting(false); }
   };
 
   // ─── EDIT VIEW ───────────────────────────────────────────────────────────────
   if (view === 'edit') {
     return (
       <div className="p-6 md:p-8 max-w-4xl mx-auto">
-        {/* Header */}
         <div className="mb-6 flex items-center gap-4 flex-wrap">
-          <button
-            onClick={backToList}
-            className="p-2 rounded-xl text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/60 transition-all shrink-0"
-          >
+          <button onClick={backToList} className="p-2 rounded-xl text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/60 transition-all shrink-0">
             <Icon icon="solar:arrow-left-linear" width={18} />
           </button>
           <div className="flex-1 min-w-0">
             <h1 className="font-display font-semibold text-2xl text-zinc-100 truncate">
               {editItem ? `Edit — ${editItem.name}` : 'New Service'}
             </h1>
+            {editItem ? <p className="text-xs text-zinc-600 font-mono mt-0.5">{editItem.num} · {editItem.slug}</p> : null}
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {editItem ? (
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-rose-500/30 text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-50"
-              >
+              <button onClick={handleDelete} disabled={deleting} className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-rose-500/30 text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-50">
                 <Icon icon={deleting ? 'solar:loading-linear' : 'solar:trash-bin-minimalistic-linear'} width={15} className={deleting ? 'animate-spin' : ''} />
                 Delete
               </button>
             ) : null}
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(99,102,241,0.2)]"
-            >
+            <button onClick={handleSave} disabled={saving} className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
               <Icon icon={saving ? 'solar:loading-linear' : 'solar:floppy-disk-linear'} width={15} className={saving ? 'animate-spin' : ''} />
               {saving ? 'Saving…' : 'Save Service'}
             </button>
           </div>
         </div>
 
-        {error ? (
-          <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-6">{error}</div>
-        ) : null}
+        {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-6">{error}</div> : null}
 
         <div className="space-y-5">
           {/* IDENTITY */}
@@ -283,21 +270,8 @@ export default function AdminServices() {
             <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Identity</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-400">Number</label>
-                <input type="text" value={form.num} onChange={(e) => setField('num', e.target.value)} placeholder="01" className={INPUT} />
-              </div>
-              <div className="space-y-1.5">
                 <label className="text-xs font-medium text-zinc-400">Name <span className="text-rose-500">*</span></label>
-                <input
-                  type="text"
-                  value={form.name}
-                  onChange={(e) => {
-                    setField('name', e.target.value);
-                    if (!editItem) setField('slug', toSlug(e.target.value));
-                  }}
-                  placeholder="Web Development"
-                  className={INPUT}
-                />
+                <input type="text" value={form.name} onChange={(e) => { setField('name', e.target.value); if (!editItem) setField('slug', toSlug(e.target.value)); }} placeholder="Web Development" className={INPUT} />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-zinc-400">Slug <span className="text-rose-500">*</span></label>
@@ -306,6 +280,11 @@ export default function AdminServices() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-zinc-400">Icon <span className="text-zinc-600 font-normal">(Iconify ID)</span></label>
                 <input type="text" value={form.icon} onChange={(e) => setField('icon', e.target.value)} placeholder="solar:code-square-linear" className={INPUT + ' font-mono text-xs'} />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-zinc-400">CTA Label</label>
+                <input type="text" value={form.cta_label} onChange={(e) => setField('cta_label', e.target.value)} placeholder={`Start a ${form.name || 'Service'} Project`} className={INPUT} />
+                <p className="text-[10px] text-zinc-700">Leave empty to auto-generate from service name.</p>
               </div>
             </div>
           </div>
@@ -317,28 +296,17 @@ export default function AdminServices() {
               <ColorInput label="Accent Color" value={form.accent} onChange={(v) => setField('accent', v)} />
               <ColorInput label="Light Color" value={form.light} onChange={(v) => setField('light', v)} />
             </div>
-            {/* Live mini-preview */}
-            <div
-              className="rounded-xl p-4 border mt-2"
-              style={{
-                background: `color-mix(in srgb,${form.accent} 8%,transparent)`,
-                borderColor: `color-mix(in srgb,${form.accent} 22%,transparent)`
-              }}
-            >
+            {/* Live preview */}
+            <div className="rounded-xl p-4 border mt-2" style={{ background: `color-mix(in srgb,${form.accent} 8%,transparent)`, borderColor: `color-mix(in srgb,${form.accent} 22%,transparent)` }}>
               <div className="flex items-center gap-3">
-                <div
-                  className="w-10 h-10 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center shrink-0"
-                  style={{ color: form.accent }}
-                >
+                <div className="w-10 h-10 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center shrink-0" style={{ color: form.accent }}>
                   <Icon icon={form.icon || 'solar:code-square-linear'} width={20} />
                 </div>
                 <div className="min-w-0">
-                  <span className="font-mono text-xs" style={{ color: form.accent }}>{form.num || '00'}</span>
                   <p className="text-sm font-semibold text-zinc-100 truncate">{form.name || 'Service Name'}</p>
+                  <p className="text-xs text-zinc-500 truncate">{form.cta_label || `Start a ${form.name || 'Service'} Project →`}</p>
                 </div>
-                <div className="ml-auto shrink-0">
-                  <div className="w-8 h-1 rounded-full" style={{ background: `linear-gradient(to right,${form.accent},transparent)` }} />
-                </div>
+                <div className="ml-auto shrink-0"><div className="w-8 h-1 rounded-full" style={{ background: `linear-gradient(to right,${form.accent},transparent)` }} /></div>
               </div>
               <div className="flex gap-2 mt-3">
                 {padMetrics(form.metrics).filter((m) => m.value || m.label).map((m, i) => (
@@ -356,33 +324,15 @@ export default function AdminServices() {
             <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Description</h2>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-zinc-400">Short Description</label>
-              <textarea
-                value={form.description}
-                onChange={(e) => setField('description', e.target.value)}
-                rows={2}
-                placeholder="Brief description for cards and SEO…"
-                className={TEXTAREA}
-              />
+              <textarea value={form.description} onChange={(e) => setField('description', e.target.value)} rows={2} placeholder="Used on home page cards and SEO…" className={TEXTAREA} />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-zinc-400">Paragraph 1</label>
-              <textarea
-                value={form.p1}
-                onChange={(e) => setField('p1', e.target.value)}
-                rows={3}
-                placeholder="First content paragraph shown on the services page…"
-                className={TEXTAREA}
-              />
+              <textarea value={form.p1} onChange={(e) => setField('p1', e.target.value)} rows={3} placeholder="First content paragraph on the services page…" className={TEXTAREA} />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-zinc-400">Paragraph 2</label>
-              <textarea
-                value={form.p2}
-                onChange={(e) => setField('p2', e.target.value)}
-                rows={3}
-                placeholder="Second content paragraph…"
-                className={TEXTAREA}
-              />
+              <textarea value={form.p2} onChange={(e) => setField('p2', e.target.value)} rows={3} placeholder="Second content paragraph…" className={TEXTAREA} />
             </div>
           </div>
 
@@ -391,44 +341,22 @@ export default function AdminServices() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">What's Included</h2>
-                <p className="text-[11px] text-zinc-700 mt-0.5">Check items to enable them on the site. Uncheck to hide without deleting.</p>
+                <p className="text-[11px] text-zinc-700 mt-0.5">Check = visible on site. First 3 enabled items appear on home page cards.</p>
               </div>
-              <button
-                onClick={addFeature}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
-              >
-                <Icon icon="solar:add-circle-linear" width={14} />
-                Add Item
+              <button onClick={addFeature} className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
+                <Icon icon="solar:add-circle-linear" width={14} />Add Item
               </button>
             </div>
-            {form.features.length === 0 ? (
-              <p className="text-xs text-zinc-600 text-center py-4">No items yet. Click "Add Item" to start.</p>
-            ) : null}
+            {form.features.length === 0 ? <p className="text-xs text-zinc-600 text-center py-4">No items yet. Click "Add Item" to start.</p> : null}
             <div className="space-y-2">
               {form.features.map((feat, i) => (
                 <div key={i} className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => toggleFeature(i)}
-                    className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
-                      feat.enabled ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-600 bg-transparent'
-                    }`}
-                    title={feat.enabled ? 'Disable on site' : 'Enable on site'}
-                  >
+                  <button type="button" onClick={() => toggleFeature(i)} title={feat.enabled ? 'Disable on site' : 'Enable on site'}
+                    className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${feat.enabled ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-600 bg-transparent'}`}>
                     {feat.enabled ? <Icon icon="solar:check-read-linear" width={11} className="text-white" /> : null}
                   </button>
-                  <input
-                    type="text"
-                    value={feat.label}
-                    onChange={(e) => setFeatureLabel(i, e.target.value)}
-                    placeholder="Feature description"
-                    className={`flex-1 ${INPUT} ${!feat.enabled ? 'opacity-50' : ''}`}
-                  />
-                  <button
-                    onClick={() => removeFeature(i)}
-                    className="p-1.5 text-zinc-600 hover:text-rose-400 transition-colors shrink-0"
-                    title="Remove"
-                  >
+                  <input type="text" value={feat.label} onChange={(e) => setFeatureLabel(i, e.target.value)} placeholder="Feature description" className={`flex-1 ${INPUT} ${!feat.enabled ? 'opacity-50' : ''}`} />
+                  <button onClick={() => removeFeature(i)} className="p-1.5 text-zinc-600 hover:text-rose-400 transition-colors shrink-0" title="Remove">
                     <Icon icon="solar:close-circle-linear" width={16} />
                   </button>
                 </div>
@@ -440,29 +368,17 @@ export default function AdminServices() {
           <div className="bg-[#111113] border border-zinc-800 rounded-2xl p-6 space-y-4">
             <div>
               <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Side Panel Metrics</h2>
-              <p className="text-[11px] text-zinc-700 mt-0.5">Up to 3 tiles shown in the visual panel beside the service content.</p>
+              <p className="text-[11px] text-zinc-700 mt-0.5">Up to 3 tiles shown in the visual panel beside service content.</p>
             </div>
             {[0, 1, 2].map((i) => (
               <div key={i} className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium text-zinc-500">Tile {i + 1} — Value</label>
-                  <input
-                    type="text"
-                    value={form.metrics[i]?.value || ''}
-                    onChange={(e) => setMetric(i, 'value', e.target.value)}
-                    placeholder="e.g. 50ms"
-                    className={INPUT}
-                  />
+                  <input type="text" value={form.metrics[i]?.value || ''} onChange={(e) => setMetric(i, 'value', e.target.value)} placeholder="e.g. 50ms" className={INPUT} />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium text-zinc-500">Tile {i + 1} — Label</label>
-                  <input
-                    type="text"
-                    value={form.metrics[i]?.label || ''}
-                    onChange={(e) => setMetric(i, 'label', e.target.value)}
-                    placeholder="e.g. Avg Load"
-                    className={INPUT}
-                  />
+                  <input type="text" value={form.metrics[i]?.label || ''} onChange={(e) => setMetric(i, 'label', e.target.value)} placeholder="e.g. Avg Load" className={INPUT} />
                 </div>
               </div>
             ))}
@@ -471,31 +387,37 @@ export default function AdminServices() {
           {/* SETTINGS */}
           <div className="bg-[#111113] border border-zinc-800 rounded-2xl p-6 space-y-4">
             <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Settings</h2>
-            <div className="flex items-end gap-8">
+            <div className="flex flex-wrap items-end gap-8">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-zinc-400">Sort Order</label>
-                <input
-                  type="number"
-                  value={form.sort_order}
-                  onChange={(e) => setField('sort_order', parseInt(e.target.value) || 0)}
-                  className="w-24 bg-[#18181B] border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-zinc-100 text-center focus:outline-none focus:border-indigo-500/50 transition-all"
-                />
+                <input type="number" value={form.sort_order} onChange={(e) => setField('sort_order', parseInt(e.target.value) || 0)}
+                  className="w-24 bg-[#18181B] border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-zinc-100 text-center focus:outline-none focus:border-indigo-500/50 transition-all" />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-zinc-400">Visible on site</label>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <button
-                    type="button"
-                    onClick={() => setField('enabled', !form.enabled)}
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${form.enabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}
-                  >
+                  <button type="button" onClick={() => setField('enabled', !form.enabled)}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${form.enabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}>
                     <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${form.enabled ? 'translate-x-4' : 'translate-x-1'}`} />
                   </button>
                   <span className="text-xs text-zinc-400">{form.enabled ? 'Enabled' : 'Hidden'}</span>
                 </div>
               </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-zinc-400">Show on home page</label>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <button type="button" onClick={() => setField('show_on_home', !form.show_on_home)}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${form.show_on_home ? 'bg-indigo-500' : 'bg-zinc-700'}`}>
+                    <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${form.show_on_home ? 'translate-x-4' : 'translate-x-1'}`} />
+                  </button>
+                  <span className="text-xs text-zinc-400">{form.show_on_home ? 'Shown' : 'Hidden from home'}</span>
+                </div>
+              </div>
             </div>
           </div>
+
+          {/* HISTORY */}
+          {editItem ? <HistoryPanel serviceId={editItem.id} /> : null}
         </div>
       </div>
     );
@@ -503,41 +425,31 @@ export default function AdminServices() {
 
   // ─── LIST VIEW ────────────────────────────────────────────────────────────────
   const enabledCount = items ? items.filter((s) => s.enabled).length : 0;
+  const homeCount = items ? items.filter((s) => s.enabled && s.show_on_home).length : 0;
 
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto">
-      {/* Header */}
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="font-display font-semibold text-2xl text-zinc-100">Services</h1>
           <p className="text-sm text-zinc-500 mt-1">
-            {items ? `${items.length} total · ${enabledCount} enabled on site` : '—'}
+            {items ? `${items.length} total · ${enabledCount} on site · ${homeCount} on home page` : '—'}
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <input ref={importInputRef} type="file" accept=".csv" className="hidden" onChange={handleImportFile} />
-          <button
-            onClick={handleExport}
-            disabled={exporting || !items}
-            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all border bg-[#18181B] border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100 disabled:opacity-50"
-          >
+          <button onClick={handleExport} disabled={exporting || !items}
+            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all border bg-[#18181B] border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100 disabled:opacity-50">
             <Icon icon={exporting ? 'solar:loading-linear' : 'solar:export-linear'} width={16} className={exporting ? 'animate-spin' : ''} />
             {someSelected ? `Export (${selected.size})` : 'Export'}
           </button>
-          <button
-            onClick={() => importInputRef.current?.click()}
-            disabled={importing}
-            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all border bg-[#18181B] border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100 disabled:opacity-50"
-          >
+          <button onClick={() => importInputRef.current?.click()} disabled={importing}
+            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all border bg-[#18181B] border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100 disabled:opacity-50">
             <Icon icon={importing ? 'solar:loading-linear' : 'solar:import-linear'} width={16} className={importing ? 'animate-spin' : ''} />
             Import
           </button>
-          <button
-            onClick={openNew}
-            className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)]"
-          >
-            <Icon icon="solar:add-circle-linear" width={16} />
-            Add Service
+          <button onClick={openNew} className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+            <Icon icon="solar:add-circle-linear" width={16} />Add Service
           </button>
         </div>
       </div>
@@ -548,10 +460,7 @@ export default function AdminServices() {
           {importMsg.text}
         </div>
       ) : null}
-
-      {error ? (
-        <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div>
-      ) : null}
+      {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div> : null}
 
       <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
@@ -559,49 +468,40 @@ export default function AdminServices() {
             <thead>
               <tr className="bg-[#18181B] border-b border-zinc-800">
                 <th className="px-4 py-3 w-10">
-                  <button
-                    onClick={() => setSelected(allSelected ? new Set() : new Set((items || []).map((s) => s.id)))}
-                    className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${allSelected ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-600 bg-transparent'}`}
-                  >
+                  <button onClick={() => setSelected(allSelected ? new Set() : new Set((items || []).map((s) => s.id)))}
+                    className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${allSelected ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-600 bg-transparent'}`}>
                     {allSelected ? <Icon icon="solar:check-read-linear" width={9} className="text-white" /> : null}
                   </button>
                 </th>
-                {['Order', 'Service', 'Features', 'Enabled', ''].map((h) => (
-                  <th key={h} className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider whitespace-nowrap">
-                    {h}
-                  </th>
+                {['#', 'Order', 'Service', 'Features', 'Home', 'Site', ''].map((h) => (
+                  <th key={h} className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-800/60">
               {!items ? (
-                <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
+                <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
               ) : items.length === 0 ? (
-                <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-zinc-600">No services yet. Click "Add Service" to create one.</td></tr>
+                <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-zinc-600">No services yet.</td></tr>
               ) : (
-                items.map((svc) => (
-                  <tr key={svc.id} className="hover:bg-zinc-800/20 transition-colors group">
+                items.map((svc, idx) => (
+                  <tr key={svc.id} className="hover:bg-zinc-800/20 transition-colors">
                     <td className="px-4 py-3">
-                      <button
-                        onClick={() => toggleSelect(svc.id)}
-                        className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${selected.has(svc.id) ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-600 bg-transparent'}`}
-                      >
+                      <button onClick={() => toggleSelect(svc.id)}
+                        className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${selected.has(svc.id) ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-600 bg-transparent'}`}>
                         {selected.has(svc.id) ? <Icon icon="solar:check-read-linear" width={9} className="text-white" /> : null}
                       </button>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="font-mono text-xs text-zinc-500">{String(idx + 1).padStart(2, '0')}</span>
                     </td>
                     <td className="px-4 py-3">
                       <OrderCell id={svc.id} initialOrder={svc.sort_order} onSaved={handleOrderSaved} onError={setError} />
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <div
-                          className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                          style={{
-                            background: `color-mix(in srgb,${svc.accent} 15%,transparent)`,
-                            color: svc.accent,
-                            border: `1px solid color-mix(in srgb,${svc.accent} 25%,transparent)`
-                          }}
-                        >
+                        <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                          style={{ background: `color-mix(in srgb,${svc.accent} 15%,transparent)`, color: svc.accent, border: `1px solid color-mix(in srgb,${svc.accent} 25%,transparent)` }}>
                           <Icon icon={svc.icon || 'solar:code-square-linear'} width={16} />
                         </div>
                         <div>
@@ -613,27 +513,25 @@ export default function AdminServices() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-zinc-500 text-xs">
+                    <td className="px-4 py-3 text-zinc-500 text-xs whitespace-nowrap">
                       <span className="text-zinc-300">{svc.features?.filter((f) => f.enabled).length ?? 0}</span>
-                      <span className="text-zinc-600"> / {svc.features?.length ?? 0} enabled</span>
+                      <span className="text-zinc-600"> / {svc.features?.length ?? 0}</span>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <button
-                        onClick={() => handleToggleEnabled(svc.id, svc.enabled)}
-                        disabled={toggling === svc.id}
+                      <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${svc.show_on_home ? 'bg-indigo-500/10 text-indigo-400' : 'bg-zinc-800 text-zinc-600'}`}>
+                        {svc.show_on_home ? 'shown' : 'hidden'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <button onClick={() => handleToggleEnabled(svc.id, svc.enabled)} disabled={toggling === svc.id}
                         className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 ${svc.enabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}
-                        title={svc.enabled ? 'Disable on site' : 'Enable on site'}
-                      >
+                        title={svc.enabled ? 'Disable' : 'Enable'}>
                         <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${svc.enabled ? 'translate-x-4' : 'translate-x-1'}`} />
                       </button>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => openEdit(svc)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all"
-                      >
-                        <Icon icon="solar:pen-linear" width={13} />
-                        Edit
+                      <button onClick={() => openEdit(svc)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all">
+                        <Icon icon="solar:pen-linear" width={13} />Edit
                       </button>
                     </td>
                   </tr>
