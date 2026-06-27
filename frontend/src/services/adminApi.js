@@ -72,6 +72,22 @@ export const adminApi = {
     request(`/api/admin/newsletter/${id}`, { method: 'DELETE' }),
   exportNewsletter: () => downloadCsv('/api/admin/newsletter/export', 'newsletter.csv'),
 
+  services: () => request('/api/admin/services'),
+  createService: (data) => request('/api/admin/services', { method: 'POST', body: JSON.stringify(data) }),
+  updateService: (id, data) => request(`/api/admin/services/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteService: (id) => request(`/api/admin/services/${id}`, { method: 'DELETE' }),
+  setServiceEnabled: (id, enabled) =>
+    request(`/api/admin/services/${id}/enabled`, { method: 'PATCH', body: JSON.stringify({ enabled }) }),
+  setServiceOrder: (id, sort_order) =>
+    request(`/api/admin/services/${id}/order`, { method: 'PATCH', body: JSON.stringify({ sort_order }) }),
+  exportServices: (ids = []) =>
+    downloadCsv(
+      `/api/admin/services/export${ids.length ? `?ids=${ids.join(',')}` : ''}`,
+      'services.csv'
+    ),
+  importServices: (csv) =>
+    request('/api/admin/services/import', { method: 'POST', body: JSON.stringify({ csv }) }),
+
   testimonials: () => request('/api/admin/testimonials'),
   exportTestimonials: () => downloadCsv('/api/admin/testimonials/export', 'testimonials.csv'),
   importTestimonials: (csv) =>

@@ -7,6 +7,7 @@ import authRoutes from './auth.js';
 import adminRoutes from './admin.js';
 import customerRoutes from './customer.js';
 import testimonialsRoutes from './testimonials.js';
+import servicesRoutes from './services.js';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use('/auth', authRoutes);
 router.use('/admin', adminRoutes);
 router.use('/customer', customerRoutes);
 router.use('/testimonials', testimonialsRoutes);
+router.use('/services', servicesRoutes);
 
 export default router;

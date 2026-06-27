@@ -10,6 +10,7 @@ import {
 import { exportCsv as exportNewsletter, list as listNewsletter, remove as removeNewsletter } from '../controllers/adminNewsletterController.js';
 import { getDashboard } from '../controllers/dashboardController.js';
 import { adminList as listTestimonials, exportCsv as exportTestimonials, importCsv as importTestimonials, updateSortOrder as updateTestimonialOrder, updateVisibility as updateTestimonialVisibility } from '../controllers/testimonialsController.js';
+import { adminCreate as createService, adminDelete as deleteService, adminExportCsv as exportServicesCsv, adminGetOne as getService, adminImportCsv as importServicesCsv, adminListAll as listServices, adminSetEnabled as setServiceEnabled, adminSetOrder as setServiceOrder, adminUpdate as updateService } from '../controllers/servicesController.js';
 import { create as createUser, list as listUsers, remove as removeUser, rollup as userRollup, update as updateUser } from '../controllers/usersController.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { authorize } from '../middleware/authorize.js';
@@ -38,6 +39,16 @@ router.get('/testimonials/export', asyncHandler(exportTestimonials));
 router.post('/testimonials/import', asyncHandler(importTestimonials));
 router.patch('/testimonials/:id/visibility', asyncHandler(updateTestimonialVisibility));
 router.patch('/testimonials/:id/order', asyncHandler(updateTestimonialOrder));
+
+router.get('/services', asyncHandler(listServices));
+router.post('/services', asyncHandler(createService));
+router.get('/services/export', asyncHandler(exportServicesCsv));
+router.post('/services/import', asyncHandler(importServicesCsv));
+router.get('/services/:id', asyncHandler(getService));
+router.put('/services/:id', asyncHandler(updateService));
+router.delete('/services/:id', asyncHandler(deleteService));
+router.patch('/services/:id/enabled', asyncHandler(setServiceEnabled));
+router.patch('/services/:id/order', asyncHandler(setServiceOrder));
 
 router.get('/users/rollup', asyncHandler(userRollup));
 router.get('/users', asyncHandler(listUsers));
