@@ -80,10 +80,20 @@ export async function getPublicServices() {
 
 export async function listAllServices() {
   const result = await query(
-    `SELECT id, slug, name, icon, accent, light, description, p1, p2, features, metrics,
-            sort_order, enabled, show_on_home, cta_label, created_at, updated_at,
-            ROW_NUMBER() OVER (ORDER BY sort_order ASC, created_at ASC) AS position
-     FROM services ORDER BY sort_order ASC, created_at ASC`
+    `SELECT s.id, s.slug, s.name, s.icon, s.accent, s.light, s.description, s.p1, s.p2,
+            s.features, s.metrics, s.sort_order, s.enabled, s.show_on_home, s.cta_label,
+            s.created_at, s.updated_at,
+            ROW_NUMBER() OVER (ORDER BY s.sort_order ASC, s.created_at ASC) AS position,
+            lh.updated_by_name AS last_modified_by
+     FROM services s
+     LEFT JOIN LATERAL (
+       SELECT u.name AS updated_by_name
+       FROM service_history h
+       JOIN admin_users u ON u.id = h.updated_by
+       WHERE h.service_id = s.id
+       ORDER BY h.updated_at DESC LIMIT 1
+     ) lh ON true
+     ORDER BY s.sort_order ASC, s.created_at ASC`
   );
   return result.rows.map(mapRow);
 }

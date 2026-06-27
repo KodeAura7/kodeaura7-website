@@ -6,7 +6,7 @@ import { useSiteData } from '../contexts/SiteDataContext';
 
 export default function Footer() {
   const { services, socialLinks } = useSiteData();
-  const enabledServices = services.filter((s) => s.enabled);
+  const enabledServices = services.filter((s) => s.enabled !== false);
   const enabledSocials = socialLinks.filter((s) => s.enabled).sort((a, b) => a.sort_order - b.sort_order);
 
   return (
