@@ -9,7 +9,7 @@ import {
 } from '../controllers/adminContactController.js';
 import { exportCsv as exportNewsletter, list as listNewsletter, remove as removeNewsletter } from '../controllers/adminNewsletterController.js';
 import { getDashboard } from '../controllers/dashboardController.js';
-import { adminList as listTestimonials, updateSortOrder as updateTestimonialOrder, updateVisibility as updateTestimonialVisibility } from '../controllers/testimonialsController.js';
+import { adminList as listTestimonials, exportCsv as exportTestimonials, importCsv as importTestimonials, updateSortOrder as updateTestimonialOrder, updateVisibility as updateTestimonialVisibility } from '../controllers/testimonialsController.js';
 import { create as createUser, list as listUsers, remove as removeUser, rollup as userRollup, update as updateUser } from '../controllers/usersController.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { authorize } from '../middleware/authorize.js';
@@ -34,6 +34,8 @@ router.get('/newsletter/export', asyncHandler(exportNewsletter));
 router.delete('/newsletter/:id', asyncHandler(removeNewsletter));
 
 router.get('/testimonials', asyncHandler(listTestimonials));
+router.get('/testimonials/export', asyncHandler(exportTestimonials));
+router.post('/testimonials/import', asyncHandler(importTestimonials));
 router.patch('/testimonials/:id/visibility', asyncHandler(updateTestimonialVisibility));
 router.patch('/testimonials/:id/order', asyncHandler(updateTestimonialOrder));
 

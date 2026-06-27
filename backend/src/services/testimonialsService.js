@@ -131,3 +131,36 @@ export async function updateOrder(id, sortOrder) {
   if (!result.rows[0]) throw Object.assign(new Error('Testimonial not found.'), { status: 404 });
   return result.rows[0];
 }
+
+export async function exportAllTestimonials() {
+  const result = await query(
+    `SELECT t.name, t.designation, t.rating, t.review, t.visible, t.sort_order, t.created_at,
+            u.name AS user_name, u.email AS user_email
+     FROM testimonials t
+     JOIN admin_users u ON u.id = t.user_id
+     ORDER BY t.sort_order ASC, t.created_at DESC`
+  );
+  return result.rows;
+}
+
+export async function importTestimonials(rows, userId) {
+  let imported = 0;
+  for (const row of rows) {
+    const name = sanitize(row.name || '').trim();
+    const designation = sanitize(row.designation || '').trim();
+    const review = sanitize(row.review || '').trim();
+    const rating = parseInt(row.rating);
+    const visible = String(row.visible).toLowerCase() === 'true';
+    const sortOrder = parseInt(row.sort_order) || 0;
+
+    if (!name || !designation || !review || review.length < 20 || !VALID_RATINGS.has(rating)) continue;
+
+    await query(
+      `INSERT INTO testimonials (user_id, name, designation, rating, review, visible, sort_order)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [userId, name, designation, rating, review, visible, sortOrder]
+    );
+    imported++;
+  }
+  return { imported };
+}

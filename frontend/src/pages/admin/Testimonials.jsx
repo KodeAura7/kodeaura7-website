@@ -107,6 +107,12 @@ export default function Testimonials() {
   const [reviewMsg, setReviewMsg] = useState({ type: '', text: '' });
   const [deleting, setDeleting] = useState(null);
 
+  // Export / import
+  const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importMsg, setImportMsg] = useState({ type: '', text: '' });
+  const importInputRef = useRef(null);
+
   const loadAll = () => {
     setError('');
     adminApi.testimonials().then(setItems).catch((err) => setError(err.message));
@@ -210,6 +216,36 @@ export default function Testimonials() {
     });
   };
 
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      await adminApi.exportTestimonials();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleImportFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!importInputRef.current) return;
+    importInputRef.current.value = '';
+    if (!file) return;
+    setImporting(true);
+    setImportMsg({ type: '', text: '' });
+    try {
+      const csv = await file.text();
+      const result = await adminApi.importTestimonials(csv);
+      setImportMsg({ type: 'success', text: `Imported ${result.imported} testimonial${result.imported !== 1 ? 's' : ''}.` });
+      loadAll();
+    } catch (err) {
+      setImportMsg({ type: 'error', text: err.message });
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const shown = items ? items.filter((t) => t.visible).length : 0;
 
   return (
@@ -222,7 +258,30 @@ export default function Testimonials() {
             {items ? `${items.length} total · ${shown} visible on site` : '—'}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <input
+            ref={importInputRef}
+            type="file"
+            accept=".csv"
+            className="hidden"
+            onChange={handleImportFile}
+          />
+          <button
+            onClick={handleExport}
+            disabled={exporting || !items}
+            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all border bg-[#18181B] border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100 disabled:opacity-50"
+          >
+            <Icon icon={exporting ? 'solar:loading-linear' : 'solar:export-linear'} width={16} className={exporting ? 'animate-spin' : ''} />
+            Export
+          </button>
+          <button
+            onClick={() => importInputRef.current?.click()}
+            disabled={importing}
+            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all border bg-[#18181B] border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100 disabled:opacity-50"
+          >
+            <Icon icon={importing ? 'solar:loading-linear' : 'solar:import-linear'} width={16} className={importing ? 'animate-spin' : ''} />
+            Import
+          </button>
           {myReviews && myReviews.length > 0 ? (
             <button
               onClick={() => { setMyPanelOpen((v) => !v); if (formOpen) closeForm(); }}
@@ -439,6 +498,13 @@ export default function Testimonials() {
               </button>
             </div>
           </form>
+        </div>
+      ) : null}
+
+      {importMsg.text ? (
+        <div className={`border rounded-xl p-3 text-sm mb-4 flex items-center gap-2 ${importMsg.type === 'error' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'}`}>
+          <Icon icon={importMsg.type === 'error' ? 'solar:danger-circle-linear' : 'solar:check-circle-linear'} width={15} />
+          {importMsg.text}
         </div>
       ) : null}
 
