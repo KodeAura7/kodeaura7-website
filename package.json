@@ -17,7 +17,8 @@
   "devDependencies": {
     "husky": "^9.1.7",
     "lint-staged": "^15.2.10",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "vite-plugin-sitemap": "^0.8.2"
   },
   "lint-staged": {
     "*.{js,jsx,css,md,json}": [

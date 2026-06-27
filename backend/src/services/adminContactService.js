@@ -15,35 +15,35 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 const SELECT_COLS = 'id, name, email, service, message, source, status, created_at, updated_at';
 
-export async function listContacts({ page = 1, limit = 20, search = '', sort = 'created_at', dir = 'desc' }) {
+export async function listContacts({ page = 1, limit = 20, search = '', sort = 'created_at', dir = 'desc', status = '', lvWhere = null }) {
   const offset = (Number(page) - 1) * Number(limit);
   const sortCol = SORT_COLS[sort] ?? 'created_at';
   const sortDir = dir === 'asc' ? 'ASC' : 'DESC';
 
+  const conditions = ['deleted_at IS NULL'];
+  // LV params must come first so their $N indices are correct
+  const params = lvWhere ? [...lvWhere.params] : [];
+  if (lvWhere?.sql) conditions.push(lvWhere.sql);
+
   if (search) {
     const term = `%${sanitize(search)}%`;
-    const [countRes, dataRes] = await Promise.all([
-      query(
-        `SELECT COUNT(*) FROM contact_messages
-         WHERE deleted_at IS NULL AND (name ILIKE $1 OR email ILIKE $1 OR service ILIKE $1)`,
-        [term]
-      ),
-      query(
-        `SELECT ${SELECT_COLS} FROM contact_messages
-         WHERE deleted_at IS NULL AND (name ILIKE $1 OR email ILIKE $1 OR service ILIKE $1)
-         ORDER BY ${sortCol} ${sortDir} LIMIT $2 OFFSET $3`,
-        [term, Number(limit), offset]
-      )
-    ]);
-    return buildPage(dataRes.rows, countRes.rows[0].count, page, limit);
+    params.push(term);
+    conditions.push(`(name ILIKE $${params.length} OR email ILIKE $${params.length} OR service ILIKE $${params.length})`);
   }
 
+  if (status && VALID_STATUSES.has(status)) {
+    params.push(status);
+    conditions.push(`status = $${params.length}`);
+  }
+
+  const where = conditions.join(' AND ');
+
   const [countRes, dataRes] = await Promise.all([
-    query('SELECT COUNT(*) FROM contact_messages WHERE deleted_at IS NULL'),
+    query(`SELECT COUNT(*) FROM contact_messages WHERE ${where}`, params),
     query(
-      `SELECT ${SELECT_COLS} FROM contact_messages WHERE deleted_at IS NULL
-       ORDER BY ${sortCol} ${sortDir} LIMIT $1 OFFSET $2`,
-      [Number(limit), offset]
+      `SELECT ${SELECT_COLS} FROM contact_messages WHERE ${where}
+       ORDER BY ${sortCol} ${sortDir} LIMIT $${params.length + 1} OFFSET $${params.length + 2}`,
+      [...params, Number(limit), offset]
     )
   ]);
 

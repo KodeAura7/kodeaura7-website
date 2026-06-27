@@ -1,37 +1,31 @@
 import { query } from '../database/pool.js';
 import { sanitize } from '../utils/sanitize.js';
 
-export async function listSubscribers({ page = 1, limit = 20, search = '', sort = 'subscribed_at', dir = 'desc' }) {
+export async function listSubscribers({ page = 1, limit = 20, search = '', sort = 'subscribed_at', dir = 'desc', lvWhere = null }) {
   const offset = (Number(page) - 1) * Number(limit);
   const sortCol = sort === 'email' ? 'email' : 'subscribed_at';
   const sortDir = dir === 'asc' ? 'ASC' : 'DESC';
 
+  const conditions = ['deleted_at IS NULL'];
+  const params = lvWhere ? [...lvWhere.params] : [];
+  if (lvWhere?.sql) conditions.push(lvWhere.sql);
+
   if (search) {
     const term = `%${sanitize(search)}%`;
-    const [countRes, dataRes] = await Promise.all([
-      query(
-        `SELECT COUNT(*) FROM newsletter_subscribers
-         WHERE deleted_at IS NULL AND email ILIKE $1`,
-        [term]
-      ),
-      query(
-        `SELECT id, email, source, subscribed_at
-         FROM newsletter_subscribers
-         WHERE deleted_at IS NULL AND email ILIKE $1
-         ORDER BY ${sortCol} ${sortDir} LIMIT $2 OFFSET $3`,
-        [term, Number(limit), offset]
-      )
-    ]);
-    return buildPage(dataRes.rows, countRes.rows[0].count, page, limit);
+    params.push(term);
+    conditions.push(`email ILIKE $${params.length}`);
   }
 
+  const where = conditions.join(' AND ');
+
   const [countRes, dataRes] = await Promise.all([
-    query('SELECT COUNT(*) FROM newsletter_subscribers WHERE deleted_at IS NULL'),
+    query(`SELECT COUNT(*) FROM newsletter_subscribers WHERE ${where}`, params),
     query(
       `SELECT id, email, source, subscribed_at
-       FROM newsletter_subscribers WHERE deleted_at IS NULL
-       ORDER BY ${sortCol} ${sortDir} LIMIT $1 OFFSET $2`,
-      [Number(limit), offset]
+       FROM newsletter_subscribers
+       WHERE ${where}
+       ORDER BY ${sortCol} ${sortDir} LIMIT $${params.length + 1} OFFSET $${params.length + 2}`,
+      [...params, Number(limit), offset]
     )
   ]);
 

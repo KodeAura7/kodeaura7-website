@@ -53,8 +53,12 @@ export const adminApi = {
 
   dashboard: () => request('/api/admin/dashboard'),
 
-  contacts: (params = {}) =>
-    request(`/api/admin/contacts?${new URLSearchParams(params)}`),
+  contacts: (params = {}) => {
+    const p = { ...params };
+    if (!p.status) delete p.status;
+    if (!p.list_view_id) delete p.list_view_id;
+    return request(`/api/admin/contacts?${new URLSearchParams(p)}`);
+  },
   getContact: (id) => request(`/api/admin/contacts/${id}`),
   updateContactStatus: (id, status) =>
     request(`/api/admin/contacts/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
@@ -72,6 +76,31 @@ export const adminApi = {
     request(`/api/admin/newsletter/${id}`, { method: 'DELETE' }),
   exportNewsletter: () => downloadCsv('/api/admin/newsletter/export', 'newsletter.csv'),
 
+  services: () => request('/api/admin/services'),
+  createService: (data) => request('/api/admin/services', { method: 'POST', body: JSON.stringify(data) }),
+  updateService: (id, data) => request(`/api/admin/services/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteService: (id) => request(`/api/admin/services/${id}`, { method: 'DELETE' }),
+  setServiceEnabled: (id, enabled) =>
+    request(`/api/admin/services/${id}/enabled`, { method: 'PATCH', body: JSON.stringify({ enabled }) }),
+  setServiceOrder: (id, sort_order) =>
+    request(`/api/admin/services/${id}/order`, { method: 'PATCH', body: JSON.stringify({ sort_order }) }),
+  exportServices: (ids = []) =>
+    downloadCsv(
+      `/api/admin/services/export${ids.length ? `?ids=${ids.join(',')}` : ''}`,
+      'services.csv'
+    ),
+  importServices: (csv) =>
+    request('/api/admin/services/import', { method: 'POST', body: JSON.stringify({ csv }) }),
+  getServiceHistory: (id) => request(`/api/admin/services/${id}/history`),
+
+  socialLinks: () => request('/api/admin/social-links'),
+  createSocialLink: (data) => request('/api/admin/social-links', { method: 'POST', body: JSON.stringify(data) }),
+  updateSocialLink: (id, data) => request(`/api/admin/social-links/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteSocialLink: (id) => request(`/api/admin/social-links/${id}`, { method: 'DELETE' }),
+  setSocialLinkEnabled: (id, enabled) =>
+    request(`/api/admin/social-links/${id}/enabled`, { method: 'PATCH', body: JSON.stringify({ enabled }) }),
+  exportSocialLinks: () => downloadCsv('/api/admin/social-links/export', 'social-links.csv'),
+
   testimonials: () => request('/api/admin/testimonials'),
   exportTestimonials: () => downloadCsv('/api/admin/testimonials/export', 'testimonials.csv'),
   importTestimonials: (csv) =>
@@ -81,7 +110,54 @@ export const adminApi = {
   updateTestimonialOrder: (id, sort_order) =>
     request(`/api/admin/testimonials/${id}/order`, { method: 'PATCH', body: JSON.stringify({ sort_order }) }),
 
-  users: () => request('/api/admin/users'),
+  listLogoAssets: () => request('/api/admin/assets/logos'),
+  uploadLogoAsset: (file) => {
+    const token = getToken();
+    const fd = new FormData();
+    fd.append('logo', file);
+    return fetch(`${API_BASE_URL}/api/admin/assets/logos`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: fd,
+    }).then(async (r) => {
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.message || 'Upload failed.');
+      return d;
+    });
+  },
+
+  getPageContent: (page) => request(`/api/admin/pages/${page}`),
+  setPageContent: (page, content) => request(`/api/admin/pages/${page}`, { method: 'PUT', body: JSON.stringify(content) }),
+  getPageHistory: (page) => request(`/api/admin/pages/${page}/history`),
+
+  // ── List Views ──────────────────────────────────────────────────────────────
+  getListViews: (objectName) => request(`/api/admin/list-views?object=${objectName}`),
+  getListView: (id) => request(`/api/admin/list-views/${id}`),
+  getListViewFields: (objectName) => request(`/api/admin/list-views/fields?object=${objectName}`),
+  createListView: (data) => request('/api/admin/list-views', { method: 'POST', body: JSON.stringify(data) }),
+  updateListView: (id, data) => request(`/api/admin/list-views/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteListView: (id) => request(`/api/admin/list-views/${id}`, { method: 'DELETE' }),
+  duplicateListView: (id) => request(`/api/admin/list-views/${id}/duplicate`, { method: 'POST' }),
+  setListViewDefault: (id) => request(`/api/admin/list-views/${id}/default`, { method: 'PATCH' }),
+  toggleListViewFavorite: (id) => request(`/api/admin/list-views/${id}/favorite`, { method: 'PATCH' }),
+
+  getMyPermissions: () => request('/api/admin/permissions/my'),
+  getPermissions: (role) => request(`/api/admin/permissions${role ? `?role=${role}` : ''}`),
+  setPermission: (role, action, enabled) => request('/api/admin/permissions', { method: 'PUT', body: JSON.stringify({ role, action, enabled }) }),
+  bulkSetPermissions: (permissions) => request('/api/admin/permissions/bulk', { method: 'PUT', body: JSON.stringify({ permissions }) }),
+
+  getContactFormFields: () => request('/api/admin/contact-form'),
+  createContactFormField: (data) => request('/api/admin/contact-form', { method: 'POST', body: JSON.stringify(data) }),
+  updateContactFormField: (id, data) => request(`/api/admin/contact-form/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteContactFormField: (id) => request(`/api/admin/contact-form/${id}`, { method: 'DELETE' }),
+  reorderContactFormFields: (order) => request('/api/admin/contact-form/reorder', { method: 'POST', body: JSON.stringify({ order }) }),
+
+  users: (params = {}) => {
+    const p = { ...params };
+    if (!p.list_view_id) delete p.list_view_id;
+    const qs = new URLSearchParams(p).toString();
+    return request(`/api/admin/users${qs ? `?${qs}` : ''}`);
+  },
   createUser: (data) =>
     request('/api/admin/users', { method: 'POST', body: JSON.stringify(data) }),
   updateUser: (id, data) =>

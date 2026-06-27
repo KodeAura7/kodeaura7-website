@@ -4,19 +4,20 @@ import ContactForm from '../components/ContactForm';
 import Icon from '../components/Icon';
 import SEO from '../components/SEO';
 import SiteLayout from '../layouts/SiteLayout';
-import { services, tech } from '../constants/site';
+import { tech } from '../constants/site';
 import { steps, testimonials as staticTestimonials } from '../constants/content';
 import { api } from '../services/api';
+import { useSiteData } from '../contexts/SiteDataContext';
 
 export default function Home() {
   const marquee = [...tech, ...tech];
   const [testimonials, setTestimonials] = useState(staticTestimonials);
+  const { services: allServices } = useSiteData();
+  const services = allServices.filter((s) => s.show_on_home !== false);
 
   useEffect(() => {
     api.testimonials()
-      .then((data) => {
-        if (data && data.length > 0) setTestimonials(data);
-      })
+      .then((data) => { if (data && data.length > 0) setTestimonials(data); })
       .catch(() => null);
   }, []);
   return (
@@ -61,18 +62,27 @@ export default function Home() {
             <Link to="/services" className="inline-flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-zinc-100 transition-colors shrink-0">View all services <Icon icon="solar:arrow-right-linear" width={16} /></Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {services.map((svc) => (
-              <Link key={svc.name} to="/services" className="svc-card group block bg-[#111113] rounded-3xl p-8 md:p-10 border border-zinc-800 transition-all duration-500" style={{ '--accent': svc.accent, '--accent-light': svc.light }}>
-                <div className="svc-icon w-16 h-16 rounded-2xl bg-[#18181B] border border-zinc-800 flex items-center justify-center mb-8 text-zinc-100 transition-all duration-500 group-hover:scale-110 group-hover:-rotate-3"><Icon icon={svc.icon} width={30} /></div>
-                <h3 className="svc-title font-display font-light text-2xl tracking-tight mb-4 transition-colors">{svc.name}</h3>
-                <p className="text-zinc-400 leading-relaxed mb-6 font-extralight">{svc.desc}</p>
-                <div className="svc-rule h-[2px] w-12 bg-zinc-800 transition-all duration-700 mb-6" />
-                <ul className="space-y-2.5 mb-8">
-                  {svc.shortFeatures.map((feat) => <li key={feat} className="flex items-center gap-2.5 text-sm text-zinc-400"><Icon icon="solar:check-circle-linear" width={16} className="shrink-0" />{feat}</li>)}
-                </ul>
-                <div className="svc-cta flex items-center gap-2 text-sm font-medium text-zinc-300 transition-colors">Explore Service <Icon icon="solar:arrow-right-linear" width={16} /></div>
-              </Link>
-            ))}
+            {services.map((svc) => {
+              const desc = svc.description || svc.desc || '';
+              const highlights = (svc.features || svc.shortFeatures || [])
+                .filter((f) => (typeof f === 'string' ? true : f.enabled !== false))
+                .slice(0, 3)
+                .map((f) => (typeof f === 'string' ? f : f.label));
+              return (
+                <Link key={svc.id || svc.name} to="/services" className="svc-card group block bg-[#111113] rounded-3xl p-8 md:p-10 border border-zinc-800 transition-all duration-500" style={{ '--accent': svc.accent, '--accent-light': svc.light }}>
+                  <div className="svc-icon w-16 h-16 rounded-2xl bg-[#18181B] border border-zinc-800 flex items-center justify-center mb-8 text-zinc-100 transition-all duration-500 group-hover:scale-110 group-hover:-rotate-3"><Icon icon={svc.icon} width={30} /></div>
+                  <h3 className="svc-title font-display font-light text-2xl tracking-tight mb-4 transition-colors">{svc.name}</h3>
+                  {desc ? <p className="text-zinc-400 leading-relaxed mb-6 font-extralight">{desc}</p> : null}
+                  <div className="svc-rule h-[2px] w-12 bg-zinc-800 transition-all duration-700 mb-6" />
+                  {highlights.length > 0 ? (
+                    <ul className="space-y-2.5 mb-8">
+                      {highlights.map((feat) => <li key={feat} className="flex items-center gap-2.5 text-sm text-zinc-400"><Icon icon="solar:check-circle-linear" width={16} className="shrink-0" />{feat}</li>)}
+                    </ul>
+                  ) : null}
+                  <div className="svc-cta flex items-center gap-2 text-sm font-medium text-zinc-300 transition-colors">Explore Service <Icon icon="solar:arrow-right-linear" width={16} /></div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

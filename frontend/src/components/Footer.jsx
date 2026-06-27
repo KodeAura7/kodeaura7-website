@@ -2,21 +2,27 @@ import { Link } from 'react-router-dom';
 import Icon from './Icon';
 import Logo from './Logo';
 import NewsletterForm from './NewsletterForm';
+import { useSiteData } from '../contexts/SiteDataContext';
 
 export default function Footer() {
+  const { services, socialLinks } = useSiteData();
+  const enabledServices = services.filter((s) => s.enabled !== false);
+  const enabledSocials = [...socialLinks].sort((a, b) => a.sort_order - b.sort_order);
+
   return (
     <footer className="bg-[#09090B] border-t border-zinc-900 pt-20 pb-8">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-2 md:grid-cols-12 gap-10 mb-16">
           <div className="col-span-2 md:col-span-5">
             <div className="mb-5">
-              <Logo />
+              <Logo variant="footer" />
             </div>
             <p className="font-display text-xl text-zinc-300 tracking-tight mb-6 max-w-xs">We Build the Digital Future.</p>
             <div className="flex gap-3">
-              {['mdi:linkedin', 'mdi:twitter', 'mdi:instagram'].map((icon) => (
-                <a key={icon} href="#" className="w-9 h-9 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:border-zinc-600 transition-all">
-                  <Icon icon={icon} width={17} />
+              {enabledSocials.map((s) => (
+                <a key={s.id} href={s.url} title={s.name} target="_blank" rel="noopener noreferrer"
+                  className="w-9 h-9 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:border-zinc-600 transition-all">
+                  <Icon icon={s.icon} width={17} />
                 </a>
               ))}
             </div>
@@ -24,10 +30,10 @@ export default function Footer() {
           <div className="md:col-span-3">
             <p className="text-xs uppercase tracking-widest text-zinc-500 font-mono mb-5">Services</p>
             <ul className="space-y-3 text-sm text-zinc-400">
-              {['Web Development', 'Salesforce CRM', 'UI/UX Design', 'Meta & Google Ads'].map((label) => (
-                <li key={label}>
+              {enabledServices.map((svc) => (
+                <li key={svc.id || svc.slug}>
                   <Link to="/services" className="hover:text-zinc-100 transition-colors">
-                    {label}
+                    {svc.name}
                   </Link>
                 </li>
               ))}

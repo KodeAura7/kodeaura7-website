@@ -42,6 +42,24 @@ export const api = {
   newsletterSubscribe: () => authRequest('/api/customer/newsletter', { method: 'POST' }),
   newsletterUnsubscribe: () => authRequest('/api/customer/newsletter', { method: 'DELETE' }),
 
+  services: async () => {
+    const r = await fetch(`${API_BASE_URL}/api/services`);
+    const data = await r.json().catch(() => []);
+    return Array.isArray(data) ? data : [];
+  },
+
+  socialLinks: async () => {
+    const r = await fetch(`${API_BASE_URL}/api/social-links`);
+    const data = await r.json().catch(() => []);
+    return Array.isArray(data) ? data : [];
+  },
+
+  contactFormFields: async () => {
+    const r = await fetch(`${API_BASE_URL}/api/contact-form`);
+    const data = await r.json().catch(() => []);
+    return Array.isArray(data) ? data : [];
+  },
+
   testimonials: () => authRequest('/api/testimonials'),
   myTestimonials: () => authGet('/api/testimonials/mine'),
   submitTestimonial: (payload) => authRequest('/api/testimonials', { method: 'POST', body: JSON.stringify(payload) }),

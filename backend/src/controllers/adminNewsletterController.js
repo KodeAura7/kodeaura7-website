@@ -1,8 +1,18 @@
 import { deleteSubscriber, exportAllSubscribers, listSubscribers } from '../services/adminNewsletterService.js';
+import { getListView, buildWhereClause } from '../services/listViewService.js';
+
+async function resolveLvWhere(listViewId, userId, objectName) {
+  if (!listViewId) return null;
+  try {
+    const lv = await getListView(listViewId, userId);
+    return buildWhereClause(lv.filters, lv.filter_logic, objectName);
+  } catch { return null; }
+}
 
 export async function list(request, response) {
-  const { page, limit, search, sort, dir } = request.query;
-  const result = await listSubscribers({ page, limit, search, sort, dir });
+  const { page, limit, search, sort, dir, list_view_id } = request.query;
+  const lvWhere = await resolveLvWhere(list_view_id, request.user?.sub, 'newsletter');
+  const result = await listSubscribers({ page, limit, search, sort, dir, lvWhere });
   response.status(200).json(result);
 }
 
