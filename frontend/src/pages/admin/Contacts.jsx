@@ -7,6 +7,7 @@ import { adminApi } from '../../services/adminApi';
 import { TableToolbar } from '../../components/admin/TableToolbar';
 import { useColumnVisibility } from '../../hooks/useColumnVisibility';
 import { useToast } from '../../contexts/ToastContext';
+import { usePermissions } from '../../contexts/PermissionsContext';
 
 const LIMIT = 20;
 
@@ -59,6 +60,7 @@ const FILTER_GROUPS = [
 export default function Contacts() {
   const navigate = useNavigate();
   const { success, error: toastError } = useToast();
+  const { canDo } = usePermissions();
   const [data, setData] = useState(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -154,8 +156,8 @@ export default function Contacts() {
         <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div>
       ) : null}
 
-      {/* Bulk toolbar */}
-      {checkedIds.size > 0 ? (
+      {/* Bulk toolbar — only shown when user can update status */}
+      {checkedIds.size > 0 && canDo('contacts.status_update') ? (
         <div className="mb-4 flex flex-wrap items-center gap-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3">
           <span className="text-xs text-indigo-400 font-medium">{checkedIds.size} selected</span>
           <div className="flex items-center gap-2 ml-auto">
@@ -189,11 +191,13 @@ export default function Contacts() {
         columns={COLS} visibleCols={visibleCols} onColumnsToggle={toggleCol} onColumnsReset={resetCols}
         placeholder="Search by name, email or service…"
       >
-        <button onClick={handleExport} disabled={exporting}
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/70 border border-transparent transition-all disabled:opacity-50">
-          <Icon icon={exporting ? 'solar:loading-linear' : 'solar:download-linear'} width={13} className={exporting ? 'animate-spin' : ''} />
-          Export
-        </button>
+        {canDo('contacts.export') && (
+          <button onClick={handleExport} disabled={exporting}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/70 border border-transparent transition-all disabled:opacity-50">
+            <Icon icon={exporting ? 'solar:loading-linear' : 'solar:download-linear'} width={13} className={exporting ? 'animate-spin' : ''} />
+            Export
+          </button>
+        )}
       </TableToolbar>
 
       {/* Table */}
@@ -236,12 +240,14 @@ export default function Contacts() {
                     {visibleCols.has('status') && <td className="px-4 py-3 whitespace-nowrap"><ContactStatusBadge status={c.status} /></td>}
                     {visibleCols.has('created_at') && <td className="px-4 py-3 text-zinc-500 whitespace-nowrap font-mono text-xs">{new Date(c.created_at).toLocaleDateString()}</td>}
                     {visibleCols.has('updated_at') && <td className="px-4 py-3 text-zinc-500 whitespace-nowrap font-mono text-xs">{c.updated_at ? new Date(c.updated_at).toLocaleDateString() : '—'}</td>}
-                    <td className="px-4 py-3 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                      <button onClick={(e) => handleDelete(e, c.id)} disabled={deleting === c.id}
-                        className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-40" title="Delete">
-                        <Icon icon="solar:trash-bin-minimalistic-linear" width={16} />
-                      </button>
-                    </td>
+                    {canDo('contacts.delete') && (
+                      <td className="px-4 py-3 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                        <button onClick={(e) => handleDelete(e, c.id)} disabled={deleting === c.id}
+                          className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-40" title="Delete">
+                          <Icon icon="solar:trash-bin-minimalistic-linear" width={16} />
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}

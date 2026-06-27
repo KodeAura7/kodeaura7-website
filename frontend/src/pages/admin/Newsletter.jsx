@@ -4,6 +4,7 @@ import { adminApi } from '../../services/adminApi';
 import { TableToolbar } from '../../components/admin/TableToolbar';
 import { useColumnVisibility } from '../../hooks/useColumnVisibility';
 import { useToast } from '../../contexts/ToastContext';
+import { usePermissions } from '../../contexts/PermissionsContext';
 
 const COLS = [
   { key: 'email', label: 'Email' },
@@ -28,6 +29,7 @@ function useDebounce(value, delay = 300) {
 
 export default function Newsletter() {
   const { success, error: toastError } = useToast();
+  const { canDo } = usePermissions();
   const [data, setData] = useState(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -103,11 +105,13 @@ export default function Newsletter() {
         columns={COLS} visibleCols={visibleCols} onColumnsToggle={toggleCol} onColumnsReset={resetCols}
         placeholder="Search by email…"
       >
-        <button onClick={handleExport} disabled={exporting}
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/70 border border-transparent transition-all disabled:opacity-50">
-          <Icon icon={exporting ? 'solar:loading-linear' : 'solar:download-linear'} width={13} className={exporting ? 'animate-spin' : ''} />
-          Export
-        </button>
+        {canDo('newsletter.export') && (
+          <button onClick={handleExport} disabled={exporting}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/70 border border-transparent transition-all disabled:opacity-50">
+            <Icon icon={exporting ? 'solar:loading-linear' : 'solar:download-linear'} width={13} className={exporting ? 'animate-spin' : ''} />
+            Export
+          </button>
+        )}
       </TableToolbar>
 
       <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
@@ -136,12 +140,14 @@ export default function Newsletter() {
                   <tr key={s.id} className="hover:bg-zinc-800/30 transition-colors">
                     {visibleCols.has('email') && <td className="px-4 py-3 text-zinc-200">{s.email}</td>}
                     {visibleCols.has('subscribed_at') && <td className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">{new Date(s.subscribed_at).toLocaleDateString()}</td>}
-                    <td className="px-4 py-3 text-right">
-                      <button onClick={() => handleDelete(s.id)} disabled={deleting === s.id}
-                        className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-40" title="Delete">
-                        <Icon icon="solar:trash-bin-minimalistic-linear" width={16} />
-                      </button>
-                    </td>
+                    {canDo('newsletter.delete') && (
+                      <td className="px-4 py-3 text-right">
+                        <button onClick={() => handleDelete(s.id)} disabled={deleting === s.id}
+                          className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-40" title="Delete">
+                          <Icon icon="solar:trash-bin-minimalistic-linear" width={16} />
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}

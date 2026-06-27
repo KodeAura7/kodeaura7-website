@@ -1,4 +1,5 @@
 import { query } from '../database/pool.js';
+import { invalidatePermissionsCache, getRolePermissions } from '../services/permissionsService.js';
 
 const VALID_ROLES = new Set(['admin', 'customer']);
 
@@ -12,6 +13,15 @@ export async function getPermissions(req, res) {
     : `SELECT role, action, enabled FROM permissions ORDER BY role, action`;
   const result = await query(sql, role ? [role] : []);
   res.json(result.rows);
+}
+
+export async function getMyPermissions(req, res) {
+  const role = req.user?.role;
+  if (role === 'super_admin') {
+    return res.json({ role, all: true, permissions: {} });
+  }
+  const permissions = await getRolePermissions(role);
+  res.json({ role, all: false, permissions });
 }
 
 export async function setPermission(req, res) {
@@ -28,6 +38,7 @@ export async function setPermission(req, res) {
      ON CONFLICT (role, action) DO UPDATE SET enabled = $3, updated_at = NOW()`,
     [role, action.trim(), enabled]
   );
+  invalidatePermissionsCache(role);
   res.json({ role, action, enabled });
 }
 
@@ -45,5 +56,7 @@ export async function bulkSetPermissions(req, res) {
       [role, action, enabled]
     );
   }
+  // Invalidate entire cache so all roles pick up new rules immediately
+  invalidatePermissionsCache();
   res.json({ ok: true });
 }

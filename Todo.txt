@@ -1,0 +1,9 @@
+Fix the sidebar during scrolling.
+
+Button to migrate record from sandbox to production and vice versa. 
+in this: user will select the record by selecting checkbox in record list view, then click to migrate button then select the enviorment. 
+after it migrate them and update those record source 'migrated from XYZ environment''
+
+Create listviews: 
+User can create listviews with the name and there user can set filteration and save.
+Using this user can set listview type. For example: if user wants a seperate lisviews where all closed contact will display then they will create a Closed Contacts lisview where a filter will applied Status-> closed. Also user can update filters add more etc just like in salesforce listviews.

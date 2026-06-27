@@ -4,6 +4,7 @@ import { adminApi } from '../../services/adminApi';
 import { TableToolbar } from '../../components/admin/TableToolbar';
 import { useColumnVisibility } from '../../hooks/useColumnVisibility';
 import { useToast } from '../../contexts/ToastContext';
+import { usePermissions } from '../../contexts/PermissionsContext';
 
 const SVC_COLS = [
   { key: 'num', label: '#' },
@@ -244,6 +245,7 @@ function HistorySidebar({ serviceId, editMode, onRevert, open, onToggle, history
 
 export default function AdminServices() {
   const { success, error: toastError } = useToast();
+  const { canDo } = usePermissions();
   const [view, setView] = useState('list');
   const [editMode, setEditMode] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(true);
@@ -424,7 +426,7 @@ export default function AdminServices() {
                   </>
                 ) : (
                   <>
-                    {currentItem ? (
+                    {currentItem && canDo('services.delete') ? (
                       <button onClick={handleDelete} disabled={deleting} className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-rose-500/30 text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-50">
                         <Icon icon={deleting ? 'solar:loading-linear' : 'solar:trash-bin-minimalistic-linear'} width={15} className={deleting ? 'animate-spin' : ''} />
                         Delete
@@ -731,15 +733,19 @@ export default function AdminServices() {
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <input ref={importInputRef} type="file" accept=".csv" className="hidden" onChange={handleImportFile} />
-          <button onClick={() => importInputRef.current?.click()} disabled={importing}
-            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100 disabled:opacity-50 transition-all">
-            <Icon icon={importing ? 'solar:loading-linear' : 'solar:import-linear'} width={16} className={importing ? 'animate-spin' : ''} />
-            Import
-          </button>
-          <button onClick={openNew} className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)]">
-            <Icon icon="solar:add-circle-linear" width={16} />Add Service
-          </button>
+          {canDo('services.edit') && (
+            <>
+              <input ref={importInputRef} type="file" accept=".csv" className="hidden" onChange={handleImportFile} />
+              <button onClick={() => importInputRef.current?.click()} disabled={importing}
+                className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100 disabled:opacity-50 transition-all">
+                <Icon icon={importing ? 'solar:loading-linear' : 'solar:import-linear'} width={16} className={importing ? 'animate-spin' : ''} />
+                Import
+              </button>
+              <button onClick={openNew} className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+                <Icon icon="solar:add-circle-linear" width={16} />Add Service
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -760,11 +766,13 @@ export default function AdminServices() {
         columns={SVC_COLS} visibleCols={svcCols} onColumnsToggle={toggleSvcCol} onColumnsReset={resetSvcCols}
         placeholder="Search by name or slug…"
       >
-        <button onClick={handleExport} disabled={exporting || !items}
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/70 border border-transparent transition-all disabled:opacity-50">
-          <Icon icon={exporting ? 'solar:loading-linear' : 'solar:export-linear'} width={13} className={exporting ? 'animate-spin' : ''} />
-          {someSelected ? `Export (${selected.size})` : 'Export'}
-        </button>
+        {canDo('services.view') && (
+          <button onClick={handleExport} disabled={exporting || !items}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/70 border border-transparent transition-all disabled:opacity-50">
+            <Icon icon={exporting ? 'solar:loading-linear' : 'solar:export-linear'} width={13} className={exporting ? 'animate-spin' : ''} />
+            {someSelected ? `Export (${selected.size})` : 'Export'}
+          </button>
+        )}
       </TableToolbar>
 
       <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">

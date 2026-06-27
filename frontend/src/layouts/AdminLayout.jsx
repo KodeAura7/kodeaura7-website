@@ -3,7 +3,10 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import Icon from '../components/Icon';
 import Logo from '../components/Logo';
 import { useAuth } from '../hooks/useAuth';
+import { PermissionsProvider, usePermissions } from '../contexts/PermissionsContext';
 
+// Each nav item can carry a `permission` key. If set, the item is hidden when
+// the user doesn't have that permission. Role-gated groups use `roles`.
 const NAV_GROUPS = [
   {
     label: 'Overview',
@@ -14,24 +17,24 @@ const NAV_GROUPS = [
   {
     label: 'Leads',
     items: [
-      { to: '/admin/contacts', label: 'Contacts', icon: 'solar:users-group-two-rounded-linear' },
-      { to: '/admin/newsletter', label: 'Newsletter', icon: 'solar:letter-linear' },
+      { to: '/admin/contacts',   label: 'Contacts',   icon: 'solar:users-group-two-rounded-linear', permission: 'contacts.view' },
+      { to: '/admin/newsletter', label: 'Newsletter', icon: 'solar:letter-linear',                  permission: 'newsletter.view' },
     ],
   },
   {
     label: 'Content',
     items: [
-      { to: '/admin/services', label: 'Services', icon: 'solar:layers-linear' },
-      { to: '/admin/testimonials', label: 'Testimonials', icon: 'solar:star-linear' },
-      { to: '/admin/social-links', label: 'Social Links', icon: 'solar:share-linear' },
+      { to: '/admin/services',     label: 'Services',     icon: 'solar:layers-linear',      permission: 'services.view' },
+      { to: '/admin/testimonials', label: 'Testimonials', icon: 'solar:star-linear',         permission: 'testimonials.view' },
+      { to: '/admin/social-links', label: 'Social Links', icon: 'solar:share-linear',        permission: 'social_links.view' },
     ],
   },
   {
     label: 'Site',
     items: [
-      { to: '/admin/about',        label: 'About Page',    icon: 'solar:document-text-linear' },
-      { to: '/admin/branding',     label: 'Branding',      icon: 'solar:palette-bold-duotone' },
-      { to: '/admin/contact-form', label: 'Contact Form',  icon: 'solar:chat-round-dots-linear' },
+      { to: '/admin/about',        label: 'About Page',   icon: 'solar:document-text-linear',    permission: 'about.edit' },
+      { to: '/admin/branding',     label: 'Branding',     icon: 'solar:palette-bold-duotone',    permission: 'branding.edit' },
+      { to: '/admin/contact-form', label: 'Contact Form', icon: 'solar:chat-round-dots-linear',  permission: 'contact_form.edit' },
     ],
   },
   {
@@ -63,37 +66,38 @@ function NavItem({ to, label, icon, onClick }) {
   );
 }
 
-export default function AdminLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+const ROLE_COLORS = {
+  super_admin: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
+  admin:       'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
+  customer:    'bg-zinc-800 border-zinc-700 text-zinc-400',
+};
+
+function SidebarContent({ close }) {
   const { user, logout } = useAuth();
+  const { canDo, isSuperAdmin } = usePermissions();
   const navigate = useNavigate();
-
-  const close = () => setSidebarOpen(false);
-
-  const handleLogout = () => {
-    logout();
-    navigate('/sign-in', { replace: true });
-  };
-
   const role = user?.role;
-  const visibleGroups = NAV_GROUPS.filter(
-    (g) => !g.roles || g.roles.includes(role)
-  );
 
-  const roleColors = {
-    super_admin: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-    admin: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-    customer: 'bg-zinc-800 border-zinc-700 text-zinc-400',
-  };
+  const handleLogout = () => { logout(); navigate('/sign-in', { replace: true }); };
 
-  const Sidebar = () => (
+  const visibleGroups = NAV_GROUPS
+    .filter((g) => !g.roles || g.roles.includes(role))
+    .map((g) => ({
+      ...g,
+      items: g.items.filter((item) => {
+        // Super admin always sees all items in their role-gated groups
+        if (!item.permission || isSuperAdmin) return true;
+        return canDo(item.permission);
+      }),
+    }))
+    .filter((g) => g.items.length > 0);
+
+  return (
     <aside className="inset-y-0 left-0 w-60 bg-[#09090B] border-r border-zinc-800 flex flex-col h-screen">
-      {/* Logo */}
       <div className="h-16 flex items-center px-5 border-b border-zinc-800 shrink-0">
         <Logo />
       </div>
 
-      {/* Nav groups */}
       <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-5">
         {visibleGroups.map((group) => (
           <div key={group.label}>
@@ -109,7 +113,6 @@ export default function AdminLayout() {
         ))}
       </nav>
 
-      {/* User card */}
       <div className="px-3 pb-4 pt-3 border-t border-zinc-800 shrink-0 space-y-1">
         {user && (
           <div className="px-3 py-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800 mb-2">
@@ -122,7 +125,7 @@ export default function AdminLayout() {
                 <p className="text-[10px] text-zinc-500 font-mono truncate">{user.email}</p>
               </div>
             </div>
-            <span className={`inline-block rounded-full px-2 py-0.5 text-[9px] font-mono uppercase tracking-wider border ${roleColors[role] || roleColors.customer}`}>
+            <span className={`inline-block rounded-full px-2 py-0.5 text-[9px] font-mono uppercase tracking-wider border ${ROLE_COLORS[role] || ROLE_COLORS.customer}`}>
               {role?.replace('_', ' ')}
             </span>
           </div>
@@ -137,29 +140,29 @@ export default function AdminLayout() {
       </div>
     </aside>
   );
+}
+
+function AdminLayoutInner() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const close = () => setSidebarOpen(false);
 
   return (
     <div className="min-h-screen bg-[#09090B] flex">
-      {/* Mobile overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-20 bg-black/60 md:hidden" onClick={close} />
       )}
 
-      {/* Sidebar — desktop (static) */}
+      {/* Sidebar — desktop */}
       <div className="hidden md:flex">
-        <Sidebar />
+        <SidebarContent close={close} />
       </div>
 
-      {/* Sidebar — mobile (fixed overlay) */}
-      <div
-        className={`fixed inset-y-0 left-0 z-30 md:hidden transition-transform duration-200 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
-      >
-        <Sidebar />
+      {/* Sidebar — mobile */}
+      <div className={`fixed inset-y-0 left-0 z-30 md:hidden transition-transform duration-200 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <SidebarContent close={close} />
       </div>
 
-      {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Mobile topbar */}
         <header className="md:hidden h-16 flex items-center gap-4 px-5 border-b border-zinc-800 bg-[#09090B] shrink-0">
           <button
             onClick={() => setSidebarOpen(true)}
@@ -176,5 +179,13 @@ export default function AdminLayout() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function AdminLayout() {
+  return (
+    <PermissionsProvider>
+      <AdminLayoutInner />
+    </PermissionsProvider>
   );
 }

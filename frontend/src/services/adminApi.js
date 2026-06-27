@@ -129,6 +129,7 @@ export const adminApi = {
   setPageContent: (page, content) => request(`/api/admin/pages/${page}`, { method: 'PUT', body: JSON.stringify(content) }),
   getPageHistory: (page) => request(`/api/admin/pages/${page}/history`),
 
+  getMyPermissions: () => request('/api/admin/permissions/my'),
   getPermissions: (role) => request(`/api/admin/permissions${role ? `?role=${role}` : ''}`),
   setPermission: (role, action, enabled) => request('/api/admin/permissions', { method: 'PUT', body: JSON.stringify({ role, action, enabled }) }),
   bulkSetPermissions: (permissions) => request('/api/admin/permissions/bulk', { method: 'PUT', body: JSON.stringify({ permissions }) }),
