@@ -73,6 +73,9 @@ export const adminApi = {
   exportNewsletter: () => downloadCsv('/api/admin/newsletter/export', 'newsletter.csv'),
 
   testimonials: () => request('/api/admin/testimonials'),
+  exportTestimonials: () => downloadCsv('/api/admin/testimonials/export', 'testimonials.csv'),
+  importTestimonials: (csv) =>
+    request('/api/admin/testimonials/import', { method: 'POST', body: JSON.stringify({ csv }) }),
   updateTestimonialVisibility: (id, visible) =>
     request(`/api/admin/testimonials/${id}/visibility`, { method: 'PATCH', body: JSON.stringify({ visible }) }),
   updateTestimonialOrder: (id, sort_order) =>
