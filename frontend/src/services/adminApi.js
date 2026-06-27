@@ -53,8 +53,11 @@ export const adminApi = {
 
   dashboard: () => request('/api/admin/dashboard'),
 
-  contacts: (params = {}) =>
-    request(`/api/admin/contacts?${new URLSearchParams(params)}`),
+  contacts: (params = {}) => {
+    const p = { ...params };
+    if (!p.status) delete p.status;
+    return request(`/api/admin/contacts?${new URLSearchParams(p)}`);
+  },
   getContact: (id) => request(`/api/admin/contacts/${id}`),
   updateContactStatus: (id, status) =>
     request(`/api/admin/contacts/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
@@ -105,6 +108,8 @@ export const adminApi = {
     request(`/api/admin/testimonials/${id}/visibility`, { method: 'PATCH', body: JSON.stringify({ visible }) }),
   updateTestimonialOrder: (id, sort_order) =>
     request(`/api/admin/testimonials/${id}/order`, { method: 'PATCH', body: JSON.stringify({ sort_order }) }),
+
+  listLogoAssets: () => request('/api/admin/assets/logos'),
 
   getPageContent: (page) => request(`/api/admin/pages/${page}`),
   setPageContent: (page, content) => request(`/api/admin/pages/${page}`, { method: 'PUT', body: JSON.stringify(content) }),

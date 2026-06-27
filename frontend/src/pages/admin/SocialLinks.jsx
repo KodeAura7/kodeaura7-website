@@ -1,6 +1,32 @@
 import { useEffect, useState } from 'react';
 import Icon from '../../components/Icon';
 import { adminApi } from '../../services/adminApi';
+import { TableToolbar } from '../../components/admin/TableToolbar';
+import { useColumnVisibility } from '../../hooks/useColumnVisibility';
+
+const SL_COLS = [
+  { key: 'icon', label: 'Icon' },
+  { key: 'name', label: 'Name' },
+  { key: 'url', label: 'URL', default: false },
+  { key: 'iconify', label: 'Iconify ID', default: false },
+  { key: 'enabled', label: 'Enabled' },
+];
+
+const SL_FILTER_GROUPS = [
+  {
+    key: 'enabled',
+    label: 'Visibility',
+    options: [
+      { value: 'true', label: 'Enabled' },
+      { value: 'false', label: 'Disabled' },
+    ],
+  },
+];
+
+const SL_SORT_OPTIONS = [
+  { value: 'sort_order', label: 'Sort Order' },
+  { value: 'name', label: 'Name' },
+];
 
 const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all';
 
@@ -77,6 +103,13 @@ export default function SocialLinks() {
   const [toggling, setToggling] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [exporting, setExporting] = useState(false);
+
+  const [slSearch, setSlSearch] = useState('');
+  const [slSort, setSlSort] = useState('sort_order');
+  const [slDir, setSlDir] = useState('asc');
+  const [slFilters, setSlFilters] = useState({});
+  const { visibleCols: slCols, toggle: toggleSlCol, reset: resetSlCols } = useColumnVisibility('social-links', SL_COLS);
+  const handleSlFilter = (key, val) => setSlFilters(f => ({ ...f, [key]: val }));
 
   const loadAll = () => {
     setError('');
@@ -205,6 +238,17 @@ export default function SocialLinks() {
   // ─── LIST VIEW ────────────────────────────────────────────────────────────────
   const enabledCount = items ? items.filter((s) => s.enabled).length : 0;
 
+  const slQ = slSearch.toLowerCase();
+  const slFiltered = (items || [])
+    .filter(s =>
+      (!slQ || s.name.toLowerCase().includes(slQ) || s.url.toLowerCase().includes(slQ)) &&
+      (!slFilters.enabled || String(s.enabled) === slFilters.enabled)
+    )
+    .sort((a, b) => {
+      if (slSort === 'name') return slDir === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+      return slDir === 'asc' ? (a.sort_order ?? 0) - (b.sort_order ?? 0) : (b.sort_order ?? 0) - (a.sort_order ?? 0);
+    });
+
   return (
     <div className="p-6 md:p-8 max-w-3xl mx-auto">
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
@@ -212,19 +256,28 @@ export default function SocialLinks() {
           <h1 className="font-display font-semibold text-2xl text-zinc-100">Social Links</h1>
           <p className="text-sm text-zinc-500 mt-1">{items ? `${items.length} total · ${enabledCount} visible` : '—'}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={handleExport} disabled={exporting || !items}
-            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100 disabled:opacity-50">
-            <Icon icon={exporting ? 'solar:loading-linear' : 'solar:export-linear'} width={16} className={exporting ? 'animate-spin' : ''} />
-            Export
-          </button>
-          <button onClick={openNew} className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)]">
-            <Icon icon="solar:add-circle-linear" width={16} />Add Link
-          </button>
-        </div>
+        <button onClick={openNew} className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+          <Icon icon="solar:add-circle-linear" width={16} />Add Link
+        </button>
       </div>
 
       {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div> : null}
+
+      <TableToolbar
+        search={slSearch} onSearch={setSlSearch}
+        onRefresh={loadAll}
+        sortOptions={SL_SORT_OPTIONS} sort={slSort} dir={slDir}
+        onSort={(col, d) => { setSlSort(col); setSlDir(d); }}
+        filterGroups={SL_FILTER_GROUPS} filters={slFilters} onFilter={handleSlFilter}
+        columns={SL_COLS} visibleCols={slCols} onColumnsToggle={toggleSlCol} onColumnsReset={resetSlCols}
+        placeholder="Search by name or URL…"
+      >
+        <button onClick={handleExport} disabled={exporting || !items}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/70 border border-transparent transition-all disabled:opacity-50">
+          <Icon icon={exporting ? 'solar:loading-linear' : 'solar:export-linear'} width={13} className={exporting ? 'animate-spin' : ''} />
+          Export
+        </button>
+      </TableToolbar>
 
       <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
         {/* Live preview */}
@@ -242,23 +295,27 @@ export default function SocialLinks() {
         <div className="divide-y divide-zinc-800/60">
           {!items ? (
             <p className="px-6 py-10 text-center text-sm text-zinc-600">Loading…</p>
-          ) : items.length === 0 ? (
-            <p className="px-6 py-10 text-center text-sm text-zinc-600">No social links yet.</p>
+          ) : slFiltered.length === 0 ? (
+            <p className="px-6 py-10 text-center text-sm text-zinc-600">{items.length === 0 ? 'No social links yet.' : 'No results.'}</p>
           ) : (
-            items.map((link) => (
+            slFiltered.map((link) => (
               <div key={link.id} className="px-6 py-4 flex items-center gap-4 hover:bg-zinc-800/20 transition-colors group">
-                <div className="w-9 h-9 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-zinc-300 shrink-0">
-                  <Icon icon={link.icon || 'mdi:link'} width={18} />
-                </div>
+                {slCols.has('icon') && (
+                  <div className="w-9 h-9 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-zinc-300 shrink-0">
+                    <Icon icon={link.icon || 'mdi:link'} width={18} />
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-zinc-200">{link.name}</p>
-                  <p className="text-[11px] text-zinc-600 font-mono truncate">{link.url}</p>
+                  {slCols.has('name') && <p className="text-sm font-medium text-zinc-200">{link.name}</p>}
+                  {slCols.has('url') && <p className="text-[11px] text-zinc-600 font-mono truncate">{link.url}</p>}
                 </div>
-                <span className="text-[10px] font-mono text-zinc-600">{link.icon}</span>
-                <button onClick={() => handleToggleEnabled(link.id, link.enabled)} disabled={toggling === link.id}
-                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 shrink-0 ${link.enabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}>
-                  <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${link.enabled ? 'translate-x-4' : 'translate-x-1'}`} />
-                </button>
+                {slCols.has('iconify') && <span className="text-[10px] font-mono text-zinc-600">{link.icon}</span>}
+                {slCols.has('enabled') && (
+                  <button onClick={() => handleToggleEnabled(link.id, link.enabled)} disabled={toggling === link.id}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 shrink-0 ${link.enabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}>
+                    <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${link.enabled ? 'translate-x-4' : 'translate-x-1'}`} />
+                  </button>
+                )}
                 <button onClick={() => openEdit(link)} className="p-1.5 rounded-lg text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all shrink-0">
                   <Icon icon="solar:pen-linear" width={15} />
                 </button>

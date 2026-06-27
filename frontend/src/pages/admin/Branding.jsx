@@ -69,13 +69,83 @@ function ColorSwatch({ label, value, onChange }) {
   );
 }
 
+function AssetPickerModal({ onSelect, onClose }) {
+  const [assets, setAssets] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState('');
+
+  useEffect(() => {
+    adminApi.listLogoAssets()
+      .then(setAssets)
+      .catch((e) => setErr(e.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
+      <div className="bg-[#111113] border border-zinc-800 rounded-2xl w-full max-w-xl shadow-2xl">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800">
+          <div>
+            <h3 className="text-sm font-semibold text-zinc-100">Project Assets</h3>
+            <p className="text-[10px] text-zinc-600 font-mono mt-0.5">backend/assets/logos/</p>
+          </div>
+          <button onClick={onClose} className="p-1.5 text-zinc-500 hover:text-zinc-200 transition-colors">
+            <Icon icon="solar:close-square-linear" width={18} />
+          </button>
+        </div>
+        <div className="p-5 min-h-[180px]">
+          {loading && (
+            <div className="flex items-center justify-center py-10 text-zinc-600 gap-2">
+              <Icon icon="solar:loading-linear" width={18} className="animate-spin" />
+              <span className="text-sm">Loading assets…</span>
+            </div>
+          )}
+          {err && <p className="text-sm text-rose-400 text-center py-6">{err}</p>}
+          {!loading && !err && assets?.length === 0 && (
+            <div className="text-center py-8">
+              <Icon icon="solar:folder-open-linear" width={32} className="text-zinc-700 mx-auto mb-3" />
+              <p className="text-sm text-zinc-500">No logo files found.</p>
+              <p className="text-xs text-zinc-700 mt-1 font-mono">Drop images into backend/assets/logos/</p>
+            </div>
+          )}
+          {assets && assets.length > 0 && (
+            <div className="grid grid-cols-4 gap-3">
+              {assets.map((asset) => (
+                <button
+                  key={asset.name}
+                  onClick={() => { onSelect(asset.url); onClose(); }}
+                  className="group flex flex-col items-center gap-2 p-3 rounded-xl border border-zinc-800 hover:border-indigo-500/40 hover:bg-indigo-500/5 transition-all"
+                >
+                  <div className="w-full h-16 flex items-center justify-center overflow-hidden rounded-lg bg-[#18181B]">
+                    <img src={asset.url} alt={asset.name} className="max-w-full max-h-full object-contain" />
+                  </div>
+                  <span className="text-[9px] text-zinc-600 group-hover:text-zinc-400 font-mono truncate w-full text-center">
+                    {asset.name}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function LogoSlot({ label, hint, value, onChange }) {
   const [imgError, setImgError] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   useEffect(() => { setImgError(false); }, [value.url]);
 
   return (
     <div className="space-y-3">
+      {pickerOpen && (
+        <AssetPickerModal
+          onSelect={(url) => onChange({ ...value, url })}
+          onClose={() => setPickerOpen(false)}
+        />
+      )}
       <div className="flex items-start gap-4">
         {/* Preview box */}
         <div className="w-28 h-16 rounded-xl border border-zinc-800 bg-[#18181B] flex items-center justify-center shrink-0 overflow-hidden p-2">
@@ -95,13 +165,24 @@ function LogoSlot({ label, hint, value, onChange }) {
         </div>
         <div className="flex-1 space-y-2">
           <Field label="Image URL" hint={hint}>
-            <input
-              type="url"
-              value={value.url}
-              onChange={(e) => onChange({ ...value, url: e.target.value })}
-              placeholder="https://example.com/logo.svg"
-              className={INPUT}
-            />
+            <div className="flex gap-2">
+              <input
+                type="url"
+                value={value.url}
+                onChange={(e) => onChange({ ...value, url: e.target.value })}
+                placeholder="https://example.com/logo.svg"
+                className={INPUT}
+              />
+              <button
+                type="button"
+                onClick={() => setPickerOpen(true)}
+                title="Browse project assets"
+                className="shrink-0 px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-700 hover:border-zinc-500 text-zinc-400 hover:text-zinc-100 transition-all text-xs flex items-center gap-1.5"
+              >
+                <Icon icon="solar:folder-open-linear" width={14} />
+                Browse
+              </button>
+            </div>
           </Field>
           <Field label="Alt text">
             <input

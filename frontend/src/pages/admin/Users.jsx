@@ -2,6 +2,44 @@ import { useEffect, useState } from 'react';
 import Icon from '../../components/Icon';
 import { useAuth } from '../../hooks/useAuth';
 import { adminApi } from '../../services/adminApi';
+import { TableToolbar } from '../../components/admin/TableToolbar';
+import { useColumnVisibility } from '../../hooks/useColumnVisibility';
+
+const COLS = [
+  { key: 'name', label: 'Name' },
+  { key: 'email', label: 'Email' },
+  { key: 'role', label: 'Role' },
+  { key: 'status', label: 'Status' },
+  { key: 'last_login', label: 'Last Login', default: false },
+  { key: 'created_at', label: 'Created' },
+];
+
+const SORT_OPTIONS = [
+  { value: 'name', label: 'Name' },
+  { value: 'email', label: 'Email' },
+  { value: 'role', label: 'Role' },
+  { value: 'created_at', label: 'Created' },
+];
+
+const FILTER_GROUPS = [
+  {
+    key: 'role',
+    label: 'Role',
+    options: [
+      { value: 'customer', label: 'Customer' },
+      { value: 'admin', label: 'Admin' },
+      { value: 'super_admin', label: 'Super Admin' },
+    ],
+  },
+  {
+    key: 'status',
+    label: 'Status',
+    options: [
+      { value: 'active', label: 'Active' },
+      { value: 'inactive', label: 'Inactive' },
+    ],
+  },
+];
 
 function RollupCard({ label, total, active, icon, color }) {
   const colors = {
@@ -189,9 +227,16 @@ export default function Users() {
   const isSuperAdmin = me?.role === 'super_admin';
   const [users, setUsers] = useState(null);
   const [rollup, setRollup] = useState(null);
-  const [modal, setModal] = useState(null); // null | 'create' | user object
+  const [modal, setModal] = useState(null);
   const [deleting, setDeleting] = useState(null);
   const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState('name');
+  const [dir, setDir] = useState('asc');
+  const [filters, setFilters] = useState({});
+  const { visibleCols, toggle: toggleCol, reset: resetCols } = useColumnVisibility('users', COLS);
+
+  const handleFilter = (key, val) => setFilters((f) => ({ ...f, [key]: val }));
 
   const load = () => {
     setError('');
@@ -235,7 +280,7 @@ export default function Users() {
         <RollupCard label="Customers" total={rollup?.customer?.total} active={rollup?.customer?.active} icon="solar:users-group-two-rounded-linear" color="cyan" />
       </div>
 
-      <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-display font-semibold text-2xl text-zinc-100">Users</h1>
           <p className="text-sm text-zinc-500 mt-1">
@@ -243,87 +288,92 @@ export default function Users() {
           </p>
         </div>
         {isSuperAdmin ? (
-          <button
-            onClick={() => setModal('create')}
-            className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)]"
-          >
-            <Icon icon="solar:user-plus-linear" width={16} />
-            Create User
+          <button onClick={() => setModal('create')}
+            className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+            <Icon icon="solar:user-plus-linear" width={16} />Create User
           </button>
-        ) : (
-          <span className="text-xs text-zinc-600 font-mono">View only</span>
-        )}
+        ) : <span className="text-xs text-zinc-600 font-mono">View only</span>}
       </div>
 
-      {error ? (
-        <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div>
-      ) : null}
+      {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div> : null}
 
-      <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-[#18181B] border-b border-zinc-800">
-                {['Name', 'Email', 'Role', 'Status', 'Last Login', 'Created'].map((h) => (
-                  <th key={h} className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                    {h}
-                  </th>
-                ))}
-                {isSuperAdmin ? (
-                  <th className="px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider text-right">Actions</th>
-                ) : null}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-800/60">
-              {!users ? (
-                <tr>
-                  <td colSpan={isSuperAdmin ? 7 : 6} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td>
-                </tr>
-              ) : users.length === 0 ? (
-                <tr>
-                  <td colSpan={isSuperAdmin ? 7 : 6} className="px-4 py-10 text-center text-sm text-zinc-600">No users found.</td>
-                </tr>
-              ) : (
-                users.map((u) => (
-                  <tr key={u.id} className="hover:bg-zinc-800/30 transition-colors">
-                    <td className="px-4 py-3 text-zinc-200 font-medium whitespace-nowrap">{u.name}</td>
-                    <td className="px-4 py-3 text-zinc-400 whitespace-nowrap">{u.email}</td>
-                    <td className="px-4 py-3 whitespace-nowrap"><RoleBadge role={u.role} /></td>
-                    <td className="px-4 py-3 whitespace-nowrap"><StatusDot status={u.status} /></td>
-                    <td className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">
-                      {u.last_login ? new Date(u.last_login).toLocaleDateString() : '—'}
-                    </td>
-                    <td className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">
-                      {new Date(u.created_at).toLocaleDateString()}
-                    </td>
-                    {isSuperAdmin ? (
-                      <td className="px-4 py-3 text-right whitespace-nowrap">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => setModal(u)}
-                            className="p-1.5 rounded-lg text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all"
-                            title="Edit"
-                          >
-                            <Icon icon="solar:pen-linear" width={15} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(u)}
-                            disabled={deleting === u.id || u.id === me?.id}
-                            className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-30"
-                            title={u.id === me?.id ? "Can't delete yourself" : 'Delete'}
-                          >
-                            <Icon icon="solar:trash-bin-minimalistic-linear" width={15} />
-                          </button>
-                        </div>
-                      </td>
-                    ) : null}
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {(() => {
+        const q = search.toLowerCase();
+        const filtered = (users || [])
+          .filter((u) =>
+            (!q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)) &&
+            (!filters.role || u.role === filters.role) &&
+            (!filters.status || u.status === filters.status)
+          )
+          .sort((a, b) => {
+            const va = (a[sort] || '').toString();
+            const vb = (b[sort] || '').toString();
+            return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+          });
+        const visibleColCount = COLS.filter((c) => visibleCols.has(c.key)).length;
+        return (
+          <>
+            <TableToolbar
+              search={search} onSearch={setSearch}
+              onRefresh={load}
+              sortOptions={SORT_OPTIONS} sort={sort} dir={dir}
+              onSort={(col, d) => { setSort(col); setDir(d); }}
+              filterGroups={FILTER_GROUPS} filters={filters} onFilter={handleFilter}
+              columns={COLS} visibleCols={visibleCols} onColumnsToggle={toggleCol} onColumnsReset={resetCols}
+              placeholder="Search by name or email…"
+            />
+            <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-[#18181B] border-b border-zinc-800">
+                      {COLS.filter((c) => visibleCols.has(c.key)).map(({ key, label }) => (
+                        <th key={key} onClick={() => { setSort(key); setDir((d) => sort === key && d === 'asc' ? 'desc' : 'asc'); }}
+                          className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider cursor-pointer hover:text-zinc-300 transition-colors select-none">
+                          {label}
+                        </th>
+                      ))}
+                      {isSuperAdmin && <th className="px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider text-right">Actions</th>}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-800/60">
+                    {!users ? (
+                      <tr><td colSpan={visibleColCount + 1} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
+                    ) : filtered.length === 0 ? (
+                      <tr><td colSpan={visibleColCount + 1} className="px-4 py-10 text-center text-sm text-zinc-600">No users found.</td></tr>
+                    ) : (
+                      filtered.map((u) => (
+                        <tr key={u.id} className="hover:bg-zinc-800/30 transition-colors">
+                          {visibleCols.has('name') && <td className="px-4 py-3 text-zinc-200 font-medium whitespace-nowrap">{u.name}</td>}
+                          {visibleCols.has('email') && <td className="px-4 py-3 text-zinc-400 whitespace-nowrap">{u.email}</td>}
+                          {visibleCols.has('role') && <td className="px-4 py-3 whitespace-nowrap"><RoleBadge role={u.role} /></td>}
+                          {visibleCols.has('status') && <td className="px-4 py-3 whitespace-nowrap"><StatusDot status={u.status} /></td>}
+                          {visibleCols.has('last_login') && <td className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">{u.last_login ? new Date(u.last_login).toLocaleDateString() : '—'}</td>}
+                          {visibleCols.has('created_at') && <td className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">{new Date(u.created_at).toLocaleDateString()}</td>}
+                          {isSuperAdmin && (
+                            <td className="px-4 py-3 text-right whitespace-nowrap">
+                              <div className="flex items-center justify-end gap-2">
+                                <button onClick={() => setModal(u)} className="p-1.5 rounded-lg text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all" title="Edit">
+                                  <Icon icon="solar:pen-linear" width={15} />
+                                </button>
+                                <button onClick={() => handleDelete(u)} disabled={deleting === u.id || u.id === me?.id}
+                                  className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-30"
+                                  title={u.id === me?.id ? "Can't delete yourself" : 'Delete'}>
+                                  <Icon icon="solar:trash-bin-minimalistic-linear" width={15} />
+                                </button>
+                              </div>
+                            </td>
+                          )}
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        );
+      })()}
     </div>
   );
 }

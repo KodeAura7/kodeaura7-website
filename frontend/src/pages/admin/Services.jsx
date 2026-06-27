@@ -1,6 +1,43 @@
 import { useEffect, useRef, useState } from 'react';
 import Icon from '../../components/Icon';
 import { adminApi } from '../../services/adminApi';
+import { TableToolbar } from '../../components/admin/TableToolbar';
+import { useColumnVisibility } from '../../hooks/useColumnVisibility';
+
+const SVC_COLS = [
+  { key: 'num', label: '#' },
+  { key: 'order', label: 'Order' },
+  { key: 'service', label: 'Service' },
+  { key: 'features', label: 'Features', default: false },
+  { key: 'home', label: 'Home' },
+  { key: 'last_modified', label: 'Last Modified', default: false },
+  { key: 'site', label: 'Site' },
+];
+
+const SVC_FILTER_GROUPS = [
+  {
+    key: 'enabled',
+    label: 'Site Visibility',
+    options: [
+      { value: 'true', label: 'Enabled' },
+      { value: 'false', label: 'Disabled' },
+    ],
+  },
+  {
+    key: 'home',
+    label: 'Home Page',
+    options: [
+      { value: 'true', label: 'Shown on Home' },
+      { value: 'false', label: 'Hidden from Home' },
+    ],
+  },
+];
+
+const SVC_SORT_OPTIONS = [
+  { value: 'sort_order', label: 'Sort Order' },
+  { value: 'name', label: 'Name' },
+  { value: 'updated_at', label: 'Last Modified' },
+];
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -223,6 +260,14 @@ export default function AdminServices() {
   const [importing, setImporting] = useState(false);
   const [importMsg, setImportMsg] = useState({ type: '', text: '' });
   const importInputRef = useRef(null);
+
+  const [svcSearch, setSvcSearch] = useState('');
+  const [svcSort, setSvcSort] = useState('sort_order');
+  const [svcDir, setSvcDir] = useState('asc');
+  const [svcFilters, setSvcFilters] = useState({});
+  const { visibleCols: svcCols, toggle: toggleSvcCol, reset: resetSvcCols } = useColumnVisibility('services', SVC_COLS);
+
+  const handleSvcFilter = (key, val) => setSvcFilters(f => ({ ...f, [key]: val }));
 
   const loadAll = () => { setError(''); adminApi.services().then(setItems).catch(e => setError(e.message)); };
   useEffect(() => { loadAll(); }, []);
@@ -649,6 +694,19 @@ export default function AdminServices() {
   const enabledCount = items ? items.filter(s => s.enabled).length : 0;
   const homeCount = items ? items.filter(s => s.enabled && s.show_on_home).length : 0;
 
+  const q = svcSearch.toLowerCase();
+  const svcFiltered = (items || [])
+    .filter(s =>
+      (!q || s.name.toLowerCase().includes(q) || (s.slug || '').includes(q)) &&
+      (!svcFilters.enabled || String(s.enabled) === svcFilters.enabled) &&
+      (!svcFilters.home || String(s.show_on_home) === svcFilters.home)
+    )
+    .sort((a, b) => {
+      if (svcSort === 'name') return svcDir === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+      if (svcSort === 'updated_at') return svcDir === 'asc' ? new Date(a.updated_at) - new Date(b.updated_at) : new Date(b.updated_at) - new Date(a.updated_at);
+      return svcDir === 'asc' ? (a.sort_order ?? 0) - (b.sort_order ?? 0) : (b.sort_order ?? 0) - (a.sort_order ?? 0);
+    });
+
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto">
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
@@ -660,11 +718,6 @@ export default function AdminServices() {
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <input ref={importInputRef} type="file" accept=".csv" className="hidden" onChange={handleImportFile} />
-          <button onClick={handleExport} disabled={exporting || !items}
-            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100 disabled:opacity-50 transition-all">
-            <Icon icon={exporting ? 'solar:loading-linear' : 'solar:export-linear'} width={16} className={exporting ? 'animate-spin' : ''} />
-            {someSelected ? `Export (${selected.size})` : 'Export'}
-          </button>
           <button onClick={() => importInputRef.current?.click()} disabled={importing}
             className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100 disabled:opacity-50 transition-all">
             <Icon icon={importing ? 'solar:loading-linear' : 'solar:import-linear'} width={16} className={importing ? 'animate-spin' : ''} />
@@ -684,6 +737,22 @@ export default function AdminServices() {
       ) : null}
       {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div> : null}
 
+      <TableToolbar
+        search={svcSearch} onSearch={setSvcSearch}
+        onRefresh={loadAll}
+        sortOptions={SVC_SORT_OPTIONS} sort={svcSort} dir={svcDir}
+        onSort={(col, d) => { setSvcSort(col); setSvcDir(d); }}
+        filterGroups={SVC_FILTER_GROUPS} filters={svcFilters} onFilter={handleSvcFilter}
+        columns={SVC_COLS} visibleCols={svcCols} onColumnsToggle={toggleSvcCol} onColumnsReset={resetSvcCols}
+        placeholder="Search by name or slug…"
+      >
+        <button onClick={handleExport} disabled={exporting || !items}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/70 border border-transparent transition-all disabled:opacity-50">
+          <Icon icon={exporting ? 'solar:loading-linear' : 'solar:export-linear'} width={13} className={exporting ? 'animate-spin' : ''} />
+          {someSelected ? `Export (${selected.size})` : 'Export'}
+        </button>
+      </TableToolbar>
+
       <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -695,18 +764,19 @@ export default function AdminServices() {
                     {allSelected ? <Icon icon="solar:check-read-linear" width={9} className="text-white" /> : null}
                   </button>
                 </th>
-                {['#', 'Order', 'Service', 'Features', 'Home', 'Last Modified', 'Site', ''].map(h => (
-                  <th key={h} className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
+                {SVC_COLS.filter(c => svcCols.has(c.key)).map(c => (
+                  <th key={c.key} className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider whitespace-nowrap">{c.label}</th>
                 ))}
+                <th className="px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider text-right" />
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-800/60">
               {!items ? (
-                <tr><td colSpan={9} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
-              ) : items.length === 0 ? (
-                <tr><td colSpan={9} className="px-4 py-10 text-center text-sm text-zinc-600">No services yet.</td></tr>
+                <tr><td colSpan={svcCols.size + 2} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
+              ) : svcFiltered.length === 0 ? (
+                <tr><td colSpan={svcCols.size + 2} className="px-4 py-10 text-center text-sm text-zinc-600">No services found.</td></tr>
               ) : (
-                items.map((svc, idx) => (
+                svcFiltered.map((svc, idx) => (
                   <tr key={svc.id} className="hover:bg-zinc-800/20 transition-colors">
                     <td className="px-4 py-3">
                       <button onClick={() => toggleSelect(svc.id)}
@@ -714,50 +784,50 @@ export default function AdminServices() {
                         {selected.has(svc.id) ? <Icon icon="solar:check-read-linear" width={9} className="text-white" /> : null}
                       </button>
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="font-mono text-xs text-zinc-500">{String(idx + 1).padStart(2, '0')}</span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <OrderCell id={svc.id} initialOrder={svc.sort_order} onSaved={handleOrderSaved} onError={setError} />
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                          style={{ background: `color-mix(in srgb,${svc.accent} 15%,transparent)`, color: svc.accent, border: `1px solid color-mix(in srgb,${svc.accent} 25%,transparent)` }}>
-                          <Icon icon={svc.icon || 'solar:code-square-linear'} width={16} />
+                    {svcCols.has('num') && <td className="px-4 py-3"><span className="font-mono text-xs text-zinc-500">{String(idx + 1).padStart(2, '0')}</span></td>}
+                    {svcCols.has('order') && <td className="px-4 py-3"><OrderCell id={svc.id} initialOrder={svc.sort_order} onSaved={handleOrderSaved} onError={setError} /></td>}
+                    {svcCols.has('service') && (
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                            style={{ background: `color-mix(in srgb,${svc.accent} 15%,transparent)`, color: svc.accent, border: `1px solid color-mix(in srgb,${svc.accent} 25%,transparent)` }}>
+                            <Icon icon={svc.icon || 'solar:code-square-linear'} width={16} />
+                          </div>
+                          <div>
+                            <button onClick={() => openRecord(svc)} className="text-zinc-200 font-medium hover:text-indigo-400 transition-colors text-left block leading-tight">{svc.name}</button>
+                            <p className="text-[10px] text-zinc-600 font-mono">{svc.slug}</p>
+                          </div>
                         </div>
-                        <div>
-                          <button onClick={() => openRecord(svc)}
-                            className="text-zinc-200 font-medium hover:text-indigo-400 transition-colors text-left block leading-tight">
-                            {svc.name}
-                          </button>
-                          <p className="text-[10px] text-zinc-600 font-mono">{svc.slug}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-zinc-500 text-xs whitespace-nowrap">
-                      <span className="text-zinc-300">{svc.features?.filter(f => f.enabled).length ?? 0}</span>
-                      <span className="text-zinc-600"> / {svc.features?.length ?? 0}</span>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${svc.show_on_home ? 'bg-indigo-500/10 text-indigo-400' : 'bg-zinc-800 text-zinc-600'}`}>
-                        {svc.show_on_home ? 'shown' : 'hidden'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap min-w-[140px]">
-                      {svc.updated_at ? (
-                        <div>
-                          <p className="text-xs text-zinc-400">{fmtDate(svc.updated_at)}</p>
-                          {svc.last_modified_by ? <p className="text-[10px] text-zinc-600">{svc.last_modified_by}</p> : null}
-                        </div>
-                      ) : <span className="text-zinc-700 text-xs">—</span>}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <button onClick={() => handleToggleEnabled(svc.id, svc.enabled)} disabled={toggling === svc.id}
-                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 ${svc.enabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}>
-                        <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${svc.enabled ? 'translate-x-4' : 'translate-x-1'}`} />
-                      </button>
-                    </td>
+                      </td>
+                    )}
+                    {svcCols.has('features') && (
+                      <td className="px-4 py-3 text-zinc-500 text-xs whitespace-nowrap">
+                        <span className="text-zinc-300">{svc.features?.filter(f => f.enabled).length ?? 0}</span>
+                        <span className="text-zinc-600"> / {svc.features?.length ?? 0}</span>
+                      </td>
+                    )}
+                    {svcCols.has('home') && (
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${svc.show_on_home ? 'bg-indigo-500/10 text-indigo-400' : 'bg-zinc-800 text-zinc-600'}`}>
+                          {svc.show_on_home ? 'shown' : 'hidden'}
+                        </span>
+                      </td>
+                    )}
+                    {svcCols.has('last_modified') && (
+                      <td className="px-4 py-3 whitespace-nowrap min-w-[140px]">
+                        {svc.updated_at ? (
+                          <div><p className="text-xs text-zinc-400">{fmtDate(svc.updated_at)}</p>{svc.last_modified_by ? <p className="text-[10px] text-zinc-600">{svc.last_modified_by}</p> : null}</div>
+                        ) : <span className="text-zinc-700 text-xs">—</span>}
+                      </td>
+                    )}
+                    {svcCols.has('site') && (
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <button onClick={() => handleToggleEnabled(svc.id, svc.enabled)} disabled={toggling === svc.id}
+                          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 ${svc.enabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}>
+                          <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${svc.enabled ? 'translate-x-4' : 'translate-x-1'}`} />
+                        </button>
+                      </td>
+                    )}
                     <td className="px-4 py-3 text-right">
                       <button onClick={() => { openRecord(svc); enterEdit(); }}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all">

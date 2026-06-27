@@ -4,6 +4,8 @@ import ContactStatusBadge from '../../components/ContactStatusBadge';
 import { CONTACT_STATUSES } from '../../utils/contactStatusConfig';
 import Icon from '../../components/Icon';
 import { adminApi } from '../../services/adminApi';
+import { TableToolbar } from '../../components/admin/TableToolbar';
+import { useColumnVisibility } from '../../hooks/useColumnVisibility';
 
 const LIMIT = 20;
 
@@ -23,6 +25,36 @@ function SortIcon({ col, sort, dir }) {
 
 const STATUS_LABEL = { new: 'New', in_progress: 'In Progress', completed: 'Completed', closed: 'Closed' };
 
+const COLS = [
+  { key: 'name', label: 'Name' },
+  { key: 'email', label: 'Email' },
+  { key: 'service', label: 'Service' },
+  { key: 'status', label: 'Status' },
+  { key: 'created_at', label: 'Date' },
+  { key: 'updated_at', label: 'Updated', default: false },
+];
+
+const SORT_OPTIONS = [
+  { value: 'created_at', label: 'Date Created' },
+  { value: 'name', label: 'Name' },
+  { value: 'email', label: 'Email' },
+  { value: 'status', label: 'Status' },
+  { value: 'updated_at', label: 'Last Updated' },
+];
+
+const FILTER_GROUPS = [
+  {
+    key: 'status',
+    label: 'Status',
+    options: [
+      { value: 'new', label: 'New' },
+      { value: 'in_progress', label: 'In Progress' },
+      { value: 'completed', label: 'Completed' },
+      { value: 'closed', label: 'Closed' },
+    ],
+  },
+];
+
 export default function Contacts() {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
@@ -30,6 +62,7 @@ export default function Contacts() {
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState('created_at');
   const [dir, setDir] = useState('desc');
+  const [filters, setFilters] = useState({});
   const [checkedIds, setCheckedIds] = useState(new Set());
   const [bulkStatus, setBulkStatus] = useState('in_progress');
   const [bulkLoading, setBulkLoading] = useState(false);
@@ -37,23 +70,26 @@ export default function Contacts() {
   const [error, setError] = useState('');
   const [exporting, setExporting] = useState(false);
   const debouncedSearch = useDebounce(search);
+  const { visibleCols, toggle: toggleCol, reset: resetCols } = useColumnVisibility('contacts', COLS);
 
   const load = useCallback(() => {
     setError('');
     adminApi
-      .contacts({ page, limit: LIMIT, search: debouncedSearch, sort, dir })
+      .contacts({ page, limit: LIMIT, search: debouncedSearch, sort, dir, status: filters.status || '' })
       .then((d) => { setData(d); setCheckedIds(new Set()); })
       .catch((err) => setError(err.message));
-  }, [page, debouncedSearch, sort, dir]);
+  }, [page, debouncedSearch, sort, dir, filters]);
 
   useEffect(() => { load(); }, [load]);
-  useEffect(() => { setPage(1); }, [debouncedSearch]);
+  useEffect(() => { setPage(1); }, [debouncedSearch, filters]);
 
   const handleSort = (col) => {
     if (sort === col) setDir((d) => (d === 'asc' ? 'desc' : 'asc'));
     else { setSort(col); setDir('asc'); }
     setPage(1);
   };
+
+  const handleFilter = (key, val) => setFilters((f) => ({ ...f, [key]: val }));
 
   // Multi-select
   const rows = data?.data ?? [];
@@ -100,30 +136,15 @@ export default function Contacts() {
     finally { setExporting(false); }
   };
 
-  const COLS = [
-    { col: 'name', label: 'Name' },
-    { col: 'email', label: 'Email' },
-    { col: 'service', label: 'Service' },
-    { col: 'status', label: 'Status' },
-    { col: 'created_at', label: 'Date' },
-    { col: 'updated_at', label: 'Updated' }
-  ];
+  const visibleColCount = COLS.filter((c) => visibleCols.has(c.key)).length;
 
   return (
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
-      <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-display font-semibold text-2xl text-zinc-100">Contacts</h1>
           <p className="text-sm text-zinc-500 mt-1">{data ? `${data.pagination.total} total` : '—'}</p>
         </div>
-        <button
-          onClick={handleExport}
-          disabled={exporting}
-          className="inline-flex items-center gap-2 bg-[#18181B] border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100 rounded-xl px-4 py-2.5 text-sm font-medium transition-all disabled:opacity-50"
-        >
-          <Icon icon="solar:download-linear" width={16} />
-          {exporting ? 'Exporting…' : 'Export CSV'}
-        </button>
       </div>
 
       {error ? (
@@ -144,36 +165,33 @@ export default function Contacts() {
                 <option key={s} value={s}>{STATUS_LABEL[s]}</option>
               ))}
             </select>
-            <button
-              onClick={handleBulkStatus}
-              disabled={bulkLoading}
-              className="px-3 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white text-xs font-medium transition-all disabled:opacity-60"
-            >
+            <button onClick={handleBulkStatus} disabled={bulkLoading}
+              className="px-3 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white text-xs font-medium transition-all disabled:opacity-60">
               {bulkLoading ? 'Applying…' : 'Apply'}
             </button>
-            <button
-              onClick={() => setCheckedIds(new Set())}
-              className="px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-zinc-500 text-zinc-400 text-xs transition-all"
-            >
+            <button onClick={() => setCheckedIds(new Set())}
+              className="px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-zinc-500 text-zinc-400 text-xs transition-all">
               Deselect all
             </button>
           </div>
         </div>
       ) : null}
 
-      {/* Search */}
-      <div className="relative mb-4">
-        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none">
-          <Icon icon="solar:magnifer-linear" width={16} />
-        </span>
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by name, email or service…"
-          className="w-full bg-[#111113] border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all"
-        />
-      </div>
+      <TableToolbar
+        search={search} onSearch={(v) => setSearch(v)}
+        onRefresh={load}
+        sortOptions={SORT_OPTIONS} sort={sort} dir={dir}
+        onSort={(col, d) => { setSort(col); setDir(d); setPage(1); }}
+        filterGroups={FILTER_GROUPS} filters={filters} onFilter={handleFilter}
+        columns={COLS} visibleCols={visibleCols} onColumnsToggle={toggleCol} onColumnsReset={resetCols}
+        placeholder="Search by name, email or service…"
+      >
+        <button onClick={handleExport} disabled={exporting}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/70 border border-transparent transition-all disabled:opacity-50">
+          <Icon icon={exporting ? 'solar:loading-linear' : 'solar:download-linear'} width={13} className={exporting ? 'animate-spin' : ''} />
+          Export
+        </button>
+      </TableToolbar>
 
       {/* Table */}
       <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
@@ -182,22 +200,14 @@ export default function Contacts() {
             <thead>
               <tr className="bg-[#18181B] border-b border-zinc-800">
                 <th className="w-10 px-4 py-3">
-                  <input
-                    type="checkbox"
-                    checked={allChecked}
-                    ref={(el) => { if (el) el.indeterminate = someChecked; }}
-                    onChange={toggleAll}
-                    className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer"
-                  />
+                  <input type="checkbox" checked={allChecked} ref={(el) => { if (el) el.indeterminate = someChecked; }}
+                    onChange={toggleAll} className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer" />
                 </th>
-                {COLS.map(({ col, label }) => (
-                  <th
-                    key={col}
-                    onClick={() => handleSort(col)}
-                    className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider cursor-pointer hover:text-zinc-300 transition-colors select-none"
-                  >
+                {COLS.filter((c) => visibleCols.has(c.key)).map(({ key, label }) => (
+                  <th key={key} onClick={() => handleSort(key)}
+                    className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider cursor-pointer hover:text-zinc-300 transition-colors select-none">
                     <span className="flex items-center gap-1.5">
-                      {label} <SortIcon col={col} sort={sort} dir={dir} />
+                      {label} <SortIcon col={key} sort={sort} dir={dir} />
                     </span>
                   </th>
                 ))}
@@ -206,41 +216,26 @@ export default function Contacts() {
             </thead>
             <tbody className="divide-y divide-zinc-800/60">
               {!data ? (
-                <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
+                <tr><td colSpan={visibleColCount + 2} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
               ) : rows.length === 0 ? (
-                <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-zinc-600">No contacts found.</td></tr>
+                <tr><td colSpan={visibleColCount + 2} className="px-4 py-10 text-center text-sm text-zinc-600">No contacts found.</td></tr>
               ) : (
                 rows.map((c) => (
-                  <tr
-                    key={c.id}
-                    onClick={() => navigate(`/admin/contacts/${c.id}`)}
-                    className="hover:bg-zinc-800/30 transition-colors cursor-pointer"
-                  >
+                  <tr key={c.id} onClick={() => navigate(`/admin/contacts/${c.id}`)}
+                    className="hover:bg-zinc-800/30 transition-colors cursor-pointer">
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                      <input
-                        type="checkbox"
-                        checked={checkedIds.has(c.id)}
-                        onChange={() => toggleOne(c.id)}
-                        className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer"
-                      />
+                      <input type="checkbox" checked={checkedIds.has(c.id)} onChange={() => toggleOne(c.id)}
+                        className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer" />
                     </td>
-                    <td className="px-4 py-3 text-zinc-200 font-medium whitespace-nowrap">{c.name}</td>
-                    <td className="px-4 py-3 text-zinc-400 whitespace-nowrap">{c.email}</td>
-                    <td className="px-4 py-3 text-zinc-400 whitespace-nowrap max-w-[140px] truncate">{c.service}</td>
-                    <td className="px-4 py-3 whitespace-nowrap"><ContactStatusBadge status={c.status} /></td>
-                    <td className="px-4 py-3 text-zinc-500 whitespace-nowrap font-mono text-xs">
-                      {new Date(c.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-3 text-zinc-500 whitespace-nowrap font-mono text-xs">
-                      {c.updated_at ? new Date(c.updated_at).toLocaleDateString() : '—'}
-                    </td>
+                    {visibleCols.has('name') && <td className="px-4 py-3 text-zinc-200 font-medium whitespace-nowrap">{c.name}</td>}
+                    {visibleCols.has('email') && <td className="px-4 py-3 text-zinc-400 whitespace-nowrap">{c.email}</td>}
+                    {visibleCols.has('service') && <td className="px-4 py-3 text-zinc-400 whitespace-nowrap max-w-[140px] truncate">{c.service}</td>}
+                    {visibleCols.has('status') && <td className="px-4 py-3 whitespace-nowrap"><ContactStatusBadge status={c.status} /></td>}
+                    {visibleCols.has('created_at') && <td className="px-4 py-3 text-zinc-500 whitespace-nowrap font-mono text-xs">{new Date(c.created_at).toLocaleDateString()}</td>}
+                    {visibleCols.has('updated_at') && <td className="px-4 py-3 text-zinc-500 whitespace-nowrap font-mono text-xs">{c.updated_at ? new Date(c.updated_at).toLocaleDateString() : '—'}</td>}
                     <td className="px-4 py-3 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                      <button
-                        onClick={(e) => handleDelete(e, c.id)}
-                        disabled={deleting === c.id}
-                        className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-40"
-                        title="Delete"
-                      >
+                      <button onClick={(e) => handleDelete(e, c.id)} disabled={deleting === c.id}
+                        className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-40" title="Delete">
                         <Icon icon="solar:trash-bin-minimalistic-linear" width={16} />
                       </button>
                     </td>

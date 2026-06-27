@@ -1,6 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
 import Icon from '../../components/Icon';
 import { adminApi } from '../../services/adminApi';
+import { TableToolbar } from '../../components/admin/TableToolbar';
+import { useColumnVisibility } from '../../hooks/useColumnVisibility';
+
+const COLS = [
+  { key: 'email', label: 'Email' },
+  { key: 'subscribed_at', label: 'Subscribed' },
+];
+
+const SORT_OPTIONS = [
+  { value: 'subscribed_at', label: 'Subscribed Date' },
+  { value: 'email', label: 'Email' },
+];
 
 const LIMIT = 20;
 
@@ -23,6 +35,7 @@ export default function Newsletter() {
   const [error, setError] = useState('');
   const [exporting, setExporting] = useState(false);
   const debouncedSearch = useDebounce(search);
+  const { visibleCols, toggle: toggleCol, reset: resetCols } = useColumnVisibility('newsletter', COLS);
 
   const load = useCallback(() => {
     setError('');
@@ -70,56 +83,40 @@ export default function Newsletter() {
 
   return (
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
-      <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="mb-6 flex items-center justify-between gap-4">
         <div>
           <h1 className="font-display font-semibold text-2xl text-zinc-100">Newsletter</h1>
-          <p className="text-sm text-zinc-500 mt-1">
-            {data ? `${data.pagination.total} subscribers` : '—'}
-          </p>
+          <p className="text-sm text-zinc-500 mt-1">{data ? `${data.pagination.total} subscribers` : '—'}</p>
         </div>
-        <button
-          onClick={handleExport}
-          disabled={exporting}
-          className="inline-flex items-center gap-2 bg-[#18181B] border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100 rounded-xl px-4 py-2.5 text-sm font-medium transition-all disabled:opacity-50"
-        >
-          <Icon icon="solar:download-linear" width={16} />
-          {exporting ? 'Exporting…' : 'Export CSV'}
+      </div>
+
+      {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div> : null}
+
+      <TableToolbar
+        search={search} onSearch={setSearch}
+        onRefresh={load}
+        sortOptions={SORT_OPTIONS} sort={sort} dir={dir}
+        onSort={(col, d) => { setSort(col); setDir(d); setPage(1); }}
+        columns={COLS} visibleCols={visibleCols} onColumnsToggle={toggleCol} onColumnsReset={resetCols}
+        placeholder="Search by email…"
+      >
+        <button onClick={handleExport} disabled={exporting}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/70 border border-transparent transition-all disabled:opacity-50">
+          <Icon icon={exporting ? 'solar:loading-linear' : 'solar:download-linear'} width={13} className={exporting ? 'animate-spin' : ''} />
+          Export
         </button>
-      </div>
-
-      {error ? (
-        <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div>
-      ) : null}
-
-      <div className="relative mb-4">
-        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none">
-          <Icon icon="solar:magnifer-linear" width={16} />
-        </span>
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by email…"
-          className="w-full bg-[#111113] border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all"
-        />
-      </div>
+      </TableToolbar>
 
       <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-[#18181B] border-b border-zinc-800">
-                {[
-                  { col: 'email', label: 'Email' },
-                  { col: 'subscribed_at', label: 'Subscribed' }
-                ].map(({ col, label }) => (
-                  <th
-                    key={col}
-                    onClick={() => handleSort(col)}
-                    className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider cursor-pointer hover:text-zinc-300 transition-colors select-none"
-                  >
+                {COLS.filter((c) => visibleCols.has(c.key)).map(({ key, label }) => (
+                  <th key={key} onClick={() => handleSort(key)}
+                    className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider cursor-pointer hover:text-zinc-300 transition-colors select-none">
                     <span className="flex items-center gap-1.5">
-                      {label} <SortIcon col={col} />
+                      {label} <SortIcon col={key} />
                     </span>
                   </th>
                 ))}
@@ -128,27 +125,17 @@ export default function Newsletter() {
             </thead>
             <tbody className="divide-y divide-zinc-800/60">
               {!data ? (
-                <tr>
-                  <td colSpan={3} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td>
-                </tr>
+                <tr><td colSpan={3} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
               ) : data.data.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="px-4 py-10 text-center text-sm text-zinc-600">No subscribers found.</td>
-                </tr>
+                <tr><td colSpan={3} className="px-4 py-10 text-center text-sm text-zinc-600">No subscribers found.</td></tr>
               ) : (
                 data.data.map((s) => (
                   <tr key={s.id} className="hover:bg-zinc-800/30 transition-colors">
-                    <td className="px-4 py-3 text-zinc-200">{s.email}</td>
-                    <td className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">
-                      {new Date(s.subscribed_at).toLocaleDateString()}
-                    </td>
+                    {visibleCols.has('email') && <td className="px-4 py-3 text-zinc-200">{s.email}</td>}
+                    {visibleCols.has('subscribed_at') && <td className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">{new Date(s.subscribed_at).toLocaleDateString()}</td>}
                     <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => handleDelete(s.id)}
-                        disabled={deleting === s.id}
-                        className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-40"
-                        title="Delete"
-                      >
+                      <button onClick={() => handleDelete(s.id)} disabled={deleting === s.id}
+                        className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-40" title="Delete">
                         <Icon icon="solar:trash-bin-minimalistic-linear" width={16} />
                       </button>
                     </td>

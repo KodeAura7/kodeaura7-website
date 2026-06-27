@@ -8,8 +8,8 @@ import {
 } from '../services/adminContactService.js';
 
 export async function list(request, response) {
-  const { page, limit, search, sort, dir } = request.query;
-  const result = await listContacts({ page, limit, search, sort, dir });
+  const { page, limit, search, sort, dir, status } = request.query;
+  const result = await listContacts({ page, limit, search, sort, dir, status });
   response.status(200).json(result);
 }
 
