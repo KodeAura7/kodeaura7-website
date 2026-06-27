@@ -7,3 +7,4 @@ coverage
 npm-debug.log*
 frontend/.vercel
 backend/.render
+Todo.text
