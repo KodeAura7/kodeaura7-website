@@ -11,14 +11,25 @@ import {
   updateService,
   updateServiceOrder
 } from '../services/servicesService.js';
+import { buildWhereClause, getListView } from '../services/listViewService.js';
+
+async function resolveLvWhere(listViewId, userId) {
+  if (!listViewId) return null;
+  try {
+    const lv = await getListView(listViewId, userId);
+    return buildWhereClause(lv.filters, lv.filter_logic, 'services');
+  } catch { return null; }
+}
 
 export async function publicList(_req, res) {
   const items = await getPublicServices();
   res.status(200).json(items);
 }
 
-export async function adminListAll(_req, res) {
-  const items = await listAllServices();
+export async function adminListAll(req, res) {
+  const { list_view_id } = req.query;
+  const lvWhere = await resolveLvWhere(list_view_id, req.user?.sub);
+  const items = await listAllServices({ lvWhere });
   res.status(200).json(items);
 }
 

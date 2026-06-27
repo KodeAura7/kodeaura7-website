@@ -38,6 +38,16 @@ export const OBJECT_CONFIGS = {
       created_at: { col: 'created_at', type: 'date',  label: 'Created Date' },
       updated_at: { col: 'updated_at', type: 'date',  label: 'Last Modified' },
     }
+  },
+  services: {
+    fields: {
+      name:         { col: 'name',         type: 'text',    label: 'Name' },
+      slug:         { col: 'slug',         type: 'text',    label: 'Slug' },
+      enabled:      { col: 'enabled',      type: 'boolean', label: 'Visible on Site' },
+      show_on_home: { col: 'show_on_home', type: 'boolean', label: 'Show on Home' },
+      sort_order:   { col: 'sort_order',   type: 'number',  label: 'Sort Order' },
+      updated_at:   { col: 'updated_at',   type: 'date',    label: 'Last Modified' },
+    }
   }
 };
 
@@ -56,16 +66,18 @@ const VALID_OPERATORS = new Set([
 
 // ── Query builder ─────────────────────────────────────────────────────────────
 
-function applyOperator(col, op, value, valueTo, params) {
+function applyOperator(col, op, value, valueTo, params, fieldType) {
+  // Cast boolean DB columns to text so string filter values ('true'/'false') compare correctly
+  const colExpr = fieldType === 'boolean' ? `${col}::text` : col;
   switch (op) {
-    case 'equals':       params.push(value);              return `${col} = $${params.length}`;
-    case 'not_equals':   params.push(value);              return `${col} != $${params.length}`;
-    case 'contains':     params.push(`%${value}%`);       return `${col} ILIKE $${params.length}`;
-    case 'not_contains': params.push(`%${value}%`);       return `${col} NOT ILIKE $${params.length}`;
-    case 'starts_with':  params.push(`${value}%`);        return `${col} ILIKE $${params.length}`;
-    case 'ends_with':    params.push(`%${value}`);        return `${col} ILIKE $${params.length}`;
-    case 'is_empty':     return `(${col} IS NULL OR ${col} = '')`;
-    case 'is_not_empty': return `(${col} IS NOT NULL AND ${col} != '')`;
+    case 'equals':       params.push(value);              return `${colExpr} = $${params.length}`;
+    case 'not_equals':   params.push(value);              return `${colExpr} != $${params.length}`;
+    case 'contains':     params.push(`%${value}%`);       return `${colExpr} ILIKE $${params.length}`;
+    case 'not_contains': params.push(`%${value}%`);       return `${colExpr} NOT ILIKE $${params.length}`;
+    case 'starts_with':  params.push(`${value}%`);        return `${colExpr} ILIKE $${params.length}`;
+    case 'ends_with':    params.push(`%${value}`);        return `${colExpr} ILIKE $${params.length}`;
+    case 'is_empty':     return `(${col} IS NULL OR ${colExpr} = '')`;
+    case 'is_not_empty': return `(${col} IS NOT NULL AND ${colExpr} != '')`;
     case 'gt':           params.push(value);              return `${col} > $${params.length}`;
     case 'lt':           params.push(value);              return `${col} < $${params.length}`;
     case 'gte':          params.push(value);              return `${col} >= $${params.length}`;
@@ -120,7 +132,7 @@ export function buildWhereClause(filters, logic, objectName) {
     if (!fieldDef) continue;                     // unknown field — skip (security)
     if (!VALID_OPERATORS.has(f.operator)) continue; // unknown operator — skip
 
-    const part = applyOperator(fieldDef.col, f.operator, f.value ?? '', f.value_to, params);
+    const part = applyOperator(fieldDef.col, f.operator, f.value ?? '', f.value_to, params, fieldDef.type);
     parts.push(part);
   }
 
@@ -161,10 +173,13 @@ async function attachFilters(rows) {
 export async function getListViewsForUser(objectName, userId) {
   validateObjectName(objectName);
   const res = await query(
-    `SELECT * FROM list_views
-     WHERE object_name = $1
-       AND (is_system = true OR owner_id = $2)
-     ORDER BY is_system DESC, is_favorite DESC, name ASC`,
+    `SELECT lv.*,
+            (p.user_id IS NOT NULL) AS is_pinned
+     FROM list_views lv
+     LEFT JOIN list_view_pins p ON p.list_view_id = lv.id AND p.user_id = $2
+     WHERE lv.object_name = $1
+       AND (lv.is_system = true OR lv.owner_id = $2)
+     ORDER BY lv.is_system DESC, lv.is_favorite DESC, lv.name ASC`,
     [objectName, userId]
   );
   return attachFilters(res.rows);
@@ -268,6 +283,54 @@ export async function toggleFavorite(id, userId) {
   validateOwnership(lv, userId);
   await query(`UPDATE list_views SET is_favorite = NOT is_favorite, updated_at = NOW() WHERE id = $1`, [id]);
   return getListView(id, userId);
+}
+
+// ── Pin / Unpin ───────────────────────────────────────────────────────────────
+
+export async function togglePin(id, userId) {
+  const lv = await getListView(id, userId);
+  const { rows } = await query(
+    'SELECT 1 FROM list_view_pins WHERE user_id = $1 AND list_view_id = $2',
+    [userId, lv.id]
+  );
+  if (rows.length > 0) {
+    await query('DELETE FROM list_view_pins WHERE user_id = $1 AND list_view_id = $2', [userId, lv.id]);
+    return false;
+  } else {
+    await query(
+      'INSERT INTO list_view_pins (user_id, list_view_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+      [userId, lv.id]
+    );
+    return true;
+  }
+}
+
+// ── Recents ───────────────────────────────────────────────────────────────────
+
+export async function recordRecentView(id, userId) {
+  await query(
+    `INSERT INTO list_view_recents (user_id, list_view_id, accessed_at)
+     VALUES ($1, $2, NOW())
+     ON CONFLICT (user_id, list_view_id) DO UPDATE SET accessed_at = NOW()`,
+    [userId, id]
+  );
+}
+
+export async function getRecentViews(userId, objectName, limit = 5) {
+  validateObjectName(objectName);
+  const { rows } = await query(
+    `SELECT lv.*,
+            (p.user_id IS NOT NULL) AS is_pinned,
+            true AS is_recent
+     FROM list_view_recents r
+     JOIN list_views lv ON lv.id = r.list_view_id
+     LEFT JOIN list_view_pins p ON p.list_view_id = lv.id AND p.user_id = $1
+     WHERE r.user_id = $1 AND lv.object_name = $2
+     ORDER BY r.accessed_at DESC
+     LIMIT $3`,
+    [userId, objectName, limit]
+  );
+  return attachFilters(rows);
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

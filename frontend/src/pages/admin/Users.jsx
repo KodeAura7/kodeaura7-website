@@ -306,6 +306,7 @@ export default function Users() {
 
       <ListViewSelector
         views={lv.views}
+        recentViews={lv.recentViews}
         activeId={lv.activeId}
         fieldConfig={lv.fieldConfig}
         loading={lv.loading}
@@ -316,6 +317,7 @@ export default function Users() {
         onDelete={lv.deleteView}
         onSetDefault={lv.setDefault}
         onFavorite={lv.toggleFavorite}
+        onPin={lv.togglePin}
       />
 
       {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div> : null}

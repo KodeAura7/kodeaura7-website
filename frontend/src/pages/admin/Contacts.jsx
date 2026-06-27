@@ -10,6 +10,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { usePermissions } from '../../contexts/PermissionsContext';
 import { useListViews } from '../../hooks/useListViews';
 import ListViewSelector from '../../components/admin/listviews/ListViewSelector';
+import MigrateModal from '../../components/admin/MigrateModal';
 
 const LIMIT = 20;
 
@@ -73,6 +74,7 @@ export default function Contacts() {
   const [checkedIds, setCheckedIds] = useState(new Set());
   const [bulkStatus, setBulkStatus] = useState('in_progress');
   const [bulkLoading, setBulkLoading] = useState(false);
+  const [migrateOpen, setMigrateOpen] = useState(false);
   const [deleting, setDeleting] = useState(null);
   const [error, setError] = useState('');
   const [exporting, setExporting] = useState(false);
@@ -158,6 +160,7 @@ export default function Contacts() {
       {/* List View Selector */}
       <ListViewSelector
         views={lv.views}
+        recentViews={lv.recentViews}
         activeId={lv.activeId}
         fieldConfig={lv.fieldConfig}
         loading={lv.loading}
@@ -168,29 +171,39 @@ export default function Contacts() {
         onDelete={lv.deleteView}
         onSetDefault={lv.setDefault}
         onFavorite={lv.toggleFavorite}
+        onPin={lv.togglePin}
       />
 
       {error ? (
         <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div>
       ) : null}
 
-      {/* Bulk toolbar — only shown when user can update status */}
-      {checkedIds.size > 0 && canDo('contacts.status_update') ? (
+      {/* Bulk toolbar */}
+      {checkedIds.size > 0 ? (
         <div className="mb-4 flex flex-wrap items-center gap-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3">
           <span className="text-xs text-indigo-400 font-medium">{checkedIds.size} selected</span>
-          <div className="flex items-center gap-2 ml-auto">
-            <select
-              value={bulkStatus}
-              onChange={(e) => setBulkStatus(e.target.value)}
-              className="bg-[#18181B] border border-zinc-700 rounded-lg px-3 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500/50"
-            >
-              {CONTACT_STATUSES.map((s) => (
-                <option key={s} value={s}>{STATUS_LABEL[s]}</option>
-              ))}
-            </select>
-            <button onClick={handleBulkStatus} disabled={bulkLoading}
-              className="px-3 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white text-xs font-medium transition-all disabled:opacity-60">
-              {bulkLoading ? 'Applying…' : 'Apply'}
+          <div className="flex items-center gap-2 ml-auto flex-wrap">
+            {canDo('contacts.status_update') && (
+              <>
+                <select
+                  value={bulkStatus}
+                  onChange={(e) => setBulkStatus(e.target.value)}
+                  className="bg-[#18181B] border border-zinc-700 rounded-lg px-3 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500/50"
+                >
+                  {CONTACT_STATUSES.map((s) => (
+                    <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+                  ))}
+                </select>
+                <button onClick={handleBulkStatus} disabled={bulkLoading}
+                  className="px-3 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white text-xs font-medium transition-all disabled:opacity-60">
+                  {bulkLoading ? 'Applying…' : 'Apply'}
+                </button>
+              </>
+            )}
+            <button onClick={() => setMigrateOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-indigo-500/50 text-zinc-300 hover:text-indigo-300 text-xs font-medium transition-all">
+              <Icon icon="solar:transfer-horizontal-linear" width={13} />
+              Migrate
             </button>
             <button onClick={() => setCheckedIds(new Set())}
               className="px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-zinc-500 text-zinc-400 text-xs transition-all">
@@ -199,6 +212,15 @@ export default function Contacts() {
           </div>
         </div>
       ) : null}
+
+      {migrateOpen && (
+        <MigrateModal
+          objectName="contacts"
+          selectedIds={checkedIds}
+          onClose={() => setMigrateOpen(false)}
+          onSuccess={() => { setMigrateOpen(false); setCheckedIds(new Set()); load(); }}
+        />
+      )}
 
       <TableToolbar
         search={search} onSearch={(v) => setSearch(v)}

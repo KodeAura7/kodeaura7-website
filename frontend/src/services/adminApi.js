@@ -76,7 +76,12 @@ export const adminApi = {
     request(`/api/admin/newsletter/${id}`, { method: 'DELETE' }),
   exportNewsletter: () => downloadCsv('/api/admin/newsletter/export', 'newsletter.csv'),
 
-  services: () => request('/api/admin/services'),
+  services: (params = {}) => {
+    const p = { ...params };
+    if (!p.list_view_id) delete p.list_view_id;
+    const qs = new URLSearchParams(p).toString();
+    return request(`/api/admin/services${qs ? `?${qs}` : ''}`);
+  },
   createService: (data) => request('/api/admin/services', { method: 'POST', body: JSON.stringify(data) }),
   updateService: (id, data) => request(`/api/admin/services/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteService: (id) => request(`/api/admin/services/${id}`, { method: 'DELETE' }),
@@ -134,12 +139,18 @@ export const adminApi = {
   getListViews: (objectName) => request(`/api/admin/list-views?object=${objectName}`),
   getListView: (id) => request(`/api/admin/list-views/${id}`),
   getListViewFields: (objectName) => request(`/api/admin/list-views/fields?object=${objectName}`),
+  getRecentListViews: (objectName) => request(`/api/admin/list-views/recents?object=${objectName}`),
   createListView: (data) => request('/api/admin/list-views', { method: 'POST', body: JSON.stringify(data) }),
   updateListView: (id, data) => request(`/api/admin/list-views/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteListView: (id) => request(`/api/admin/list-views/${id}`, { method: 'DELETE' }),
   duplicateListView: (id) => request(`/api/admin/list-views/${id}/duplicate`, { method: 'POST' }),
   setListViewDefault: (id) => request(`/api/admin/list-views/${id}/default`, { method: 'PATCH' }),
   toggleListViewFavorite: (id) => request(`/api/admin/list-views/${id}/favorite`, { method: 'PATCH' }),
+  toggleListViewPin: (id) => request(`/api/admin/list-views/${id}/pin`, { method: 'PATCH' }),
+  recordListViewRecent: (id) => request(`/api/admin/list-views/${id}/recent`, { method: 'POST' }),
+
+  migrateRecords: (ids, objectName, targetEnv) =>
+    request('/api/admin/migrate', { method: 'POST', body: JSON.stringify({ ids, objectName, targetEnv }) }),
 
   getMyPermissions: () => request('/api/admin/permissions/my'),
   getPermissions: (role) => request(`/api/admin/permissions${role ? `?role=${role}` : ''}`),

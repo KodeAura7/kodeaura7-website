@@ -147,7 +147,7 @@ function AdminLayoutInner() {
   const close = () => setSidebarOpen(false);
 
   return (
-    <div className="min-h-screen bg-[#09090B] flex">
+    <div className="h-screen bg-[#09090B] flex overflow-hidden">
       {sidebarOpen && (
         <div className="fixed inset-0 z-20 bg-black/60 md:hidden" onClick={close} />
       )}

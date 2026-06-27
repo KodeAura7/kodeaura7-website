@@ -5,6 +5,8 @@ import { TableToolbar } from '../../components/admin/TableToolbar';
 import { useColumnVisibility } from '../../hooks/useColumnVisibility';
 import { useToast } from '../../contexts/ToastContext';
 import { usePermissions } from '../../contexts/PermissionsContext';
+import { useListViews } from '../../hooks/useListViews';
+import ListViewSelector from '../../components/admin/listviews/ListViewSelector';
 
 const SVC_COLS = [
   { key: 'num', label: '#' },
@@ -246,6 +248,7 @@ function HistorySidebar({ serviceId, editMode, onRevert, open, onToggle, history
 export default function AdminServices() {
   const { success, error: toastError } = useToast();
   const { canDo } = usePermissions();
+  const lv = useListViews('services');
   const [view, setView] = useState('list');
   const [editMode, setEditMode] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(true);
@@ -273,8 +276,13 @@ export default function AdminServices() {
 
   const handleSvcFilter = (key, val) => setSvcFilters(f => ({ ...f, [key]: val }));
 
-  const loadAll = () => { setError(''); adminApi.services().then(setItems).catch(e => setError(e.message)); };
-  useEffect(() => { loadAll(); }, []);
+  const loadAll = () => {
+    setError('');
+    adminApi.services({ list_view_id: lv.activeId || '' })
+      .then(setItems)
+      .catch(e => setError(e.message));
+  };
+  useEffect(() => { loadAll(); }, [lv.activeId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setField = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
@@ -748,6 +756,23 @@ export default function AdminServices() {
           )}
         </div>
       </div>
+
+      {/* List View Selector */}
+      <ListViewSelector
+        views={lv.views}
+        recentViews={lv.recentViews}
+        activeId={lv.activeId}
+        fieldConfig={lv.fieldConfig}
+        loading={lv.loading}
+        onSelect={lv.setActiveView}
+        onCreate={lv.createView}
+        onEdit={(id, data) => lv.updateView(id, data)}
+        onDuplicate={lv.duplicateView}
+        onDelete={lv.deleteView}
+        onSetDefault={lv.setDefault}
+        onFavorite={lv.toggleFavorite}
+        onPin={lv.togglePin}
+      />
 
       {importMsg.text ? (
         <div className={`border rounded-xl p-3 text-sm mb-4 flex items-center gap-2 ${importMsg.type === 'error' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'}`}>

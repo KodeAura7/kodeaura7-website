@@ -5,8 +5,11 @@ import {
   duplicateListView,
   getListView,
   getListViewsForUser,
+  getRecentViews,
+  recordRecentView,
   setDefault,
   toggleFavorite,
+  togglePin,
   updateListView,
 } from '../services/listViewService.js';
 
@@ -56,6 +59,23 @@ export async function makeDefault(req, res) {
 export async function favorite(req, res) {
   const lv = await toggleFavorite(req.params.id, userId(req));
   res.json(lv);
+}
+
+export async function pin(req, res) {
+  const nowPinned = await togglePin(req.params.id, userId(req));
+  res.json({ pinned: nowPinned });
+}
+
+export async function recents(req, res) {
+  const objectName = req.query.object;
+  if (!objectName) return res.status(400).json({ message: 'object query param is required.' });
+  const views = await getRecentViews(userId(req), objectName);
+  res.json(views);
+}
+
+export async function recordRecent(req, res) {
+  await recordRecentView(req.params.id, userId(req));
+  res.json({ ok: true });
 }
 
 export async function getFieldConfig(req, res) {
