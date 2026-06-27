@@ -26,7 +26,6 @@ const PRESET_ICONS = [
 const EMPTY_FORM = { name: '', url: '', icon: 'mdi:linkedin', enabled: true, sort_order: 0 };
 
 function IconPicker({ value, onChange }) {
-  const [custom, setCustom] = useState('');
   const isPreset = PRESET_ICONS.some((p) => p.id === value);
 
   return (
@@ -59,7 +58,7 @@ function IconPicker({ value, onChange }) {
         <input
           type="text"
           value={isPreset ? '' : value}
-          onChange={(e) => { setCustom(e.target.value); onChange(e.target.value || 'mdi:link'); }}
+          onChange={(e) => onChange(e.target.value || 'mdi:link')}
           placeholder="Or type custom Iconify ID, e.g. mdi:rss"
           className={INPUT + ' font-mono text-xs'}
         />
