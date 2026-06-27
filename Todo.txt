@@ -11,8 +11,17 @@ Create listviews:
 User can create listviews with the name and there user can set filteration and save.
 Using this user can set listview type. For example: if user wants a seperate lisviews where all closed contact will display then they will create a Closed Contacts lisview where a filter will applied Status-> closed. Also user can update filters add more etc just like in salesforce listviews.
 
+1.2: 
+audit log records are not creating. but limit on it. in any way whichever will be the best.
 
 Pending::::::::::::::::::
 
-audit log records are not creating. but limit on it. in any way whichever will be the best.
+
+
+1.3: 
+Change history of branding section should be in right side similarly on other pages history.
+
+download button to download all data saved in database. Within seperated files. So that can also be import from other environments using import button. So create import and export whole databse button too for super admin User
+
+
 

@@ -13,6 +13,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export function createApp() {
   const app = express();
 
+  // Trust the first proxy (Render, Cloudflare, etc.) so rate limiters
+  // use the real client IP from X-Forwarded-For instead of the proxy IP.
+  app.set('trust proxy', 1);
+
   app.use(helmet());
   app.use(cors({ origin: env.corsOrigin, credentials: false }));
   app.use(express.json({ limit: '50kb' }));
