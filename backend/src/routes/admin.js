@@ -34,6 +34,12 @@ import {
 } from '../controllers/listViewController.js';
 import { initiateMigration } from '../controllers/migrateController.js';
 import { list as listAuditLogs } from '../controllers/auditLogController.js';
+import {
+  getSources,
+  listReports, getReport, createReport, updateReport, toggleFavorite as toggleReportFavorite, deleteReport, runReport, executeConfig,
+  listFolders, createFolder, deleteFolder,
+  listDashboards, getDashboard as getDashboardById, getDefaultDashboard, createDashboard, updateDashboard, deleteDashboard, getWidgetData,
+} from '../controllers/reportsController.js';
 import { exportDatabase, importDatabase, dbImportUpload, getCollectionCounts } from '../controllers/dbAdminController.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { authorize } from '../middleware/authorize.js';
@@ -141,6 +147,28 @@ router.patch('/list-views/:id/default',    asyncHandler(setListViewDefault));
 router.patch('/list-views/:id/favorite',   asyncHandler(favoriteListView));
 router.patch('/list-views/:id/pin',        asyncHandler(pinListView));
 router.post('/list-views/:id/recent',      asyncHandler(recordRecentListView));
+
+// ── Reports & Dashboards ──────────────────────────────────────────────────────
+router.get('/reports/sources',            asyncHandler(getSources));
+router.post('/reports/execute',           asyncHandler(executeConfig));
+router.get('/reports/folders',            asyncHandler(listFolders));
+router.post('/reports/folders',           asyncHandler(createFolder));
+router.delete('/reports/folders/:id',     asyncHandler(deleteFolder));
+router.get('/reports',                    asyncHandler(listReports));
+router.post('/reports',                   asyncHandler(createReport));
+router.get('/reports/:id',                asyncHandler(getReport));
+router.put('/reports/:id',                asyncHandler(updateReport));
+router.patch('/reports/:id/favorite',     asyncHandler(toggleReportFavorite));
+router.delete('/reports/:id',             asyncHandler(deleteReport));
+router.post('/reports/:id/run',           asyncHandler(runReport));
+
+router.get('/dashboards/default',         asyncHandler(getDefaultDashboard));
+router.post('/dashboards/widget-data',    asyncHandler(getWidgetData));
+router.get('/dashboards',                 asyncHandler(listDashboards));
+router.post('/dashboards',                asyncHandler(createDashboard));
+router.get('/dashboards/:id',             asyncHandler(getDashboardById));
+router.put('/dashboards/:id',             asyncHandler(updateDashboard));
+router.delete('/dashboards/:id',          asyncHandler(deleteDashboard));
 
 // ── Migrate Records ───────────────────────────────────────────────────────────
 router.post('/migrate', asyncHandler(initiateMigration));

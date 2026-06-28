@@ -27,6 +27,11 @@ const AdminPermissions = lazy(() => import('../pages/admin/Permissions.jsx'));
 const AdminContactForm = lazy(() => import('../pages/admin/ContactFormManager.jsx'));
 const AuditLog = lazy(() => import('../pages/admin/AuditLog.jsx'));
 const SystemSettings = lazy(() => import('../pages/admin/SystemSettings.jsx'));
+const Reports = lazy(() => import('../pages/admin/Reports.jsx'));
+const ReportBuilder = lazy(() => import('../pages/admin/ReportBuilder.jsx'));
+const ReportViewer = lazy(() => import('../pages/admin/ReportViewer.jsx'));
+const Dashboards = lazy(() => import('../pages/admin/Dashboards.jsx'));
+const DashboardBuilder = lazy(() => import('../pages/admin/DashboardBuilder.jsx'));
 
 export const routes = [
   { path: '/', element: <Home /> },
@@ -71,7 +76,14 @@ export const routes = [
       { path: 'permissions', element: <AdminPermissions /> },
       { path: 'users', element: <Users /> },
       { path: 'audit-log', element: <AuditLog /> },
-      { path: 'system-settings', element: <SystemSettings /> }
+      { path: 'system-settings', element: <SystemSettings /> },
+      { path: 'reports', element: <Reports /> },
+      { path: 'reports/new', element: <ReportBuilder /> },
+      { path: 'reports/:id/edit', element: <ReportBuilder /> },
+      { path: 'reports/:id/view', element: <ReportViewer /> },
+      { path: 'dashboards', element: <Dashboards /> },
+      { path: 'dashboards/new', element: <DashboardBuilder /> },
+      { path: 'dashboards/:id/edit', element: <DashboardBuilder /> },
     ]
   }
 ];

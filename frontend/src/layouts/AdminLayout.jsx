@@ -38,6 +38,13 @@ const NAV_GROUPS = [
     ],
   },
   {
+    label: 'Analytics',
+    items: [
+      { to: '/admin/dashboards', label: 'Dashboards', icon: 'solar:pie-chart-2-bold-duotone' },
+      { to: '/admin/reports',    label: 'Reports',    icon: 'solar:chart-square-linear' },
+    ],
+  },
+  {
     label: 'Administration',
     roles: ['super_admin'],
     items: [

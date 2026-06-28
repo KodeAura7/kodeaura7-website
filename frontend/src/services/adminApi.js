@@ -233,4 +233,31 @@ export const adminApi = {
     if (!response.ok) throw new Error(data.message || `Import failed: HTTP ${response.status}`);
     return data;
   },
+
+  // ── Reports ───────────────────────────────────────────────────────────────────
+  getReportSources: () => request('/api/admin/reports/sources'),
+  listReports: (params = {}) => {
+    const qs = new URLSearchParams(Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))).toString();
+    return request(`/api/admin/reports${qs ? `?${qs}` : ''}`);
+  },
+  getReport: (id) => request(`/api/admin/reports/${id}`),
+  createReport: (data) => request('/api/admin/reports', { method: 'POST', body: JSON.stringify(data) }),
+  updateReport: (id, data) => request(`/api/admin/reports/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  toggleReportFavorite: (id) => request(`/api/admin/reports/${id}/favorite`, { method: 'PATCH' }),
+  deleteReport: (id) => request(`/api/admin/reports/${id}`, { method: 'DELETE' }),
+  runReport: (id) => request(`/api/admin/reports/${id}/run`, { method: 'POST' }),
+  executeReportConfig: (config) => request('/api/admin/reports/execute', { method: 'POST', body: JSON.stringify({ config }) }),
+
+  listReportFolders: () => request('/api/admin/reports/folders'),
+  createReportFolder: (name) => request('/api/admin/reports/folders', { method: 'POST', body: JSON.stringify({ name }) }),
+  deleteReportFolder: (id) => request(`/api/admin/reports/folders/${id}`, { method: 'DELETE' }),
+
+  // ── Dashboards ────────────────────────────────────────────────────────────────
+  listDashboards: () => request('/api/admin/dashboards'),
+  getDefaultDashboard: () => request('/api/admin/dashboards/default'),
+  getDashboard: (id) => request(`/api/admin/dashboards/${id}`),
+  createDashboard: (data) => request('/api/admin/dashboards', { method: 'POST', body: JSON.stringify(data) }),
+  updateDashboard: (id, data) => request(`/api/admin/dashboards/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteDashboard: (id) => request(`/api/admin/dashboards/${id}`, { method: 'DELETE' }),
+  getWidgetData: (widgetConfig) => request('/api/admin/dashboards/widget-data', { method: 'POST', body: JSON.stringify({ widgetConfig }) }),
 };
