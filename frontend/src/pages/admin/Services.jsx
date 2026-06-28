@@ -265,6 +265,8 @@ export default function AdminServices() {
   const [saving, setSaving] = useState(false);
   const [toggling, setToggling] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+  const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
   const [importMsg, setImportMsg] = useState({ type: '', text: '' });
@@ -383,6 +385,21 @@ export default function AdminServices() {
     try { await adminApi.exportServices([...selected]); success('Exported', 'CSV downloaded.'); }
     catch (e) { setError(e.message); toastError('Export failed', e.message); }
     finally { setExporting(false); }
+  };
+
+  const handleBulkDelete = async () => {
+    setBulkDeleteConfirm(false);
+    setBulkDeleting(true);
+    try {
+      const result = await adminApi.bulkDeleteServices([...selected]);
+      setSelected(new Set());
+      success('Deleted', `${result.deleted} service${result.deleted !== 1 ? 's' : ''} removed.`);
+      loadAll();
+    } catch (e) {
+      toastError('Delete failed', e.message);
+    } finally {
+      setBulkDeleting(false);
+    }
   };
 
   const handleImportFile = async e => {
@@ -806,6 +823,28 @@ export default function AdminServices() {
           <Icon icon="solar:transfer-horizontal-linear" width={13} />
           {someSelected ? `Migrate (${selected.size})` : 'Migrate'}
         </button>
+        {canDo('services.delete') && someSelected && (
+          bulkDeleteConfirm ? (
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-zinc-500">Delete {selected.size}?</span>
+              <button onClick={handleBulkDelete} disabled={bulkDeleting}
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-rose-500 text-white hover:bg-rose-400 transition-all disabled:opacity-50">
+                <Icon icon={bulkDeleting ? 'solar:loading-linear' : 'solar:check-read-linear'} width={11} className={bulkDeleting ? 'animate-spin' : ''} />
+                {bulkDeleting ? 'Deleting…' : 'Confirm'}
+              </button>
+              <button onClick={() => setBulkDeleteConfirm(false)} disabled={bulkDeleting}
+                className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-all">
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => setBulkDeleteConfirm(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-transparent transition-all">
+              <Icon icon="solar:trash-bin-minimalistic-linear" width={13} />
+              Delete ({selected.size})
+            </button>
+          )
+        )}
       </TableToolbar>
 
       <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">

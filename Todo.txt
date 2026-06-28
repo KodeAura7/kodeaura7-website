@@ -21,6 +21,8 @@ no testimonial record migration between environments.
 
 and I am getting multiple record creation of social media again anad again. 
 
+1.5: 
+super admin can update user role.
 
 
 
@@ -36,9 +38,6 @@ checkbox to export databse.
 
 
 
-1.5: 
-super admin can update user role.
-can deactivate any user or activate.
 
 
 

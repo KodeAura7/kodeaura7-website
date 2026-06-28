@@ -67,6 +67,26 @@ export async function adminDelete(req, res) {
   res.status(204).end();
 }
 
+export async function adminBulkDelete(req, res) {
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ message: 'ids must be a non-empty array.' });
+  }
+  const deleted = [];
+  const failed  = [];
+  for (const id of ids) {
+    try {
+      const item = await getServiceById(id).catch(() => null);
+      await deleteService(id);
+      auditLog({ ...actor(req), action: 'service.delete', objectType: 'service', objectId: id, objectLabel: item?.name });
+      deleted.push(id);
+    } catch (e) {
+      failed.push({ id, error: e.message });
+    }
+  }
+  res.json({ deleted: deleted.length, failed: failed.length, errors: failed });
+}
+
 export async function adminSetEnabled(req, res) {
   const result = await setServiceEnabled(req.params.id, req.body.enabled);
   auditLog({

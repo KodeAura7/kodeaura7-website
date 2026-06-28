@@ -85,6 +85,8 @@ export const adminApi = {
   createService: (data) => request('/api/admin/services', { method: 'POST', body: JSON.stringify(data) }),
   updateService: (id, data) => request(`/api/admin/services/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteService: (id) => request(`/api/admin/services/${id}`, { method: 'DELETE' }),
+  bulkDeleteServices: (ids) =>
+    request('/api/admin/services/bulk', { method: 'DELETE', body: JSON.stringify({ ids }) }),
   setServiceEnabled: (id, enabled) =>
     request(`/api/admin/services/${id}/enabled`, { method: 'PATCH', body: JSON.stringify({ enabled }) }),
   setServiceOrder: (id, sort_order) =>
