@@ -81,11 +81,10 @@ export function useToast() {
   const toast = useContext(ToastCtx);
   if (!toast) throw new Error('useToast must be used inside ToastProvider');
 
-  return {
-    toast,
-    success: (title, message, opts) => toast({ type: 'success', title, message, ...opts }),
-    error:   (title, message, opts) => toast({ type: 'error',   title, message, ...opts }),
-    warning: (title, message, opts) => toast({ type: 'warning', title, message, ...opts }),
-    info:    (title, message, opts) => toast({ type: 'info',    title, message, ...opts }),
-  };
+  const success = useCallback((title, message, opts) => toast({ type: 'success', title, message, ...opts }), [toast]);
+  const error   = useCallback((title, message, opts) => toast({ type: 'error',   title, message, ...opts }), [toast]);
+  const warning = useCallback((title, message, opts) => toast({ type: 'warning', title, message, ...opts }), [toast]);
+  const info    = useCallback((title, message, opts) => toast({ type: 'info',    title, message, ...opts }), [toast]);
+
+  return { toast, success, error, warning, info };
 }

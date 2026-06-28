@@ -104,14 +104,17 @@ export default function Reports() {
 
   const load = useCallback(async () => {
     try {
-      const [rRes, fRes] = await Promise.all([
-        adminApi.listReports({ folder_id: activeFolder || undefined }),
-        adminApi.listReportFolders(),
-      ]);
+      const rRes = await adminApi.listReports({ folder_id: activeFolder || undefined });
       setReports(rRes.reports);
-      setFolders(fRes.folders);
     } catch (err) {
       toastError('Failed to load reports', err.message);
+    }
+    // Folders load independently — failure doesn't break the report list
+    try {
+      const fRes = await adminApi.listReportFolders();
+      setFolders(fRes.folders);
+    } catch {
+      // Folders are non-critical; silently skip on error
     }
   }, [activeFolder, toastError]);
 

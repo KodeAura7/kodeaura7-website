@@ -200,16 +200,13 @@ function DashboardHome() {
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   useEffect(() => {
-    Promise.all([adminApi.listDashboards(), adminApi.getDefaultDashboard()])
-      .then(([lr, dr]) => {
-        setDashboards(lr.dashboards);
-        setActiveDash(dr.dashboard);
+    adminApi.listDashboards()
+      .then(({ dashboards: dl }) => {
+        setDashboards(dl);
+        const def = dl.find((d) => d.is_default) ?? dl[0] ?? null;
+        setActiveDash(def);
       })
-      .catch(() => {
-        adminApi.listDashboards()
-          .then(({ dashboards: dl }) => { setDashboards(dl); if (dl[0]) setActiveDash(dl[0]); })
-          .catch((err) => toastError('Failed to load dashboards', err.message));
-      });
+      .catch((err) => toastError('Failed to load dashboards', err.message));
   }, [toastError]);
 
   const handleDelete = async () => {
