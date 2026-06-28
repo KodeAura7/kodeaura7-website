@@ -113,7 +113,7 @@ export default function Reports() {
     } catch (err) {
       toastError('Failed to load reports', err.message);
     }
-  }, [activeFolder]);
+  }, [activeFolder, toastError]);
 
   useEffect(() => { load(); }, [load]);
 

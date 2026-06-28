@@ -320,7 +320,7 @@ export async function getWidgetData(widgetConfig) {
 
 // ─── CRUD ─────────────────────────────────────────────────────────────────────
 
-export async function listReports({ userId, search = '', folderId, isPublic } = {}) {
+export async function listReports({ search = '', folderId, isPublic } = {}) {
   const params = [];
   const conds = [];
   let i = 1;

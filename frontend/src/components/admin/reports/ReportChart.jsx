@@ -66,7 +66,6 @@ export default function ReportChart({ type = 'bar', data = [], xKey = 'label', y
   };
 
   if (type === 'pie' || type === 'donut') {
-    const total = data.reduce((s, d) => s + (Number(d[yKeys[0]]) || 0), 0);
     return (
       <ResponsiveContainer width="100%" height={height}>
         <PieChart>

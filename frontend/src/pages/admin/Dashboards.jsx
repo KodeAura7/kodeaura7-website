@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Icon from '../../components/Icon';
 import { adminApi } from '../../services/adminApi';
 import { useToast } from '../../contexts/ToastContext';
@@ -17,7 +17,7 @@ function useWidgetData(widget) {
     adminApi.getWidgetData({ ...widget.config, type: widget.type })
       .then(({ data: d }) => { setData(d); setLoading(false); })
       .catch((err) => { setError(err.message); setLoading(false); });
-  }, [widget?.id, widget?.config]);
+  }, [widget?.id, widget?.config, widget?.type]);
 
   return { data, loading, error };
 }
@@ -152,7 +152,7 @@ const W_CLASSES = { 1: 'col-span-1', 2: 'col-span-2', 3: 'col-span-3', 4: 'col-s
 const H_CLASSES = { 1: 'min-h-[120px]', 2: 'min-h-[260px]', 3: 'min-h-[380px]' };
 
 // ── Dashboard viewer ──────────────────────────────────────────────────────────
-function DashboardView({ dashboard, onRefresh }) {
+function DashboardView({ dashboard }) {
   const widgets = dashboard.widgets ?? [];
   const kpis   = widgets.filter((w) => w.type === 'kpi');
   const charts  = widgets.filter((w) => w.type !== 'kpi');
@@ -194,7 +194,6 @@ function DashboardView({ dashboard, onRefresh }) {
 
 // ── Dashboard home / selector ─────────────────────────────────────────────────
 function DashboardHome() {
-  const navigate = useNavigate();
   const { success, error: toastError } = useToast();
   const [dashboards, setDashboards] = useState(null);
   const [activeDash, setActiveDash] = useState(null);
@@ -211,7 +210,7 @@ function DashboardHome() {
           .then(({ dashboards: dl }) => { setDashboards(dl); if (dl[0]) setActiveDash(dl[0]); })
           .catch((err) => toastError('Failed to load dashboards', err.message));
       });
-  }, []);
+  }, [toastError]);
 
   const handleDelete = async () => {
     if (!deleteConfirm) return;

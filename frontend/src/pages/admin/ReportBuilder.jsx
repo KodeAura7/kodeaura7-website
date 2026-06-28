@@ -481,7 +481,7 @@ export default function ReportBuilder() {
         });
       }).catch((err) => toastError('Failed to load', err.message));
     }
-  }, [id]);
+  }, [id, isEdit, toastError]);
 
   const canNext = useCallback(() => {
     if (step === 0) return config.source && config.type;
@@ -490,15 +490,15 @@ export default function ReportBuilder() {
     return true;
   }, [step, config]);
 
-  const buildApiConfig = () => ({
+  const buildApiConfig = useCallback(() => ({
     source: config.source,
     report_type: config.type,
     ...(config.type === 'tabular'
       ? { columns: config.columns, sort: config.sort, limit: config.limit }
-      : { groupBy: config.groupBy, aggregations: config.aggregations.map(({ id: _, ...rest }) => rest), sort: config.sort }),
-    filters: (config.filters ?? []).map(({ id: _, ...rest }) => rest),
+      : { groupBy: config.groupBy, aggregations: config.aggregations.map(({ fn, field, alias }) => ({ fn, field, alias })), sort: config.sort }),
+    filters: (config.filters ?? []).map(({ field, op, value, logic }) => ({ field, op, value, logic })),
     chart: config.chart,
-  });
+  }), [config]);
 
   const handlePreview = useCallback(async () => {
     if (!config.source) return;
@@ -508,7 +508,7 @@ export default function ReportBuilder() {
       setPreviewData(data);
     } catch (err) { toastError('Preview failed', err.message); }
     finally { setPreviewing(false); }
-  }, [config]);
+  }, [config.source, buildApiConfig, toastError]);
 
   const handleSave = async () => {
     if (!config.name?.trim()) return toastError('Name required', 'Please enter a report name.');

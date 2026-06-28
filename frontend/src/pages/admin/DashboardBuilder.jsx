@@ -81,7 +81,7 @@ function WidgetConfigPanel({ widget, sources, onChange, onClose }) {
   const setCfg = (patch) => onChange({ ...widget, config: { ...widget.config, ...patch } });
   const setMetric = (patch) => setCfg({ metric: { ...widget.config.metric, ...patch } });
 
-  const fetchPreview = async () => {
+  const fetchPreview = useCallback(async () => {
     if (!widget.config.source) return;
     setPreviewing(true);
     try {
@@ -89,9 +89,9 @@ function WidgetConfigPanel({ widget, sources, onChange, onClose }) {
       setPreview(data);
     } catch { setPreview(null); }
     finally { setPreviewing(false); }
-  };
+  }, [widget.config, widget.type]);
 
-  useEffect(() => { fetchPreview(); }, [widget.config.source, widget.config.groupBy, widget.config.metric?.fn, widget.type]);
+  useEffect(() => { fetchPreview(); }, [fetchPreview]);
 
   return (
     <div className="w-80 flex-shrink-0 bg-[#0E0E10] border-l border-zinc-800 flex flex-col h-full overflow-hidden">
@@ -311,7 +311,7 @@ export default function DashboardBuilder() {
         setWidgets(dashboard.widgets ?? []);
       }).catch((err) => toastError('Failed to load', err.message));
     }
-  }, [id]);
+  }, [id, isEdit, toastError]);
 
   const addWidget = (type) => {
     const w = defaultWidget(type);

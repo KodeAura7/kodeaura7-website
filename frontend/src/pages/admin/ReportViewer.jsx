@@ -1,3 +1,4 @@
+/* global Blob */
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import Icon from '../../components/Icon';
@@ -42,7 +43,7 @@ function exportCsv(columns, rows, filename) {
 export default function ReportViewer() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { success, error: toastError } = useToast();
+  const { error: toastError } = useToast();
 
   const [report, setReport] = useState(null);
   const [data, setData] = useState(null);
@@ -63,7 +64,7 @@ export default function ReportViewer() {
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, toastError]);
 
   useEffect(() => { load(); }, [load]);
 
