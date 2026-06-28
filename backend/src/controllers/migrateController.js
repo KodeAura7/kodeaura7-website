@@ -3,8 +3,8 @@ import { query } from '../database/pool.js';
 const MIGRATION_TOKEN = process.env.MIGRATION_TOKEN || '';
 
 function getEnvUrl(env) {
-  if (env === 'production') return process.env.PRODUCTION_URL || 'https://kodeaura7.in';
-  if (env === 'staging')    return process.env.STAGING_URL    || 'https://staging.kodeaura7.in';
+  if (env === 'production') return process.env.PRODUCTION_URL || null;
+  if (env === 'staging')    return process.env.STAGING_URL    || null;
   return null;
 }
 
@@ -151,7 +151,9 @@ export async function initiateMigration(req, res) {
 
   const targetUrl = getEnvUrl(targetEnv);
   if (!targetUrl) {
-    return res.status(503).json({ message: `No URL configured for environment: ${targetEnv}` });
+    return res.status(503).json({
+      message: `PRODUCTION_URL / STAGING_URL env var not set on this server. Set ${targetEnv === 'production' ? 'PRODUCTION_URL' : 'STAGING_URL'} to the backend API URL (e.g. https://your-render-app.onrender.com), NOT the Vercel frontend URL.`,
+    });
   }
 
   // Fetch records
