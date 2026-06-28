@@ -66,6 +66,8 @@ export const adminApi = {
     request('/api/admin/contacts/bulk-status', { method: 'PATCH', body: JSON.stringify({ ids, status }) }),
   deleteContact: (id) =>
     request(`/api/admin/contacts/${id}`, { method: 'DELETE' }),
+  bulkDeleteContacts: (ids) =>
+    request('/api/admin/contacts/bulk', { method: 'DELETE', body: JSON.stringify({ ids }) }),
   exportContacts: () => downloadCsv('/api/admin/contacts/export', 'contacts.csv'),
 
   userRollup: () => request('/api/admin/users/rollup'),
@@ -74,6 +76,8 @@ export const adminApi = {
     request(`/api/admin/newsletter?${new URLSearchParams(params)}`),
   deleteNewsletter: (id) =>
     request(`/api/admin/newsletter/${id}`, { method: 'DELETE' }),
+  bulkDeleteNewsletter: (ids) =>
+    request('/api/admin/newsletter/bulk', { method: 'DELETE', body: JSON.stringify({ ids }) }),
   exportNewsletter: () => downloadCsv('/api/admin/newsletter/export', 'newsletter.csv'),
 
   services: (params = {}) => {
@@ -109,6 +113,7 @@ export const adminApi = {
   exportSocialLinks: () => downloadCsv('/api/admin/social-links/export', 'social-links.csv'),
 
   testimonials: () => request('/api/admin/testimonials'),
+  deleteTestimonial: (id) => request(`/api/admin/testimonials/${id}`, { method: 'DELETE' }),
   exportTestimonials: () => downloadCsv('/api/admin/testimonials/export', 'testimonials.csv'),
   importTestimonials: (csv) =>
     request('/api/admin/testimonials/import', { method: 'POST', body: JSON.stringify({ csv }) }),

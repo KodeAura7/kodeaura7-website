@@ -341,7 +341,7 @@ export default function Users() {
   const [sort, setSort] = useState('name');
   const [dir, setDir] = useState('asc');
   const [filters, setFilters] = useState({});
-  const { visibleCols, toggle: toggleCol, reset: resetCols } = useColumnVisibility('users', COLS);
+  const { visibleCols, visibleOrdered, allOrdered, toggle: toggleCol, reset: resetCols, reorder: reorderCols } = useColumnVisibility('users', COLS);
 
   const handleFilter = (key, val) => setFilters((f) => ({ ...f, [key]: val }));
 
@@ -456,7 +456,8 @@ export default function Users() {
               sortOptions={SORT_OPTIONS} sort={sort} dir={dir}
               onSort={(col, d) => { setSort(col); setDir(d); }}
               filterGroups={FILTER_GROUPS} filters={filters} onFilter={handleFilter}
-              columns={COLS} visibleCols={visibleCols} onColumnsToggle={toggleCol} onColumnsReset={resetCols}
+              columns={COLS} allOrdered={allOrdered} visibleCols={visibleCols}
+              onColumnsToggle={toggleCol} onColumnsReset={resetCols} onColumnsReorder={reorderCols}
               placeholder="Search by name or email…"
             />
             <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
@@ -464,7 +465,7 @@ export default function Users() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-[#18181B] border-b border-zinc-800">
-                      {COLS.filter((c) => visibleCols.has(c.key)).map(({ key, label }) => (
+                      {visibleOrdered.map(({ key, label }) => (
                         <th key={key} onClick={() => { setSort(key); setDir((d) => sort === key && d === 'asc' ? 'desc' : 'asc'); }}
                           className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider cursor-pointer hover:text-zinc-300 transition-colors select-none">
                           {label}
@@ -481,18 +482,21 @@ export default function Users() {
                     ) : (
                       filtered.map((u) => (
                         <tr key={u.id} className="hover:bg-zinc-800/30 transition-colors">
-                          {visibleCols.has('name') && <td className="px-4 py-3 text-zinc-200 font-medium whitespace-nowrap">{u.name}</td>}
-                          {visibleCols.has('email') && <td className="px-4 py-3 text-zinc-400 whitespace-nowrap">{u.email}</td>}
-                          {visibleCols.has('role') && (
-                            <td className="px-4 py-3 whitespace-nowrap">
-                              {isSuperAdmin
-                                ? <InlineRolePicker userId={u.id} currentRole={u.role} isSelf={u.id === me?.id} onChanged={handleRoleChange} />
-                                : <RoleBadge role={u.role} />}
-                            </td>
-                          )}
-                          {visibleCols.has('status') && <td className="px-4 py-3 whitespace-nowrap"><StatusDot status={u.status} /></td>}
-                          {visibleCols.has('last_login') && <td className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">{u.last_login ? new Date(u.last_login).toLocaleDateString() : '—'}</td>}
-                          {visibleCols.has('created_at') && <td className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">{new Date(u.created_at).toLocaleDateString()}</td>}
+                          {visibleOrdered.map(({ key }) => {
+                            if (key === 'name')       return <td key={key} className="px-4 py-3 text-zinc-200 font-medium whitespace-nowrap">{u.name}</td>;
+                            if (key === 'email')      return <td key={key} className="px-4 py-3 text-zinc-400 whitespace-nowrap">{u.email}</td>;
+                            if (key === 'role')       return (
+                              <td key={key} className="px-4 py-3 whitespace-nowrap">
+                                {isSuperAdmin
+                                  ? <InlineRolePicker userId={u.id} currentRole={u.role} isSelf={u.id === me?.id} onChanged={handleRoleChange} />
+                                  : <RoleBadge role={u.role} />}
+                              </td>
+                            );
+                            if (key === 'status')     return <td key={key} className="px-4 py-3 whitespace-nowrap"><StatusDot status={u.status} /></td>;
+                            if (key === 'last_login') return <td key={key} className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">{u.last_login ? new Date(u.last_login).toLocaleDateString() : '—'}</td>;
+                            if (key === 'created_at') return <td key={key} className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">{new Date(u.created_at).toLocaleDateString()}</td>;
+                            return null;
+                          })}
                           {isSuperAdmin && (
                             <td className="px-4 py-3 text-right whitespace-nowrap">
                               <div className="flex items-center justify-end gap-2">

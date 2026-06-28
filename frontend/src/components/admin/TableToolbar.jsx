@@ -138,8 +138,18 @@ function SortPopover({ sortOptions, sort, dir, onSort }) {
 
 // ─── Columns popover ──────────────────────────────────────────────────────────
 
-function ColumnsPopover({ columns, visibleCols, onToggle, onReset }) {
-  const hiddenCount = columns.length - visibleCols.size;
+function ColumnsPopover({ columns, allOrdered, visibleCols, onToggle, onReset, onReorder }) {
+  const [dragKey, setDragKey] = useState(null);
+  const [dragOverKey, setDragOverKey] = useState(null);
+  const displayCols = allOrdered || columns;
+  const hiddenCount = displayCols.length - visibleCols.size;
+
+  const handleDrop = (dropKey) => {
+    if (dragKey && dragKey !== dropKey && onReorder) onReorder(dragKey, dropKey);
+    setDragKey(null);
+    setDragOverKey(null);
+  };
+
   return (
     <Popover
       align="right"
@@ -157,20 +167,40 @@ function ColumnsPopover({ columns, visibleCols, onToggle, onReset }) {
     >
       {() => (
         <div className="p-2 w-52">
-          <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-wider px-2 py-1.5">Visible columns</p>
-          {columns.map((col) => {
+          <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-wider px-2 py-1.5">
+            {onReorder ? 'Drag to reorder · toggle to hide' : 'Visible columns'}
+          </p>
+          {displayCols.map((col) => {
             const active = visibleCols.has(col.key);
+            const isDragOver = dragOverKey === col.key && dragKey !== col.key;
             return (
-              <button
+              <div
                 key={col.key}
-                onClick={() => onToggle(col.key)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-xs flex items-center gap-2.5 transition-colors ${active ? 'text-zinc-200' : 'text-zinc-600'} hover:bg-zinc-800`}
+                draggable={!!onReorder}
+                onDragStart={() => { setDragKey(col.key); setDragOverKey(null); }}
+                onDragOver={(e) => { e.preventDefault(); setDragOverKey(col.key); }}
+                onDragLeave={() => setDragOverKey(null)}
+                onDrop={() => handleDrop(col.key)}
+                onDragEnd={() => { setDragKey(null); setDragOverKey(null); }}
+                className={`flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors select-none
+                  ${isDragOver ? 'bg-indigo-500/10 border border-indigo-500/30' : 'border border-transparent'}
+                  ${dragKey === col.key ? 'opacity-40' : ''}`}
               >
-                <div className={`w-3.5 h-3.5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${active ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-600'}`}>
-                  {active && <Icon icon="solar:check-read-linear" width={8} className="text-white" />}
-                </div>
-                {col.label}
-              </button>
+                {onReorder && (
+                  <span className="text-zinc-700 hover:text-zinc-500 cursor-grab active:cursor-grabbing shrink-0">
+                    <Icon icon="solar:hamburger-menu-linear" width={12} />
+                  </span>
+                )}
+                <button
+                  onClick={() => onToggle(col.key)}
+                  className={`flex items-center gap-2 flex-1 text-left text-xs transition-colors ${active ? 'text-zinc-200' : 'text-zinc-600'} hover:text-zinc-300`}
+                >
+                  <div className={`w-3.5 h-3.5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${active ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-600'}`}>
+                    {active && <Icon icon="solar:check-read-linear" width={8} className="text-white" />}
+                  </div>
+                  {col.label}
+                </button>
+              </div>
             );
           })}
           <div className="border-t border-zinc-800 mt-1.5 pt-1.5">
@@ -201,9 +231,11 @@ export function TableToolbar({
   filters,
   onFilter,
   columns,
+  allOrdered,
   visibleCols,
   onColumnsToggle,
   onColumnsReset,
+  onColumnsReorder,
   placeholder = 'Search…',
   children,
 }) {
@@ -253,9 +285,11 @@ export function TableToolbar({
         {hasCols && (
           <ColumnsPopover
             columns={columns}
+            allOrdered={allOrdered}
             visibleCols={visibleCols}
             onToggle={onColumnsToggle}
             onReset={onColumnsReset}
+            onReorder={onColumnsReorder}
           />
         )}
 

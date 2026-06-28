@@ -31,6 +31,7 @@ export default function Header() {
   };
 
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  const isCustomer = !!user && !isAdmin;
 
   return (
     <header className="fixed top-0 inset-x-0 z-50 glass-panel border-b border-zinc-800/60">
@@ -62,12 +63,21 @@ export default function Header() {
                     Admin
                   </Link>
                 )}
-                <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-full bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
-                    <Icon icon="solar:user-linear" width={14} className="text-indigo-400" />
+                {isCustomer ? (
+                  <Link to="/welcome" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity" title="My Profile">
+                    <div className="w-7 h-7 rounded-full bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
+                      <Icon icon="solar:user-linear" width={14} className="text-indigo-400" />
+                    </div>
+                    <span className="text-xs text-zinc-400 max-w-[130px] truncate">{user.email}</span>
+                  </Link>
+                ) : (
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-full bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
+                      <Icon icon="solar:user-linear" width={14} className="text-indigo-400" />
+                    </div>
+                    <span className="text-xs text-zinc-400 max-w-[130px] truncate" title={user.email}>{user.email}</span>
                   </div>
-                  <span className="text-xs text-zinc-400 max-w-[130px] truncate" title={user.email}>{user.email}</span>
-                </div>
+                )}
                 <button onClick={handleLogout} className="text-sm font-medium text-zinc-400 hover:text-rose-400 transition-colors">
                   Sign out
                 </button>
@@ -118,6 +128,11 @@ export default function Header() {
                   <Icon icon="solar:user-linear" width={14} />
                   <span className="truncate">{user.email}</span>
                 </div>
+                {isCustomer && (
+                  <Link to="/welcome" onClick={close} className="text-indigo-400 font-medium">
+                    My Profile
+                  </Link>
+                )}
                 {isAdmin && (
                   <Link to="/admin/dashboard" onClick={close} className="text-indigo-400 font-medium">
                     Admin Panel

@@ -3,6 +3,7 @@ import Icon from '../../components/Icon';
 import { useAuth } from '../../hooks/useAuth';
 import { api } from '../../services/api';
 import { adminApi } from '../../services/adminApi';
+import { usePermissions } from '../../contexts/PermissionsContext';
 import MigrateModal from '../../components/admin/MigrateModal';
 
 const STAR_LABELS = ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent'];
@@ -90,6 +91,7 @@ const EMPTY_FORM = { name: '', designation: '', rating: 0, review: '' };
 
 export default function Testimonials() {
   const { user } = useAuth();
+  const { canDo } = usePermissions();
 
   // All testimonials (admin overview table)
   const [items, setItems] = useState(null);
@@ -193,7 +195,7 @@ export default function Testimonials() {
     if (!window.confirm('Delete this review? This cannot be undone.')) return;
     setDeleting(id);
     try {
-      await api.deleteTestimonial(id);
+      await adminApi.deleteTestimonial(id);
       loadMine();
       loadAll();
       if (editId === id) closeForm();
@@ -427,14 +429,16 @@ export default function Testimonials() {
                   >
                     <Icon icon="solar:pen-linear" width={15} />
                   </button>
-                  <button
-                    onClick={() => handleDelete(t.id)}
-                    disabled={deleting === t.id}
-                    className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-30"
-                    title="Delete"
-                  >
-                    <Icon icon="solar:trash-bin-minimalistic-linear" width={15} />
-                  </button>
+                  {canDo('testimonials.edit') && (
+                    <button
+                      onClick={() => handleDelete(t.id)}
+                      disabled={deleting === t.id}
+                      className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-30"
+                      title="Delete"
+                    >
+                      <Icon icon="solar:trash-bin-minimalistic-linear" width={15} />
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

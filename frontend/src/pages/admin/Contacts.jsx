@@ -79,7 +79,7 @@ export default function Contacts() {
   const [error, setError] = useState('');
   const [exporting, setExporting] = useState(false);
   const debouncedSearch = useDebounce(search);
-  const { visibleCols, toggle: toggleCol, reset: resetCols } = useColumnVisibility('contacts', COLS);
+  const { visibleCols, visibleOrdered, allOrdered, toggle: toggleCol, reset: resetCols, reorder: reorderCols } = useColumnVisibility('contacts', COLS);
 
   const load = useCallback(() => {
     setError('');
@@ -128,6 +128,20 @@ export default function Contacts() {
     } finally {
       setBulkLoading(false);
     }
+  };
+
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+  const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState(false);
+
+  const handleBulkDelete = async () => {
+    setBulkDeleteConfirm(false); setBulkDeleting(true);
+    try {
+      const result = await adminApi.bulkDeleteContacts([...checkedIds]);
+      setCheckedIds(new Set());
+      success('Deleted', `${result.deleted} contact${result.deleted !== 1 ? 's' : ''} removed.`);
+      load();
+    } catch (err) { toastError('Delete failed', err.message); }
+    finally { setBulkDeleting(false); }
   };
 
   const handleDelete = async (e, id) => {
@@ -228,7 +242,8 @@ export default function Contacts() {
         sortOptions={SORT_OPTIONS} sort={sort} dir={dir}
         onSort={(col, d) => { setSort(col); setDir(d); setPage(1); }}
         filterGroups={FILTER_GROUPS} filters={filters} onFilter={handleFilter}
-        columns={COLS} visibleCols={visibleCols} onColumnsToggle={toggleCol} onColumnsReset={resetCols}
+        columns={COLS} allOrdered={allOrdered} visibleCols={visibleCols}
+        onColumnsToggle={toggleCol} onColumnsReset={resetCols} onColumnsReorder={reorderCols}
         placeholder="Search by name, email or service…"
       >
         {canDo('contacts.export') && (
@@ -237,6 +252,25 @@ export default function Contacts() {
             <Icon icon={exporting ? 'solar:loading-linear' : 'solar:download-linear'} width={13} className={exporting ? 'animate-spin' : ''} />
             Export
           </button>
+        )}
+        {canDo('contacts.delete') && checkedIds.size > 0 && (
+          bulkDeleteConfirm ? (
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-zinc-500">Delete {checkedIds.size}?</span>
+              <button onClick={handleBulkDelete} disabled={bulkDeleting}
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-rose-500 text-white hover:bg-rose-400 transition-all disabled:opacity-50">
+                <Icon icon={bulkDeleting ? 'solar:loading-linear' : 'solar:check-read-linear'} width={11} className={bulkDeleting ? 'animate-spin' : ''} />
+                {bulkDeleting ? 'Deleting…' : 'Confirm'}
+              </button>
+              <button onClick={() => setBulkDeleteConfirm(false)} className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-all">Cancel</button>
+            </div>
+          ) : (
+            <button onClick={() => setBulkDeleteConfirm(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-transparent transition-all">
+              <Icon icon="solar:trash-bin-minimalistic-linear" width={13} />
+              Delete ({checkedIds.size})
+            </button>
+          )
         )}
       </TableToolbar>
 
@@ -250,7 +284,7 @@ export default function Contacts() {
                   <input type="checkbox" checked={allChecked} ref={(el) => { if (el) el.indeterminate = someChecked; }}
                     onChange={toggleAll} className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer" />
                 </th>
-                {COLS.filter((c) => visibleCols.has(c.key)).map(({ key, label }) => (
+                {visibleOrdered.map(({ key, label }) => (
                   <th key={key} onClick={() => handleSort(key)}
                     className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider cursor-pointer hover:text-zinc-300 transition-colors select-none">
                     <span className="flex items-center gap-1.5">
@@ -274,12 +308,15 @@ export default function Contacts() {
                       <input type="checkbox" checked={checkedIds.has(c.id)} onChange={() => toggleOne(c.id)}
                         className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer" />
                     </td>
-                    {visibleCols.has('name') && <td className="px-4 py-3 text-zinc-200 font-medium whitespace-nowrap">{c.name}</td>}
-                    {visibleCols.has('email') && <td className="px-4 py-3 text-zinc-400 whitespace-nowrap">{c.email}</td>}
-                    {visibleCols.has('service') && <td className="px-4 py-3 text-zinc-400 whitespace-nowrap max-w-[140px] truncate">{c.service}</td>}
-                    {visibleCols.has('status') && <td className="px-4 py-3 whitespace-nowrap"><ContactStatusBadge status={c.status} /></td>}
-                    {visibleCols.has('created_at') && <td className="px-4 py-3 text-zinc-500 whitespace-nowrap font-mono text-xs">{new Date(c.created_at).toLocaleDateString()}</td>}
-                    {visibleCols.has('updated_at') && <td className="px-4 py-3 text-zinc-500 whitespace-nowrap font-mono text-xs">{c.updated_at ? new Date(c.updated_at).toLocaleDateString() : '—'}</td>}
+                    {visibleOrdered.map(({ key }) => {
+                      if (key === 'name')       return <td key={key} className="px-4 py-3 text-zinc-200 font-medium whitespace-nowrap">{c.name}</td>;
+                      if (key === 'email')      return <td key={key} className="px-4 py-3 text-zinc-400 whitespace-nowrap">{c.email}</td>;
+                      if (key === 'service')    return <td key={key} className="px-4 py-3 text-zinc-400 whitespace-nowrap max-w-[140px] truncate">{c.service}</td>;
+                      if (key === 'status')     return <td key={key} className="px-4 py-3 whitespace-nowrap"><ContactStatusBadge status={c.status} /></td>;
+                      if (key === 'created_at') return <td key={key} className="px-4 py-3 text-zinc-500 whitespace-nowrap font-mono text-xs">{new Date(c.created_at).toLocaleDateString()}</td>;
+                      if (key === 'updated_at') return <td key={key} className="px-4 py-3 text-zinc-500 whitespace-nowrap font-mono text-xs">{c.updated_at ? new Date(c.updated_at).toLocaleDateString() : '—'}</td>;
+                      return null;
+                    })}
                     {canDo('contacts.delete') && (
                       <td className="px-4 py-3 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                         <button onClick={(e) => handleDelete(e, c.id)} disabled={deleting === c.id}
