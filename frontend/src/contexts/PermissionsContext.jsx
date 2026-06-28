@@ -39,8 +39,8 @@ export function PermissionsProvider({ children }) {
 
   // Periodic refresh — ensures revoked permissions take effect without logout
   useEffect(() => {
-    const id = setInterval(fetchPerms, REFRESH_INTERVAL);
-    return () => clearInterval(id);
+    const id = window.setInterval(fetchPerms, REFRESH_INTERVAL);
+    return () => window.clearInterval(id);
   }, [fetchPerms]);
 
   // Refresh when the browser tab becomes visible again
