@@ -137,7 +137,7 @@ router.patch('/list-views/:id/pin',        asyncHandler(pinListView));
 router.post('/list-views/:id/recent',      asyncHandler(recordRecentListView));
 
 // ── Migrate Records ───────────────────────────────────────────────────────────
-router.post('/migrate', requirePermission('contacts.view'), asyncHandler(initiateMigration));
+router.post('/migrate', asyncHandler(initiateMigration));
 
 // ── Audit Log ─────────────────────────────────────────────────────────────────
 router.get('/audit-logs', authorize('super_admin'), asyncHandler(listAuditLogs));

@@ -5,6 +5,7 @@ import { TableToolbar } from '../../components/admin/TableToolbar';
 import { useColumnVisibility } from '../../hooks/useColumnVisibility';
 import { useToast } from '../../contexts/ToastContext';
 import { usePermissions } from '../../contexts/PermissionsContext';
+import MigrateModal from '../../components/admin/MigrateModal';
 
 const SL_COLS = [
   { key: 'icon', label: 'Icon' },
@@ -107,6 +108,11 @@ export default function SocialLinks() {
   const [toggling, setToggling] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [selected, setSelected] = useState(new Set());
+  const [migrateOpen, setMigrateOpen] = useState(false);
+
+  const toggleSelect = (id) => setSelected(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const someSelected = selected.size > 0;
 
   const [slSearch, setSlSearch] = useState('');
   const [slSort, setSlSort] = useState('sort_order');
@@ -261,6 +267,7 @@ export default function SocialLinks() {
     });
 
   return (
+    <>
     <div className="p-6 md:p-8 max-w-3xl mx-auto">
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
         <div>
@@ -292,6 +299,11 @@ export default function SocialLinks() {
             Export
           </button>
         )}
+        <button onClick={() => setMigrateOpen(true)} disabled={!someSelected}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 border border-transparent transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+          <Icon icon="solar:transfer-horizontal-linear" width={13} />
+          {someSelected ? `Migrate (${selected.size})` : 'Migrate'}
+        </button>
       </TableToolbar>
 
       <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
@@ -315,6 +327,10 @@ export default function SocialLinks() {
           ) : (
             slFiltered.map((link) => (
               <div key={link.id} className="px-6 py-4 flex items-center gap-4 hover:bg-zinc-800/20 transition-colors group">
+                <button onClick={() => toggleSelect(link.id)}
+                  className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all shrink-0 ${selected.has(link.id) ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-600'}`}>
+                  {selected.has(link.id) ? <Icon icon="solar:check-read-linear" width={9} className="text-white" /> : null}
+                </button>
                 {slCols.has('icon') && (
                   <div className="w-9 h-9 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-zinc-300 shrink-0">
                     <Icon icon={link.icon || 'mdi:link'} width={18} />
@@ -347,5 +363,15 @@ export default function SocialLinks() {
         </div>
       </div>
     </div>
+
+    {migrateOpen && (
+      <MigrateModal
+        objectName="social_links"
+        selectedIds={selected}
+        onClose={() => setMigrateOpen(false)}
+        onSuccess={() => { setSelected(new Set()); loadAll(); }}
+      />
+    )}
+    </>
   );
 }

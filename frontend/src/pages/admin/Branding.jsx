@@ -4,6 +4,7 @@ import { adminApi } from '../../services/adminApi';
 import { useSiteData } from '../../contexts/SiteDataContext';
 import { useToast } from '../../contexts/ToastContext';
 import PageHistorySidebar from '../../components/admin/PageHistorySidebar';
+import MigrateModal from '../../components/admin/MigrateModal';
 
 const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all';
 
@@ -247,6 +248,7 @@ export default function AdminBranding() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [historyKey, setHistoryKey] = useState(0);
+  const [migrateOpen, setMigrateOpen] = useState(false);
 
   useEffect(() => {
     adminApi.getPageContent('branding')
@@ -291,6 +293,7 @@ export default function AdminBranding() {
   }
 
   return (
+    <>
     <div className="flex min-h-screen">
       {/* Main scrollable area */}
       <div className="flex-1 min-w-0 overflow-y-auto">
@@ -301,14 +304,21 @@ export default function AdminBranding() {
           <h1 className="font-display font-semibold text-2xl text-zinc-100">Branding</h1>
           <p className="text-sm text-zinc-500 mt-1">Logos, company name, and brand colors.</p>
         </div>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(99,102,241,0.2)]"
-        >
-          <Icon icon={saving ? 'solar:loading-linear' : 'solar:floppy-disk-linear'} width={15} className={saving ? 'animate-spin' : ''} />
-          {saving ? 'Saving…' : 'Save'}
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setMigrateOpen(true)}
+            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-zinc-700 hover:border-indigo-500/40 text-indigo-400 hover:text-indigo-300 transition-all">
+            <Icon icon="solar:transfer-horizontal-linear" width={15} />
+            Push to Env
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(99,102,241,0.2)]"
+          >
+            <Icon icon={saving ? 'solar:loading-linear' : 'solar:floppy-disk-linear'} width={15} className={saving ? 'animate-spin' : ''} />
+            {saving ? 'Saving…' : 'Save'}
+          </button>
+        </div>
       </div>
 
       {error ? (
@@ -434,5 +444,15 @@ export default function AdminBranding() {
       {/* History sidebar */}
       <PageHistorySidebar page="branding" historyKey={historyKey} actionLabel="saved branding" />
     </div>
+
+    {migrateOpen && (
+      <MigrateModal
+        objectName="branding"
+        mode="config"
+        selectedIds={new Set()}
+        onClose={() => setMigrateOpen(false)}
+      />
+    )}
+    </>
   );
 }

@@ -152,6 +152,10 @@ export const adminApi = {
   migrateRecords: (ids, objectName, targetEnv) =>
     request('/api/admin/migrate', { method: 'POST', body: JSON.stringify({ ids, objectName, targetEnv }) }),
 
+  // Config sync (about, branding, contact_form) — no IDs needed
+  syncConfig: (objectName, targetEnv) =>
+    request('/api/admin/migrate', { method: 'POST', body: JSON.stringify({ ids: [], objectName, targetEnv }) }),
+
   getMyPermissions: () => request('/api/admin/permissions/my'),
   getPermissions: (role) => request(`/api/admin/permissions${role ? `?role=${role}` : ''}`),
   setPermission: (role, action, enabled) => request('/api/admin/permissions', { method: 'PUT', body: JSON.stringify({ role, action, enabled }) }),

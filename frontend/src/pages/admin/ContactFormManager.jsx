@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import Icon from '../../components/Icon';
 import { adminApi } from '../../services/adminApi';
 import { useToast } from '../../contexts/ToastContext';
+import MigrateModal from '../../components/admin/MigrateModal';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -263,6 +264,7 @@ export default function ContactFormManager() {
   const [editTarget, setEditTarget] = useState(null); // null | 'new' | field object
   const [error, setError] = useState('');
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [migrateOpen, setMigrateOpen] = useState(false);
   const [toggling, setToggling] = useState(null);
   const dragItem = useRef(null);
   const dragOver = useRef(null);
@@ -330,6 +332,7 @@ export default function ContactFormManager() {
   const sorted = [...fields].sort((a, b) => a.sort_order - b.sort_order);
 
   return (
+    <>
     <div className="p-6 md:p-8 max-w-3xl mx-auto">
       {/* Header */}
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
@@ -340,6 +343,12 @@ export default function ContactFormManager() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <button onClick={() => setMigrateOpen(true)}
+            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-zinc-700 hover:border-indigo-500/40 text-indigo-400 hover:text-indigo-300 transition-all"
+          >
+            <Icon icon="solar:transfer-horizontal-linear" width={16} />
+            Push to Env
+          </button>
           <button
             onClick={() => setPreviewOpen(v => !v)}
             className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100 transition-all"
@@ -446,6 +455,16 @@ export default function ContactFormManager() {
           onClose={() => setEditTarget(null)}
         />
       )}
+
+      {migrateOpen && (
+        <MigrateModal
+          objectName="contact_form"
+          mode="config"
+          selectedIds={new Set()}
+          onClose={() => setMigrateOpen(false)}
+        />
+      )}
     </div>
+    </>
   );
 }
