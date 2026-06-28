@@ -14,16 +14,17 @@ Using this user can set listview type. For example: if user wants a seperate lis
 1.2: 
 audit log records are not creating. but limit on it. in any way whichever will be the best.
 
-Pending::::::::::::::::::
-
-
-
 1.3: 
 Change history of branding section should be in right side similarly on other pages history.
 
 no testimonial record migration between environments.
 
 and I am getting multiple record creation of social media again anad again. 
+
+
+
+
+Pending::::::::::::::::::
 
 
 1.4

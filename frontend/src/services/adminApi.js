@@ -184,4 +184,40 @@ export const adminApi = {
     const qs = new URLSearchParams(Object.fromEntries(Object.entries(params).filter(([, v]) => v))).toString();
     return request(`/api/admin/audit-logs${qs ? `?${qs}` : ''}`);
   },
+
+  // Database import / export
+  exportDatabase: async (collections = []) => {
+    const token = getToken();
+    const qs = collections.length ? `?collections=${collections.join(',')}` : '';
+    const response = await fetch(`${API_BASE_URL}/api/admin/db/export${qs}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || `Export failed: HTTP ${response.status}`);
+    }
+    const blob = await response.blob();
+    const cd = response.headers.get('Content-Disposition') || '';
+    const match = cd.match(/filename="([^"]+)"/);
+    const filename = match?.[1] || `kodeaura7-db-export.zip`;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  },
+
+  importDatabase: async (file, strategy) => {
+    const token = getToken();
+    const form = new FormData();
+    form.append('file', file);
+    form.append('strategy', strategy);
+    const response = await fetch(`${API_BASE_URL}/api/admin/db/import`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: form,
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.message || `Import failed: HTTP ${response.status}`);
+    return data;
+  },
 };

@@ -41,9 +41,10 @@ const NAV_GROUPS = [
     label: 'Administration',
     roles: ['super_admin'],
     items: [
-      { to: '/admin/users',       label: 'Users',       icon: 'solar:user-circle-linear' },
-      { to: '/admin/permissions', label: 'Permissions', icon: 'solar:shield-keyhole-linear' },
-      { to: '/admin/audit-log',   label: 'Audit Log',   icon: 'solar:file-text-linear' },
+      { to: '/admin/users',            label: 'Users',            icon: 'solar:user-circle-linear' },
+      { to: '/admin/permissions',      label: 'Permissions',      icon: 'solar:shield-keyhole-linear' },
+      { to: '/admin/audit-log',        label: 'Audit Log',        icon: 'solar:file-text-linear' },
+      { to: '/admin/system-settings',  label: 'System Settings',  icon: 'solar:settings-bold-duotone' },
     ],
   },
 ];
