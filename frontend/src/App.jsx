@@ -7,8 +7,13 @@ import { SiteDataProvider, useSiteData } from './contexts/SiteDataContext.jsx';
 import { ToastProvider } from './contexts/ToastContext.jsx';
 import { routes } from './routes/routes.jsx';
 
+const SITE_URL = 'https://kodeaura7.in';
+const SITE_EMAIL = 'info@kodeaura7.in';
+
 function BrandingApplier() {
-  const { branding } = useSiteData();
+  const { branding, socialLinks } = useSiteData();
+
+  // Apply CSS custom properties for brand colours
   useEffect(() => {
     if (!branding?.colors) return;
     const root = document.documentElement;
@@ -24,6 +29,37 @@ function BrandingApplier() {
     if (secondary) root.style.setProperty('--brand-secondary', secondary);
     if (accent) root.style.setProperty('--brand-accent', accent);
   }, [branding]);
+
+  // Keep Organization JSON-LD in sync with live branding + social links
+  useEffect(() => {
+    const name = branding?.name || 'KodeAura7';
+    const logoUrl = branding?.logos?.universal?.url || `${SITE_URL}/logo.png`;
+
+    // Collect real social URLs (skip placeholder "#" entries)
+    const sameAs = (socialLinks || [])
+      .map((l) => l.url)
+      .filter((u) => u && u !== '#' && u.startsWith('http'));
+
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name,
+      url: SITE_URL,
+      logo: logoUrl,
+      email: SITE_EMAIL,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Dehradun',
+        addressRegion: 'Uttarakhand',
+        addressCountry: 'IN',
+      },
+      sameAs,
+    };
+
+    const el = document.getElementById('org-schema');
+    if (el) el.textContent = JSON.stringify(schema);
+  }, [branding, socialLinks]);
+
   return null;
 }
 

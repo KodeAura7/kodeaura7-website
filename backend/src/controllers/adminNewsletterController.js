@@ -1,5 +1,6 @@
-import { deleteSubscriber, exportAllSubscribers, listSubscribers } from '../services/adminNewsletterService.js';
+import { deleteSubscriber, exportAllSubscribers, getSubscriber, listSubscribers } from '../services/adminNewsletterService.js';
 import { getListView, buildWhereClause } from '../services/listViewService.js';
+import { auditLog } from '../services/auditLogService.js';
 
 async function resolveLvWhere(listViewId, userId, objectName) {
   if (!listViewId) return null;
@@ -17,7 +18,16 @@ export async function list(request, response) {
 }
 
 export async function remove(request, response) {
+  const sub = await getSubscriber(request.params.id).catch(() => null);
   await deleteSubscriber(request.params.id);
+  auditLog({
+    userId: request.user?.sub, userName: request.user?.name, userEmail: request.user?.email,
+    ipAddress: request.ip,
+    action: 'newsletter.delete',
+    objectType: 'newsletter',
+    objectId: request.params.id,
+    objectLabel: sub?.email,
+  });
   response.status(200).json({ message: 'Subscriber deleted.' });
 }
 

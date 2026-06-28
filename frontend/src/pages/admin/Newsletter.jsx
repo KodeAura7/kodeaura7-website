@@ -7,6 +7,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { usePermissions } from '../../contexts/PermissionsContext';
 import { useListViews } from '../../hooks/useListViews';
 import ListViewSelector from '../../components/admin/listviews/ListViewSelector';
+import MigrateModal from '../../components/admin/MigrateModal';
 
 const COLS = [
   { key: 'email', label: 'Email' },
@@ -41,14 +42,25 @@ export default function Newsletter() {
   const [deleting, setDeleting] = useState(null);
   const [error, setError] = useState('');
   const [exporting, setExporting] = useState(false);
+  const [checkedIds, setCheckedIds] = useState(new Set());
+  const [migrateOpen, setMigrateOpen] = useState(false);
   const debouncedSearch = useDebounce(search);
   const { visibleCols, toggle: toggleCol, reset: resetCols } = useColumnVisibility('newsletter', COLS);
+
+  const rows = (data?.data ?? []);
+  const allChecked = rows.length > 0 && rows.every((r) => checkedIds.has(r.id));
+  const someChecked = rows.some((r) => checkedIds.has(r.id)) && !allChecked;
+  const toggleAll = () => {
+    if (allChecked) setCheckedIds((p) => { const n = new Set(p); rows.forEach((r) => n.delete(r.id)); return n; });
+    else setCheckedIds((p) => { const n = new Set(p); rows.forEach((r) => n.add(r.id)); return n; });
+  };
+  const toggleOne = (id) => setCheckedIds((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
   const load = useCallback(() => {
     setError('');
     adminApi
       .newsletter({ page, limit: LIMIT, search: debouncedSearch, sort, dir, list_view_id: lv.activeId || '' })
-      .then(setData)
+      .then((d) => { setData(d); setCheckedIds(new Set()); })
       .catch((err) => setError(err.message));
   }, [page, debouncedSearch, sort, dir, lv.activeId]);
 
@@ -100,6 +112,7 @@ export default function Newsletter() {
 
       <ListViewSelector
         views={lv.views}
+        recentViews={lv.recentViews}
         activeId={lv.activeId}
         fieldConfig={lv.fieldConfig}
         loading={lv.loading}
@@ -110,9 +123,37 @@ export default function Newsletter() {
         onDelete={lv.deleteView}
         onSetDefault={lv.setDefault}
         onFavorite={lv.toggleFavorite}
+        onPin={lv.togglePin}
       />
 
       {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div> : null}
+
+      {/* Bulk toolbar */}
+      {checkedIds.size > 0 && (
+        <div className="mb-4 flex flex-wrap items-center gap-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3">
+          <span className="text-xs text-indigo-400 font-medium">{checkedIds.size} selected</span>
+          <div className="flex items-center gap-2 ml-auto">
+            <button onClick={() => setMigrateOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-indigo-500/50 text-zinc-300 hover:text-indigo-300 text-xs font-medium transition-all">
+              <Icon icon="solar:transfer-horizontal-linear" width={13} />
+              Migrate
+            </button>
+            <button onClick={() => setCheckedIds(new Set())}
+              className="px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-zinc-500 text-zinc-400 text-xs transition-all">
+              Deselect all
+            </button>
+          </div>
+        </div>
+      )}
+
+      {migrateOpen && (
+        <MigrateModal
+          objectName="newsletter"
+          selectedIds={checkedIds}
+          onClose={() => setMigrateOpen(false)}
+          onSuccess={() => { setMigrateOpen(false); setCheckedIds(new Set()); load(); }}
+        />
+      )}
 
       <TableToolbar
         search={search} onSearch={setSearch}
@@ -136,6 +177,10 @@ export default function Newsletter() {
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-[#18181B] border-b border-zinc-800">
+                <th className="w-10 px-4 py-3">
+                  <input type="checkbox" checked={allChecked} ref={(el) => { if (el) el.indeterminate = someChecked; }}
+                    onChange={toggleAll} className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer" />
+                </th>
                 {COLS.filter((c) => visibleCols.has(c.key)).map(({ key, label }) => (
                   <th key={key} onClick={() => handleSort(key)}
                     className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider cursor-pointer hover:text-zinc-300 transition-colors select-none">
@@ -149,12 +194,16 @@ export default function Newsletter() {
             </thead>
             <tbody className="divide-y divide-zinc-800/60">
               {!data ? (
-                <tr><td colSpan={3} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
+                <tr><td colSpan={4} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
               ) : data.data.length === 0 ? (
-                <tr><td colSpan={3} className="px-4 py-10 text-center text-sm text-zinc-600">No subscribers found.</td></tr>
+                <tr><td colSpan={4} className="px-4 py-10 text-center text-sm text-zinc-600">No subscribers found.</td></tr>
               ) : (
                 data.data.map((s) => (
                   <tr key={s.id} className="hover:bg-zinc-800/30 transition-colors">
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                      <input type="checkbox" checked={checkedIds.has(s.id)} onChange={() => toggleOne(s.id)}
+                        className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer" />
+                    </td>
                     {visibleCols.has('email') && <td className="px-4 py-3 text-zinc-200">{s.email}</td>}
                     {visibleCols.has('subscribed_at') && <td className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">{new Date(s.subscribed_at).toLocaleDateString()}</td>}
                     {canDo('newsletter.delete') && (

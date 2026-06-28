@@ -1,4 +1,11 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /sign-in
+Disallow: /sign-up
+Disallow: /forgot-password
+Disallow: /reset-password/
+Disallow: /welcome
+Disallow: /api/
 
 Sitemap: https://kodeaura7.in/sitemap.xml

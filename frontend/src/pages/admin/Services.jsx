@@ -5,6 +5,9 @@ import { TableToolbar } from '../../components/admin/TableToolbar';
 import { useColumnVisibility } from '../../hooks/useColumnVisibility';
 import { useToast } from '../../contexts/ToastContext';
 import { usePermissions } from '../../contexts/PermissionsContext';
+import { useListViews } from '../../hooks/useListViews';
+import ListViewSelector from '../../components/admin/listviews/ListViewSelector';
+import MigrateModal from '../../components/admin/MigrateModal';
 
 const SVC_COLS = [
   { key: 'num', label: '#' },
@@ -246,6 +249,7 @@ function HistorySidebar({ serviceId, editMode, onRevert, open, onToggle, history
 export default function AdminServices() {
   const { success, error: toastError } = useToast();
   const { canDo } = usePermissions();
+  const lv = useListViews('services');
   const [view, setView] = useState('list');
   const [editMode, setEditMode] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(true);
@@ -255,6 +259,7 @@ export default function AdminServices() {
   const [currentItem, setCurrentItem] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [selected, setSelected] = useState(new Set());
+  const [migrateOpen, setMigrateOpen] = useState(false);
 
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -273,8 +278,13 @@ export default function AdminServices() {
 
   const handleSvcFilter = (key, val) => setSvcFilters(f => ({ ...f, [key]: val }));
 
-  const loadAll = () => { setError(''); adminApi.services().then(setItems).catch(e => setError(e.message)); };
-  useEffect(() => { loadAll(); }, []);
+  const loadAll = () => {
+    setError('');
+    adminApi.services({ list_view_id: lv.activeId || '' })
+      .then(setItems)
+      .catch(e => setError(e.message));
+  };
+  useEffect(() => { loadAll(); }, [lv.activeId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setField = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
@@ -724,6 +734,7 @@ export default function AdminServices() {
     });
 
   return (
+    <>
     <div className="p-6 md:p-8 max-w-7xl mx-auto">
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
         <div>
@@ -749,6 +760,23 @@ export default function AdminServices() {
         </div>
       </div>
 
+      {/* List View Selector */}
+      <ListViewSelector
+        views={lv.views}
+        recentViews={lv.recentViews}
+        activeId={lv.activeId}
+        fieldConfig={lv.fieldConfig}
+        loading={lv.loading}
+        onSelect={lv.setActiveView}
+        onCreate={lv.createView}
+        onEdit={(id, data) => lv.updateView(id, data)}
+        onDuplicate={lv.duplicateView}
+        onDelete={lv.deleteView}
+        onSetDefault={lv.setDefault}
+        onFavorite={lv.toggleFavorite}
+        onPin={lv.togglePin}
+      />
+
       {importMsg.text ? (
         <div className={`border rounded-xl p-3 text-sm mb-4 flex items-center gap-2 ${importMsg.type === 'error' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'}`}>
           <Icon icon={importMsg.type === 'error' ? 'solar:danger-circle-linear' : 'solar:check-circle-linear'} width={15} />
@@ -773,6 +801,11 @@ export default function AdminServices() {
             {someSelected ? `Export (${selected.size})` : 'Export'}
           </button>
         )}
+        <button onClick={() => setMigrateOpen(true)} disabled={!someSelected}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 border border-transparent transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+          <Icon icon="solar:transfer-horizontal-linear" width={13} />
+          {someSelected ? `Migrate (${selected.size})` : 'Migrate'}
+        </button>
       </TableToolbar>
 
       <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
@@ -864,5 +897,15 @@ export default function AdminServices() {
         </div>
       </div>
     </div>
+
+    {migrateOpen && (
+      <MigrateModal
+        objectName="services"
+        selectedIds={selected}
+        onClose={() => setMigrateOpen(false)}
+        onSuccess={() => { setSelected(new Set()); loadAll(); }}
+      />
+    )}
+    </>
   );
 }

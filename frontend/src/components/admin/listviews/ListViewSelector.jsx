@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import Icon from '../../Icon';
 import SaveListViewModal from './SaveListViewModal';
 
-function ViewContextMenu({ view, onEdit, onDuplicate, onDelete, onSetDefault, onFavorite, onClose }) {
+function ViewContextMenu({ view, onEdit, onDuplicate, onDelete, onSetDefault, onFavorite, onPin, onClose }) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -25,19 +25,24 @@ function ViewContextMenu({ view, onEdit, onDuplicate, onDelete, onSetDefault, on
 
   return (
     <div ref={ref}
-      className="absolute right-0 top-full mt-1 z-50 w-44 bg-[#111113] border border-zinc-800 rounded-xl shadow-2xl py-1.5 overflow-hidden"
+      className="absolute right-0 top-full mt-1 z-50 w-48 bg-[#111113] border border-zinc-800 rounded-xl shadow-2xl py-1.5 overflow-hidden"
       onClick={(e) => e.stopPropagation()}>
       {!view.is_system && item('solar:pen-linear', 'Edit', onEdit)}
       {item('solar:copy-linear', 'Duplicate', onDuplicate)}
       {item('solar:home-2-linear', 'Set as Default', onSetDefault)}
-      {!view.is_system && item('solar:star-linear', view.is_favorite ? 'Unpin Favorite' : 'Pin as Favorite', onFavorite)}
+      {item(
+        view.is_pinned ? 'solar:pin-bold' : 'solar:pin-linear',
+        view.is_pinned ? 'Unpin' : 'Pin to top',
+        onPin
+      )}
+      {!view.is_system && item('solar:star-linear', view.is_favorite ? 'Remove from Favorites' : 'Add to Favorites', onFavorite)}
       {!view.is_system && <div className="my-1.5 border-t border-zinc-800" />}
       {!view.is_system && item('solar:trash-bin-minimalistic-linear', 'Delete', onDelete, true)}
     </div>
   );
 }
 
-function ViewItem({ view, isActive, onSelect, onEdit, onDuplicate, onDelete, onSetDefault, onFavorite }) {
+function ViewItem({ view, isActive, onSelect, onEdit, onDuplicate, onDelete, onSetDefault, onFavorite, onPin }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -61,7 +66,10 @@ function ViewItem({ view, isActive, onSelect, onEdit, onDuplicate, onDelete, onS
             {view.filters.length}
           </span>
         )}
-        {view.is_favorite && !view.is_system && (
+        {view.is_pinned && (
+          <Icon icon="solar:pin-bold" width={10} className="text-amber-400 shrink-0" />
+        )}
+        {view.is_favorite && !view.is_system && !view.is_pinned && (
           <Icon icon="solar:star-bold" width={11} className="text-amber-400 shrink-0" />
         )}
         <button type="button" onClick={(e) => { e.stopPropagation(); setMenuOpen((o) => !o); }}
@@ -78,6 +86,7 @@ function ViewItem({ view, isActive, onSelect, onEdit, onDuplicate, onDelete, onS
           onDelete={() => onDelete(view.id)}
           onSetDefault={() => onSetDefault(view.id)}
           onFavorite={() => onFavorite(view.id)}
+          onPin={() => onPin(view.id)}
           onClose={() => setMenuOpen(false)}
         />
       )}
@@ -87,6 +96,7 @@ function ViewItem({ view, isActive, onSelect, onEdit, onDuplicate, onDelete, onS
 
 export default function ListViewSelector({
   views,
+  recentViews = [],
   activeId,
   fieldConfig,
   loading,
@@ -97,9 +107,10 @@ export default function ListViewSelector({
   onDelete,
   onSetDefault,
   onFavorite,
+  onPin,
 }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [modal, setModal] = useState(null); // null | { mode, data }
+  const [modal, setModal] = useState(null);
   const dropdownRef = useRef(null);
   const activeView = views.find((v) => v.id === activeId);
 
@@ -113,10 +124,13 @@ export default function ListViewSelector({
     return () => document.removeEventListener('mousedown', handleClick);
   }, [dropdownOpen]);
 
-  const systemViews = views.filter((v) => v.is_system);
+  const pinnedViews  = views.filter((v) => v.is_pinned);
+  const systemViews  = views.filter((v) => v.is_system);
   const personalViews = views.filter((v) => !v.is_system);
-  const favorites = personalViews.filter((v) => v.is_favorite);
-  const others = personalViews.filter((v) => !v.is_favorite);
+  const favorites    = personalViews.filter((v) => v.is_favorite);
+  const others       = personalViews.filter((v) => !v.is_favorite);
+  // Recent: views accessed recently that aren't already pinned (to avoid duplication in dropdown)
+  const recentNotPinned = recentViews.filter((rv) => !rv.is_pinned);
 
   const handleEdit = (view) => {
     setDropdownOpen(false);
@@ -136,10 +150,40 @@ export default function ListViewSelector({
 
   const activeFilterCount = activeView?.filters?.length ?? 0;
 
+  const sharedViewItemProps = (v) => ({
+    view: v,
+    isActive: v.id === activeId,
+    onSelect: (id) => { onSelect(id); setDropdownOpen(false); },
+    onEdit: handleEdit,
+    onDuplicate: onDuplicate,
+    onDelete: onDelete,
+    onSetDefault: onSetDefault,
+    onFavorite: onFavorite,
+    onPin: onPin,
+  });
+
   return (
     <>
-      <div className="flex items-center gap-2 mb-4">
-        {/* Selector trigger */}
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+        {/* Pinned quick-access tabs */}
+        {pinnedViews.length > 0 && (
+          <div className="flex items-center gap-1 flex-wrap">
+            {pinnedViews.map((v) => (
+              <button key={v.id} type="button" onClick={() => onSelect(v.id)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                  v.id === activeId
+                    ? 'bg-indigo-500/15 border-indigo-500/30 text-indigo-300'
+                    : 'bg-[#18181B] border-zinc-700 text-zinc-400 hover:text-zinc-100 hover:border-zinc-500'
+                }`}>
+                <Icon icon="solar:pin-bold" width={10} className="text-amber-400" />
+                {v.name}
+              </button>
+            ))}
+            <div className="w-px h-5 bg-zinc-800 mx-1" />
+          </div>
+        )}
+
+        {/* Dropdown trigger */}
         <div ref={dropdownRef} className="relative">
           <button type="button" onClick={() => setDropdownOpen((o) => !o)}
             className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium border transition-all ${
@@ -159,18 +203,25 @@ export default function ListViewSelector({
             <Icon icon={dropdownOpen ? 'solar:alt-arrow-up-linear' : 'solar:alt-arrow-down-linear'} width={13} className="text-zinc-500" />
           </button>
 
-          {/* Dropdown */}
           {dropdownOpen && (
-            <div className="absolute left-0 top-full mt-1.5 z-40 w-64 bg-[#111113] border border-zinc-800 rounded-2xl shadow-2xl py-2 max-h-80 overflow-y-auto">
+            <div className="absolute left-0 top-full mt-1.5 z-40 w-64 bg-[#111113] border border-zinc-800 rounded-2xl shadow-2xl py-2 max-h-96 overflow-y-auto">
+              {/* Recent views (non-pinned only) */}
+              {recentNotPinned.length > 0 && (
+                <div className="px-2 mb-1">
+                  <p className="text-[9px] font-mono font-semibold text-zinc-600 uppercase tracking-widest px-2 mb-1">Recent</p>
+                  {recentNotPinned.map((v) => (
+                    <ViewItem key={`recent-${v.id}`} {...sharedViewItemProps(v)} />
+                  ))}
+                  <div className="border-t border-zinc-800/60 my-1.5" />
+                </div>
+              )}
+
               {/* System views */}
               {systemViews.length > 0 && (
                 <div className="px-2 mb-1">
                   <p className="text-[9px] font-mono font-semibold text-zinc-600 uppercase tracking-widest px-2 mb-1">System</p>
                   {systemViews.map((v) => (
-                    <ViewItem key={v.id} view={v} isActive={v.id === activeId}
-                      onSelect={(id) => { onSelect(id); setDropdownOpen(false); }}
-                      onEdit={handleEdit} onDuplicate={onDuplicate} onDelete={onDelete}
-                      onSetDefault={onSetDefault} onFavorite={onFavorite} />
+                    <ViewItem key={v.id} {...sharedViewItemProps(v)} />
                   ))}
                 </div>
               )}
@@ -178,13 +229,10 @@ export default function ListViewSelector({
               {/* Favorites */}
               {favorites.length > 0 && (
                 <div className="px-2 mb-1">
-                  {systemViews.length > 0 && <div className="border-t border-zinc-800/60 my-1.5 -mx-0" />}
+                  {systemViews.length > 0 && <div className="border-t border-zinc-800/60 my-1.5" />}
                   <p className="text-[9px] font-mono font-semibold text-zinc-600 uppercase tracking-widest px-2 mb-1">Favorites</p>
                   {favorites.map((v) => (
-                    <ViewItem key={v.id} view={v} isActive={v.id === activeId}
-                      onSelect={(id) => { onSelect(id); setDropdownOpen(false); }}
-                      onEdit={handleEdit} onDuplicate={onDuplicate} onDelete={onDelete}
-                      onSetDefault={onSetDefault} onFavorite={onFavorite} />
+                    <ViewItem key={v.id} {...sharedViewItemProps(v)} />
                   ))}
                 </div>
               )}
@@ -195,20 +243,15 @@ export default function ListViewSelector({
                   {(systemViews.length > 0 || favorites.length > 0) && <div className="border-t border-zinc-800/60 my-1.5" />}
                   <p className="text-[9px] font-mono font-semibold text-zinc-600 uppercase tracking-widest px-2 mb-1">My Views</p>
                   {others.map((v) => (
-                    <ViewItem key={v.id} view={v} isActive={v.id === activeId}
-                      onSelect={(id) => { onSelect(id); setDropdownOpen(false); }}
-                      onEdit={handleEdit} onDuplicate={onDuplicate} onDelete={onDelete}
-                      onSetDefault={onSetDefault} onFavorite={onFavorite} />
+                    <ViewItem key={v.id} {...sharedViewItemProps(v)} />
                   ))}
                 </div>
               )}
 
-              {/* Empty state */}
               {views.length === 0 && !loading && (
                 <p className="px-4 py-3 text-xs text-zinc-600 text-center">No list views yet.</p>
               )}
 
-              {/* New list view */}
               <div className="border-t border-zinc-800 mt-1.5 pt-1.5 px-2">
                 <button type="button" onClick={() => { setDropdownOpen(false); setModal({ mode: 'create', data: null }); }}
                   className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-indigo-400 hover:bg-indigo-500/10 transition-all">
@@ -220,7 +263,7 @@ export default function ListViewSelector({
           )}
         </div>
 
-        {/* Quick edit button for active non-system view */}
+        {/* Quick edit for active non-system view */}
         {activeView && !activeView.is_system && (
           <button type="button" onClick={() => setModal({ mode: 'edit', data: activeView })}
             className="p-2 rounded-xl text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/60 border border-transparent transition-all" title="Edit list view">
@@ -244,7 +287,6 @@ export default function ListViewSelector({
         )}
       </div>
 
-      {/* Create/Edit Modal */}
       {modal && (
         <SaveListViewModal
           mode={modal.mode}

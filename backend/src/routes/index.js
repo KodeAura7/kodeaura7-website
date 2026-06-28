@@ -3,6 +3,7 @@ import { postContact } from '../controllers/contactController.js';
 import { publicGetFields as getContactFormFields } from '../controllers/contactFormController.js';
 import { getHealth } from '../controllers/healthController.js';
 import { postNewsletter } from '../controllers/newsletterController.js';
+import { receiveMigration } from '../controllers/migrateController.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import authRoutes from './auth.js';
 import adminRoutes from './admin.js';
@@ -18,6 +19,7 @@ router.get('/health', getHealth);
 router.post('/contact', asyncHandler(postContact));
 router.post('/newsletter', asyncHandler(postNewsletter));
 router.get('/contact-form', asyncHandler(getContactFormFields));
+router.post('/migrate/receive', asyncHandler(receiveMigration));
 
 router.use('/auth', authRoutes);
 router.use('/admin', adminRoutes);

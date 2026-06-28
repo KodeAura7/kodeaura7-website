@@ -76,7 +76,12 @@ export const adminApi = {
     request(`/api/admin/newsletter/${id}`, { method: 'DELETE' }),
   exportNewsletter: () => downloadCsv('/api/admin/newsletter/export', 'newsletter.csv'),
 
-  services: () => request('/api/admin/services'),
+  services: (params = {}) => {
+    const p = { ...params };
+    if (!p.list_view_id) delete p.list_view_id;
+    const qs = new URLSearchParams(p).toString();
+    return request(`/api/admin/services${qs ? `?${qs}` : ''}`);
+  },
   createService: (data) => request('/api/admin/services', { method: 'POST', body: JSON.stringify(data) }),
   updateService: (id, data) => request(`/api/admin/services/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteService: (id) => request(`/api/admin/services/${id}`, { method: 'DELETE' }),
@@ -134,12 +139,22 @@ export const adminApi = {
   getListViews: (objectName) => request(`/api/admin/list-views?object=${objectName}`),
   getListView: (id) => request(`/api/admin/list-views/${id}`),
   getListViewFields: (objectName) => request(`/api/admin/list-views/fields?object=${objectName}`),
+  getRecentListViews: (objectName) => request(`/api/admin/list-views/recents?object=${objectName}`),
   createListView: (data) => request('/api/admin/list-views', { method: 'POST', body: JSON.stringify(data) }),
   updateListView: (id, data) => request(`/api/admin/list-views/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteListView: (id) => request(`/api/admin/list-views/${id}`, { method: 'DELETE' }),
   duplicateListView: (id) => request(`/api/admin/list-views/${id}/duplicate`, { method: 'POST' }),
   setListViewDefault: (id) => request(`/api/admin/list-views/${id}/default`, { method: 'PATCH' }),
   toggleListViewFavorite: (id) => request(`/api/admin/list-views/${id}/favorite`, { method: 'PATCH' }),
+  toggleListViewPin: (id) => request(`/api/admin/list-views/${id}/pin`, { method: 'PATCH' }),
+  recordListViewRecent: (id) => request(`/api/admin/list-views/${id}/recent`, { method: 'POST' }),
+
+  migrateRecords: (ids, objectName, targetEnv) =>
+    request('/api/admin/migrate', { method: 'POST', body: JSON.stringify({ ids, objectName, targetEnv }) }),
+
+  // Config sync (about, branding, contact_form) — no IDs needed
+  syncConfig: (objectName, targetEnv) =>
+    request('/api/admin/migrate', { method: 'POST', body: JSON.stringify({ ids: [], objectName, targetEnv }) }),
 
   getMyPermissions: () => request('/api/admin/permissions/my'),
   getPermissions: (role) => request(`/api/admin/permissions${role ? `?role=${role}` : ''}`),
@@ -163,5 +178,46 @@ export const adminApi = {
   updateUser: (id, data) =>
     request(`/api/admin/users/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteUser: (id) =>
-    request(`/api/admin/users/${id}`, { method: 'DELETE' })
+    request(`/api/admin/users/${id}`, { method: 'DELETE' }),
+
+  auditLogs: (params = {}) => {
+    const qs = new URLSearchParams(Object.fromEntries(Object.entries(params).filter(([, v]) => v))).toString();
+    return request(`/api/admin/audit-logs${qs ? `?${qs}` : ''}`);
+  },
+
+  // Database import / export
+  exportDatabase: async (collections = []) => {
+    const token = getToken();
+    const qs = collections.length ? `?collections=${collections.join(',')}` : '';
+    const response = await fetch(`${API_BASE_URL}/api/admin/db/export${qs}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || `Export failed: HTTP ${response.status}`);
+    }
+    const blob = await response.blob();
+    const cd = response.headers.get('Content-Disposition') || '';
+    const match = cd.match(/filename="([^"]+)"/);
+    const filename = match?.[1] || `kodeaura7-db-export.zip`;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  },
+
+  importDatabase: async (file, strategy) => {
+    const token = getToken();
+    const form = new FormData();
+    form.append('file', file);
+    form.append('strategy', strategy);
+    const response = await fetch(`${API_BASE_URL}/api/admin/db/import`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: form,
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.message || `Import failed: HTTP ${response.status}`);
+    return data;
+  },
 };

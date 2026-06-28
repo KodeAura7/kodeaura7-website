@@ -41,8 +41,10 @@ const NAV_GROUPS = [
     label: 'Administration',
     roles: ['super_admin'],
     items: [
-      { to: '/admin/users',       label: 'Users',       icon: 'solar:user-circle-linear' },
-      { to: '/admin/permissions', label: 'Permissions', icon: 'solar:shield-keyhole-linear' },
+      { to: '/admin/users',            label: 'Users',            icon: 'solar:user-circle-linear' },
+      { to: '/admin/permissions',      label: 'Permissions',      icon: 'solar:shield-keyhole-linear' },
+      { to: '/admin/audit-log',        label: 'Audit Log',        icon: 'solar:file-text-linear' },
+      { to: '/admin/system-settings',  label: 'System Settings',  icon: 'solar:settings-bold-duotone' },
     ],
   },
 ];
@@ -147,7 +149,7 @@ function AdminLayoutInner() {
   const close = () => setSidebarOpen(false);
 
   return (
-    <div className="min-h-screen bg-[#09090B] flex">
+    <div className="h-screen bg-[#09090B] flex overflow-hidden">
       {sidebarOpen && (
         <div className="fixed inset-0 z-20 bg-black/60 md:hidden" onClick={close} />
       )}

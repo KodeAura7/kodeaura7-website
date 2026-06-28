@@ -78,7 +78,12 @@ export async function getPublicServices() {
   return result.rows.map(mapRow);
 }
 
-export async function listAllServices() {
+export async function listAllServices({ lvWhere = null } = {}) {
+  const conditions = [];
+  const params = lvWhere ? [...lvWhere.params] : [];
+  if (lvWhere?.sql) conditions.push(lvWhere.sql);
+  const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
   const result = await query(
     `SELECT s.id, s.slug, s.name, s.icon, s.accent, s.light, s.description, s.p1, s.p2,
             s.features, s.metrics, s.sort_order, s.enabled, s.show_on_home, s.cta_label,
@@ -93,7 +98,9 @@ export async function listAllServices() {
        WHERE h.service_id = s.id
        ORDER BY h.updated_at DESC LIMIT 1
      ) lh ON true
-     ORDER BY s.sort_order ASC, s.created_at ASC`
+     ${where}
+     ORDER BY s.sort_order ASC, s.created_at ASC`,
+    params.length ? params : undefined
   );
   return result.rows.map(mapRow);
 }

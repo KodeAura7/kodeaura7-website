@@ -10,7 +10,15 @@ export default [
       sourceType: 'module',
       globals: {
         process: 'readonly',
-        console: 'readonly'
+        console: 'readonly',
+        fetch: 'readonly',
+        URL: 'readonly',
+        URLSearchParams: 'readonly',
+        Buffer: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
       }
     }
   }

@@ -2,15 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { adminApi } from '../services/adminApi';
 
-/**
- * Manages list views for a given object.
- * - Loads all views (system + personal) on mount
- * - Syncs active view with `?lv=<id>` URL param
- * - Falls back to the default system view on first load
- */
 export function useListViews(objectName) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [views, setViews] = useState([]);
+  const [recentViews, setRecentViews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fieldConfig, setFieldConfig] = useState([]);
   const didInit = useRef(false);
@@ -23,11 +18,12 @@ export function useListViews(objectName) {
     return Promise.all([
       adminApi.getListViews(objectName),
       adminApi.getListViewFields(objectName),
+      adminApi.getRecentListViews(objectName),
     ])
-      .then(([lvs, { fields }]) => {
+      .then(([lvs, { fields }, recents]) => {
         setViews(lvs);
         setFieldConfig(fields || []);
-        // On first mount: if no URL param, find & activate the default view
+        setRecentViews(recents || []);
         if (!didInit.current) {
           didInit.current = true;
           if (!lvIdFromUrl) {
@@ -51,7 +47,6 @@ export function useListViews(objectName) {
 
   useEffect(() => { load(); }, [load]);
 
-  // Keep local activeId in sync when URL changes externally (browser back/fwd)
   useEffect(() => {
     if (lvIdFromUrl && lvIdFromUrl !== activeId) setActiveIdState(lvIdFromUrl);
   }, [lvIdFromUrl]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -64,6 +59,8 @@ export function useListViews(objectName) {
       else next.delete('lv');
       return next;
     }, { replace: true });
+    // Record recent access (fire and forget)
+    if (id) adminApi.recordListViewRecent(id).catch(() => null);
   }, [setSearchParams]);
 
   const activeView = views.find((v) => v.id === activeId) ?? views.find((v) => v.is_system && v.is_default) ?? null;
@@ -83,7 +80,6 @@ export function useListViews(objectName) {
 
   const deleteView = useCallback(async (id) => {
     await adminApi.deleteListView(id);
-    // If we just deleted the active view, reset to default
     if (id === activeId) {
       const def = views.find((v) => v.is_system && v.is_default && v.id !== id) ?? views.find((v) => v.id !== id);
       setActiveView(def?.id ?? null);
@@ -108,8 +104,14 @@ export function useListViews(objectName) {
     await load();
   }, [load]);
 
+  const togglePin = useCallback(async (id) => {
+    await adminApi.toggleListViewPin(id);
+    await load();
+  }, [load]);
+
   return {
     views,
+    recentViews,
     activeId,
     activeView,
     loading,
@@ -121,6 +123,7 @@ export function useListViews(objectName) {
     duplicateView,
     setDefault,
     toggleFavorite,
+    togglePin,
     reload: load,
   };
 }

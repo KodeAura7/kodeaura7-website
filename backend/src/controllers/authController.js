@@ -5,9 +5,20 @@ import {
   resetPassword as resetPasswordService,
   signupUser
 } from '../services/authService.js';
+import { auditLog } from '../services/auditLogService.js';
 
 export async function login(request, response) {
   const result = await loginUser(request.body);
+  auditLog({
+    userId: result.user.id,
+    userName: result.user.name,
+    userEmail: result.user.email,
+    action: 'user.login',
+    objectType: 'admin_user',
+    objectId: result.user.id,
+    objectLabel: result.user.name || result.user.email,
+    ipAddress: request.ip,
+  });
   response.status(200).json(result);
 }
 

@@ -3,6 +3,7 @@ import Icon from '../../components/Icon';
 import { useAuth } from '../../hooks/useAuth';
 import { api } from '../../services/api';
 import { adminApi } from '../../services/adminApi';
+import MigrateModal from '../../components/admin/MigrateModal';
 
 const STAR_LABELS = ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent'];
 
@@ -112,6 +113,18 @@ export default function Testimonials() {
   const [importing, setImporting] = useState(false);
   const [importMsg, setImportMsg] = useState({ type: '', text: '' });
   const importInputRef = useRef(null);
+
+  // Migrate
+  const [checkedIds, setCheckedIds] = useState(new Set());
+  const [migrateOpen, setMigrateOpen] = useState(false);
+  const rows = items ?? [];
+  const allChecked = rows.length > 0 && rows.every((r) => checkedIds.has(r.id));
+  const someChecked = rows.some((r) => checkedIds.has(r.id)) && !allChecked;
+  const toggleAll = () => {
+    if (allChecked) setCheckedIds((p) => { const n = new Set(p); rows.forEach((r) => n.delete(r.id)); return n; });
+    else setCheckedIds((p) => { const n = new Set(p); rows.forEach((r) => n.add(r.id)); return n; });
+  };
+  const toggleOne = (id) => setCheckedIds((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
   const loadAll = () => {
     setError('');
@@ -512,12 +525,43 @@ export default function Testimonials() {
         <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div>
       ) : null}
 
+      {/* Bulk toolbar */}
+      {checkedIds.size > 0 && (
+        <div className="mb-4 flex flex-wrap items-center gap-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3">
+          <span className="text-xs text-indigo-400 font-medium">{checkedIds.size} selected</span>
+          <div className="flex items-center gap-2 ml-auto">
+            <button onClick={() => setMigrateOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-indigo-500/50 text-zinc-300 hover:text-indigo-300 text-xs font-medium transition-all">
+              <Icon icon="solar:transfer-horizontal-linear" width={13} />
+              Migrate
+            </button>
+            <button onClick={() => setCheckedIds(new Set())}
+              className="px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-zinc-500 text-zinc-400 text-xs transition-all">
+              Deselect all
+            </button>
+          </div>
+        </div>
+      )}
+
+      {migrateOpen && (
+        <MigrateModal
+          objectName="testimonials"
+          selectedIds={checkedIds}
+          onClose={() => setMigrateOpen(false)}
+          onSuccess={() => { setMigrateOpen(false); setCheckedIds(new Set()); loadAll(); }}
+        />
+      )}
+
       {/* All testimonials table */}
       <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-[#18181B] border-b border-zinc-800">
+                <th className="w-10 px-4 py-3">
+                  <input type="checkbox" checked={allChecked} ref={(el) => { if (el) el.indeterminate = someChecked; }}
+                    onChange={toggleAll} className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer" />
+                </th>
                 {['Order', 'Name', 'Designation', 'Rating', 'Review', 'Submitted By', 'Approved By', 'Visible'].map((h) => (
                   <th key={h} className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider whitespace-nowrap">
                     {h}
@@ -527,12 +571,16 @@ export default function Testimonials() {
             </thead>
             <tbody className="divide-y divide-zinc-800/60">
               {!items ? (
-                <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
+                <tr><td colSpan={9} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
               ) : items.length === 0 ? (
-                <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-zinc-600">No reviews submitted yet.</td></tr>
+                <tr><td colSpan={9} className="px-4 py-10 text-center text-sm text-zinc-600">No reviews submitted yet.</td></tr>
               ) : (
                 items.map((t) => (
                   <tr key={t.id} className="hover:bg-zinc-800/20 transition-colors">
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                      <input type="checkbox" checked={checkedIds.has(t.id)} onChange={() => toggleOne(t.id)}
+                        className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer" />
+                    </td>
                     <td className="px-4 py-3">
                       <OrderCell
                         id={t.id}

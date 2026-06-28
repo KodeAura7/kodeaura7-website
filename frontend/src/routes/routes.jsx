@@ -25,6 +25,8 @@ const AdminAbout = lazy(() => import('../pages/admin/About.jsx'));
 const AdminBranding = lazy(() => import('../pages/admin/Branding.jsx'));
 const AdminPermissions = lazy(() => import('../pages/admin/Permissions.jsx'));
 const AdminContactForm = lazy(() => import('../pages/admin/ContactFormManager.jsx'));
+const AuditLog = lazy(() => import('../pages/admin/AuditLog.jsx'));
+const SystemSettings = lazy(() => import('../pages/admin/SystemSettings.jsx'));
 
 export const routes = [
   { path: '/', element: <Home /> },
@@ -67,7 +69,9 @@ export const routes = [
       { path: 'branding', element: <AdminBranding /> },
       { path: 'contact-form', element: <AdminContactForm /> },
       { path: 'permissions', element: <AdminPermissions /> },
-      { path: 'users', element: <Users /> }
+      { path: 'users', element: <Users /> },
+      { path: 'audit-log', element: <AuditLog /> },
+      { path: 'system-settings', element: <SystemSettings /> }
     ]
   }
 ];

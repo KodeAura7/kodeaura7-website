@@ -26,8 +26,14 @@ import {
   duplicate as duplicateListView,
   makeDefault as setListViewDefault,
   favorite as favoriteListView,
+  pin as pinListView,
+  recents as recentListViews,
+  recordRecent as recordRecentListView,
   getFieldConfig as getListViewFields,
 } from '../controllers/listViewController.js';
+import { initiateMigration } from '../controllers/migrateController.js';
+import { list as listAuditLogs } from '../controllers/auditLogController.js';
+import { exportDatabase, importDatabase, dbImportUpload } from '../controllers/dbAdminController.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { authorize } from '../middleware/authorize.js';
 import { requirePermission } from '../middleware/requirePermission.js';
@@ -119,6 +125,7 @@ router.delete('/contact-form/:id',   requirePermission('contact_form.edit'), asy
 
 // ── List Views ────────────────────────────────────────────────────────────────
 router.get('/list-views/fields',           asyncHandler(getListViewFields));
+router.get('/list-views/recents',          asyncHandler(recentListViews));
 router.get('/list-views',                  asyncHandler(listListViews));
 router.post('/list-views',                 asyncHandler(createListView));
 router.get('/list-views/:id',              asyncHandler(getListView));
@@ -127,6 +134,18 @@ router.delete('/list-views/:id',           asyncHandler(deleteListView));
 router.post('/list-views/:id/duplicate',   asyncHandler(duplicateListView));
 router.patch('/list-views/:id/default',    asyncHandler(setListViewDefault));
 router.patch('/list-views/:id/favorite',   asyncHandler(favoriteListView));
+router.patch('/list-views/:id/pin',        asyncHandler(pinListView));
+router.post('/list-views/:id/recent',      asyncHandler(recordRecentListView));
+
+// ── Migrate Records ───────────────────────────────────────────────────────────
+router.post('/migrate', asyncHandler(initiateMigration));
+
+// ── Audit Log ─────────────────────────────────────────────────────────────────
+router.get('/audit-logs', authorize('super_admin'), asyncHandler(listAuditLogs));
+
+// ── Database Import / Export (super_admin only) ───────────────────────────────
+router.get('/db/export', authorize('super_admin'), asyncHandler(exportDatabase));
+router.post('/db/import', authorize('super_admin'), dbImportUpload, asyncHandler(importDatabase));
 
 // ── Users (super_admin only) ──────────────────────────────────────────────────
 router.get('/users/rollup', asyncHandler(userRollup));
