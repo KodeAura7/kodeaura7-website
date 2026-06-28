@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Icon from '../../components/Icon';
 import { adminApi } from '../../services/adminApi';
 import { useToast } from '../../contexts/ToastContext';
+import { usePermissions } from '../../contexts/PermissionsContext';
 
 // ─── Action definitions ───────────────────────────────────────────────────────
 
@@ -94,6 +95,7 @@ function Toggle({ checked, onChange, disabled }) {
 
 export default function Permissions() {
   const { success, error: toastError } = useToast();
+  const { refresh: refreshMyPerms } = usePermissions();
   // perms[role][action] = boolean
   const [perms, setPerms] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -139,6 +141,7 @@ export default function Permissions() {
       await adminApi.bulkSetPermissions(permissions);
       success('Permissions saved', 'All role permissions updated.');
       setDirty(false);
+      refreshMyPerms();
     } catch (e) { setError(e.message); toastError('Save failed', e.message); }
     finally { setSaving(false); }
   };
