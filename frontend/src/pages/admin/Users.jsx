@@ -476,9 +476,19 @@ export default function Users() {
                   </thead>
                   <tbody className="divide-y divide-zinc-800/60">
                     {!users ? (
-                      <tr><td colSpan={visibleColCount + 1} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
+                      <tr><td colSpan={visibleColCount + 1} className="px-4 py-12 text-center">
+                        <div className="flex flex-col items-center gap-2 text-zinc-700">
+                          <Icon icon="solar:loading-linear" width={22} className="animate-spin" />
+                          <span className="text-sm">Loading users…</span>
+                        </div>
+                      </td></tr>
                     ) : filtered.length === 0 ? (
-                      <tr><td colSpan={visibleColCount + 1} className="px-4 py-10 text-center text-sm text-zinc-600">No users found.</td></tr>
+                      <tr><td colSpan={visibleColCount + 1} className="px-4 py-12 text-center">
+                        <div className="flex flex-col items-center gap-2 text-zinc-700">
+                          <Icon icon="solar:user-circle-linear" width={28} />
+                          <span className="text-sm">No users found.</span>
+                        </div>
+                      </td></tr>
                     ) : (
                       filtered.map((u) => (
                         <tr key={u.id} className="hover:bg-zinc-800/30 transition-colors">

@@ -227,9 +227,19 @@ export default function Newsletter() {
             </thead>
             <tbody className="divide-y divide-zinc-800/60">
               {!data ? (
-                <tr><td colSpan={4} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
+                <tr><td colSpan={4} className="px-4 py-12 text-center">
+                  <div className="flex flex-col items-center gap-2 text-zinc-700">
+                    <Icon icon="solar:loading-linear" width={22} className="animate-spin" />
+                    <span className="text-sm">Loading subscribers…</span>
+                  </div>
+                </td></tr>
               ) : data.data.length === 0 ? (
-                <tr><td colSpan={4} className="px-4 py-10 text-center text-sm text-zinc-600">No subscribers found.</td></tr>
+                <tr><td colSpan={4} className="px-4 py-12 text-center">
+                  <div className="flex flex-col items-center gap-2 text-zinc-700">
+                    <Icon icon="solar:letter-linear" width={28} />
+                    <span className="text-sm">No subscribers found.</span>
+                  </div>
+                </td></tr>
               ) : (
                 data.data.map((s) => (
                   <tr key={s.id} className="hover:bg-zinc-800/30 transition-colors">

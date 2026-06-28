@@ -575,9 +575,19 @@ export default function Testimonials() {
             </thead>
             <tbody className="divide-y divide-zinc-800/60">
               {!items ? (
-                <tr><td colSpan={9} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
+                <tr><td colSpan={9} className="px-4 py-12 text-center">
+                  <div className="flex flex-col items-center gap-2 text-zinc-700">
+                    <Icon icon="solar:loading-linear" width={22} className="animate-spin" />
+                    <span className="text-sm">Loading testimonials…</span>
+                  </div>
+                </td></tr>
               ) : items.length === 0 ? (
-                <tr><td colSpan={9} className="px-4 py-10 text-center text-sm text-zinc-600">No reviews submitted yet.</td></tr>
+                <tr><td colSpan={9} className="px-4 py-12 text-center">
+                  <div className="flex flex-col items-center gap-2 text-zinc-700">
+                    <Icon icon="solar:star-linear" width={28} />
+                    <span className="text-sm">No reviews submitted yet.</span>
+                  </div>
+                </td></tr>
               ) : (
                 items.map((t) => (
                   <tr key={t.id} className="hover:bg-zinc-800/20 transition-colors">

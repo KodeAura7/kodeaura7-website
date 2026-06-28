@@ -118,7 +118,7 @@ export default function SocialLinks() {
   const [slSort, setSlSort] = useState('sort_order');
   const [slDir, setSlDir] = useState('asc');
   const [slFilters, setSlFilters] = useState({});
-  const { visibleCols: slCols, toggle: toggleSlCol, reset: resetSlCols } = useColumnVisibility('social-links', SL_COLS);
+  const { visibleCols: slCols, allOrdered: slAllOrdered, toggle: toggleSlCol, reset: resetSlCols, reorder: reorderSlCols } = useColumnVisibility('social-links', SL_COLS);
   const handleSlFilter = (key, val) => setSlFilters(f => ({ ...f, [key]: val }));
 
   const loadAll = () => {
@@ -289,7 +289,8 @@ export default function SocialLinks() {
         sortOptions={SL_SORT_OPTIONS} sort={slSort} dir={slDir}
         onSort={(col, d) => { setSlSort(col); setSlDir(d); }}
         filterGroups={SL_FILTER_GROUPS} filters={slFilters} onFilter={handleSlFilter}
-        columns={SL_COLS} visibleCols={slCols} onColumnsToggle={toggleSlCol} onColumnsReset={resetSlCols}
+        columns={SL_COLS} allOrdered={slAllOrdered} visibleCols={slCols}
+        onColumnsToggle={toggleSlCol} onColumnsReset={resetSlCols} onColumnsReorder={reorderSlCols}
         placeholder="Search by name or URL…"
       >
         {canDo('social_links.view') && (
@@ -321,9 +322,20 @@ export default function SocialLinks() {
         ) : null}
         <div className="divide-y divide-zinc-800/60">
           {!items ? (
-            <p className="px-6 py-10 text-center text-sm text-zinc-600">Loading…</p>
+            <div className="px-6 py-12 flex flex-col items-center gap-2 text-zinc-700">
+              <Icon icon="solar:loading-linear" width={22} className="animate-spin" />
+              <span className="text-sm">Loading…</span>
+            </div>
           ) : slFiltered.length === 0 ? (
-            <p className="px-6 py-10 text-center text-sm text-zinc-600">{items.length === 0 ? 'No social links yet.' : 'No results.'}</p>
+            <div className="px-6 py-12 flex flex-col items-center gap-2 text-zinc-700">
+              <Icon icon="solar:share-circle-linear" width={28} />
+              <p className="text-sm">{items.length === 0 ? 'No social links yet. Add your first one.' : 'No results match the current filters.'}</p>
+              {items.length === 0 && canDo('social_links.edit') && (
+                <button onClick={openNew} className="mt-1 text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+                  + Add Link
+                </button>
+              )}
+            </div>
           ) : (
             slFiltered.map((link) => (
               <div key={link.id} className="px-6 py-4 flex items-center gap-4 hover:bg-zinc-800/20 transition-colors group">

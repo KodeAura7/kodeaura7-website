@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Icon from '../../components/Icon';
 import { adminApi } from '../../services/adminApi';
+import { TableToolbar } from '../../components/admin/TableToolbar';
 
 const LIMIT = 50;
 
@@ -9,11 +10,15 @@ const ACTION_LABELS = {
   'contact.status_update':    'Status Updated',
   'contact.bulk_status_update': 'Bulk Status Update',
   'contact.delete':           'Contact Deleted',
+  'contact.bulk_delete':      'Contacts Bulk Deleted',
   'newsletter.delete':        'Subscriber Deleted',
+  'newsletter.bulk_delete':   'Subscribers Bulk Deleted',
   'service.create':           'Service Created',
   'service.update':           'Service Updated',
   'service.delete':           'Service Deleted',
+  'service.bulk_delete':      'Services Bulk Deleted',
   'service.toggle_enabled':   'Service Toggled',
+  'testimonial.delete':       'Testimonial Deleted',
   'admin_user.create':        'User Created',
   'admin_user.update':        'User Updated',
   'admin_user.delete':        'User Deleted',
@@ -22,38 +27,50 @@ const ACTION_LABELS = {
 };
 
 const ACTION_ICONS = {
-  'user.login':               { icon: 'solar:login-3-linear',                  color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-  'contact.status_update':    { icon: 'solar:tag-linear',                       color: 'text-indigo-400',  bg: 'bg-indigo-500/10'  },
-  'contact.bulk_status_update':{ icon: 'solar:tag-linear',                      color: 'text-indigo-400',  bg: 'bg-indigo-500/10'  },
-  'contact.delete':           { icon: 'solar:trash-bin-minimalistic-linear',    color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
-  'newsletter.delete':        { icon: 'solar:trash-bin-minimalistic-linear',    color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
-  'service.create':           { icon: 'solar:add-circle-linear',               color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-  'service.update':           { icon: 'solar:pen-linear',                       color: 'text-amber-400',   bg: 'bg-amber-500/10'   },
-  'service.delete':           { icon: 'solar:trash-bin-minimalistic-linear',    color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
-  'service.toggle_enabled':   { icon: 'solar:eye-linear',                       color: 'text-sky-400',     bg: 'bg-sky-500/10'     },
-  'admin_user.create':        { icon: 'solar:user-plus-rounded-linear',         color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-  'admin_user.update':        { icon: 'solar:user-check-rounded-linear',        color: 'text-amber-400',   bg: 'bg-amber-500/10'   },
-  'admin_user.delete':        { icon: 'solar:user-minus-rounded-linear',        color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
-  'permission.update':        { icon: 'solar:shield-keyhole-linear',            color: 'text-violet-400',  bg: 'bg-violet-500/10'  },
-  'permission.bulk_update':   { icon: 'solar:shield-keyhole-linear',            color: 'text-violet-400',  bg: 'bg-violet-500/10'  },
+  'user.login':               { icon: 'solar:login-3-linear',               color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+  'contact.status_update':    { icon: 'solar:tag-linear',                    color: 'text-indigo-400',  bg: 'bg-indigo-500/10'  },
+  'contact.bulk_status_update':{ icon: 'solar:tag-linear',                   color: 'text-indigo-400',  bg: 'bg-indigo-500/10'  },
+  'contact.delete':           { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
+  'contact.bulk_delete':      { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
+  'newsletter.delete':        { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
+  'newsletter.bulk_delete':   { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
+  'service.create':           { icon: 'solar:add-circle-linear',            color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+  'service.update':           { icon: 'solar:pen-linear',                    color: 'text-amber-400',   bg: 'bg-amber-500/10'   },
+  'service.delete':           { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
+  'service.bulk_delete':      { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
+  'service.toggle_enabled':   { icon: 'solar:eye-linear',                    color: 'text-sky-400',     bg: 'bg-sky-500/10'     },
+  'testimonial.delete':       { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
+  'admin_user.create':        { icon: 'solar:user-plus-rounded-linear',      color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+  'admin_user.update':        { icon: 'solar:user-check-rounded-linear',     color: 'text-amber-400',   bg: 'bg-amber-500/10'   },
+  'admin_user.delete':        { icon: 'solar:user-minus-rounded-linear',     color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
+  'permission.update':        { icon: 'solar:shield-keyhole-linear',         color: 'text-violet-400',  bg: 'bg-violet-500/10'  },
+  'permission.bulk_update':   { icon: 'solar:shield-keyhole-linear',         color: 'text-violet-400',  bg: 'bg-violet-500/10'  },
 };
 
 const OBJECT_TYPE_LABELS = {
-  contact:    'Contact',
-  newsletter: 'Subscriber',
-  service:    'Service',
-  admin_user: 'User',
-  permission: 'Permission',
+  contact:     'Contact',
+  newsletter:  'Subscriber',
+  service:     'Service',
+  testimonial: 'Testimonial',
+  admin_user:  'User',
+  permission:  'Permission',
 };
 
 const ALL_ACTIONS = Object.keys(ACTION_LABELS);
 const OBJECT_TYPES = Object.keys(OBJECT_TYPE_LABELS);
 
-function useDebounce(v, d = 300) {
-  const [dv, setDv] = useState(v);
-  useEffect(() => { const t = setTimeout(() => setDv(v), d); return () => clearTimeout(t); }, [v, d]);
-  return dv;
-}
+const FILTER_GROUPS = [
+  {
+    key: 'action',
+    label: 'Action',
+    options: ALL_ACTIONS.map((a) => ({ value: a, label: ACTION_LABELS[a] })),
+  },
+  {
+    key: 'objectType',
+    label: 'Object Type',
+    options: OBJECT_TYPES.map((t) => ({ value: t, label: OBJECT_TYPE_LABELS[t] })),
+  },
+];
 
 function ActionBadge({ action }) {
   const cfg = ACTION_ICONS[action] || { icon: 'solar:info-circle-linear', color: 'text-zinc-400', bg: 'bg-zinc-700/40' };
@@ -72,7 +89,7 @@ function DetailsPopover({ details }) {
   return (
     <div className="relative inline-block">
       <button onClick={() => setOpen((o) => !o)}
-        className="text-xs text-zinc-500 hover:text-zinc-300 underline underline-offset-2 transition-colors">
+        className="text-xs text-zinc-500 hover:text-indigo-400 underline underline-offset-2 transition-colors">
         view
       </button>
       {open && (
@@ -91,64 +108,47 @@ export default function AuditLog() {
   const [data, setData] = useState(null);
   const [page, setPage] = useState(1);
   const [error, setError] = useState('');
-  const [filterAction, setFilterAction] = useState('');
-  const [filterObject, setFilterObject] = useState('');
-  const debouncedAction = useDebounce(filterAction);
-  const debouncedObject = useDebounce(filterObject);
+  const [filters, setFilters] = useState({ action: '', objectType: '' });
+
+  const handleFilter = (key, val) => {
+    setFilters((f) => ({ ...f, [key]: val }));
+    setPage(1);
+  };
 
   const load = useCallback(() => {
     setError('');
     adminApi.auditLogs({
       page,
       limit: LIMIT,
-      ...(debouncedAction ? { action: debouncedAction } : {}),
-      ...(debouncedObject ? { objectType: debouncedObject } : {}),
+      ...(filters.action ? { action: filters.action } : {}),
+      ...(filters.objectType ? { objectType: filters.objectType } : {}),
     })
       .then(setData)
       .catch((err) => setError(err.message));
-  }, [page, debouncedAction, debouncedObject]);
+  }, [page, filters]);
 
   useEffect(() => { load(); }, [load]);
-  useEffect(() => { setPage(1); }, [debouncedAction, debouncedObject]);
 
   const rows = data?.data ?? [];
+  const activeFilters = Object.values(filters).filter(Boolean).length;
 
   return (
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="font-display font-semibold text-2xl text-zinc-100">Audit Log</h1>
-          <p className="text-sm text-zinc-500 mt-1">
-            {data ? `${data.pagination.total.toLocaleString()} events · limited to most recent 10 000` : '—'}
-          </p>
-        </div>
-        <button onClick={load}
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/70 border border-zinc-800 transition-all self-start sm:self-auto">
-          <Icon icon="solar:refresh-linear" width={13} />
-          Refresh
-        </button>
+      <div className="mb-6">
+        <h1 className="font-display font-semibold text-2xl text-zinc-100">Audit Log</h1>
+        <p className="text-sm text-zinc-500 mt-1">
+          {data
+            ? `${data.pagination.total.toLocaleString()} events${activeFilters ? ' · filtered' : ' · limited to most recent 10 000'}`
+            : 'Track every admin action across the panel.'}
+        </p>
       </div>
 
-      {/* Filters */}
-      <div className="mb-4 flex flex-wrap gap-3">
-        <select value={filterAction} onChange={(e) => setFilterAction(e.target.value)}
-          className="bg-[#18181B] border border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-300 focus:outline-none focus:border-indigo-500/50 min-w-[180px]">
-          <option value="">All actions</option>
-          {ALL_ACTIONS.map((a) => <option key={a} value={a}>{ACTION_LABELS[a]}</option>)}
-        </select>
-        <select value={filterObject} onChange={(e) => setFilterObject(e.target.value)}
-          className="bg-[#18181B] border border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-300 focus:outline-none focus:border-indigo-500/50 min-w-[150px]">
-          <option value="">All object types</option>
-          {OBJECT_TYPES.map((t) => <option key={t} value={t}>{OBJECT_TYPE_LABELS[t]}</option>)}
-        </select>
-        {(filterAction || filterObject) && (
-          <button onClick={() => { setFilterAction(''); setFilterObject(''); }}
-            className="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs text-zinc-500 hover:text-zinc-300 border border-zinc-800 hover:border-zinc-700 transition-all">
-            <Icon icon="solar:close-circle-linear" width={13} />
-            Clear
-          </button>
-        )}
-      </div>
+      <TableToolbar
+        onRefresh={load}
+        filterGroups={FILTER_GROUPS}
+        filters={filters}
+        onFilter={handleFilter}
+      />
 
       {error && (
         <div className="mb-4 bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400">{error}</div>
@@ -168,9 +168,23 @@ export default function AuditLog() {
             </thead>
             <tbody className="divide-y divide-zinc-800/60">
               {!data ? (
-                <tr><td colSpan={5} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
+                <tr>
+                  <td colSpan={5} className="px-4 py-12 text-center">
+                    <div className="flex flex-col items-center gap-2 text-zinc-600">
+                      <Icon icon="solar:loading-linear" width={22} className="animate-spin text-zinc-700" />
+                      <span className="text-sm">Loading events…</span>
+                    </div>
+                  </td>
+                </tr>
               ) : rows.length === 0 ? (
-                <tr><td colSpan={5} className="px-4 py-10 text-center text-sm text-zinc-600">No events found.</td></tr>
+                <tr>
+                  <td colSpan={5} className="px-4 py-12 text-center">
+                    <div className="flex flex-col items-center gap-2 text-zinc-600">
+                      <Icon icon="solar:file-text-linear" width={28} className="text-zinc-700" />
+                      <span className="text-sm">{activeFilters ? 'No events match these filters.' : 'No events found.'}</span>
+                    </div>
+                  </td>
+                </tr>
               ) : rows.map((row) => (
                 <tr key={row.id} className="hover:bg-zinc-800/20 transition-colors">
                   <td className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">
@@ -210,18 +224,20 @@ export default function AuditLog() {
       </div>
 
       {data && data.pagination.pages > 1 && (
-        <div className="mt-4 flex items-center justify-between text-sm text-zinc-400">
+        <div className="mt-4 flex items-center justify-between">
           <span className="text-xs font-mono text-zinc-600">
-            Page {data.pagination.page} of {data.pagination.pages}
+            Page {data.pagination.page} of {data.pagination.pages} · {data.pagination.total.toLocaleString()} total
           </span>
           <div className="flex gap-2">
             <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
-              className="px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-800 hover:border-zinc-600 transition-all disabled:opacity-40 text-xs">
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-800 hover:border-zinc-600 transition-all disabled:opacity-40 text-xs text-zinc-400">
+              <Icon icon="solar:arrow-left-linear" width={12} />
               Previous
             </button>
             <button onClick={() => setPage((p) => Math.min(data.pagination.pages, p + 1))} disabled={page === data.pagination.pages}
-              className="px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-800 hover:border-zinc-600 transition-all disabled:opacity-40 text-xs">
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-800 hover:border-zinc-600 transition-all disabled:opacity-40 text-xs text-zinc-400">
               Next
+              <Icon icon="solar:arrow-right-linear" width={12} />
             </button>
           </div>
         </div>

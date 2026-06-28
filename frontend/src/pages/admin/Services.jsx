@@ -205,9 +205,15 @@ function HistorySidebar({ serviceId, editMode, onRevert, open, onToggle, history
       {open ? (
         <div className="flex-1 overflow-y-auto divide-y divide-zinc-800/40 min-w-[320px]">
           {!history ? (
-            <p className="p-5 text-xs text-zinc-600 text-center">Loading…</p>
+            <div className="p-5 flex items-center justify-center gap-2 text-zinc-700">
+              <Icon icon="solar:loading-linear" width={14} className="animate-spin" />
+              <span className="text-xs">Loading…</span>
+            </div>
           ) : history.length === 0 ? (
-            <p className="p-5 text-xs text-zinc-600 text-center">No edit history yet.</p>
+            <div className="p-5 flex flex-col items-center gap-1.5 text-zinc-700">
+              <Icon icon="solar:history-linear" width={20} />
+              <span className="text-xs">No edit history yet.</span>
+            </div>
           ) : (
             history.map(entry => (
               <div key={entry.id} className="p-4">
@@ -867,9 +873,19 @@ export default function AdminServices() {
             </thead>
             <tbody className="divide-y divide-zinc-800/60">
               {!items ? (
-                <tr><td colSpan={svcCols.size + 2} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
+                <tr><td colSpan={svcCols.size + 2} className="px-4 py-12 text-center">
+                  <div className="flex flex-col items-center gap-2 text-zinc-700">
+                    <Icon icon="solar:loading-linear" width={22} className="animate-spin" />
+                    <span className="text-sm">Loading services…</span>
+                  </div>
+                </td></tr>
               ) : svcFiltered.length === 0 ? (
-                <tr><td colSpan={svcCols.size + 2} className="px-4 py-10 text-center text-sm text-zinc-600">No services found.</td></tr>
+                <tr><td colSpan={svcCols.size + 2} className="px-4 py-12 text-center">
+                  <div className="flex flex-col items-center gap-2 text-zinc-700">
+                    <Icon icon="solar:layers-linear" width={28} />
+                    <span className="text-sm">No services found.</span>
+                  </div>
+                </td></tr>
               ) : (
                 svcFiltered.map((svc, idx) => (
                   <tr key={svc.id} className="hover:bg-zinc-800/20 transition-colors">
