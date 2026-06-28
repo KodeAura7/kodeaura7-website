@@ -10,7 +10,7 @@ import {
 import { exportCsv as exportNewsletter, list as listNewsletter, remove as removeNewsletter } from '../controllers/adminNewsletterController.js';
 import { getDashboard } from '../controllers/dashboardController.js';
 import { adminList as listTestimonials, exportCsv as exportTestimonials, importCsv as importTestimonials, updateSortOrder as updateTestimonialOrder, updateVisibility as updateTestimonialVisibility } from '../controllers/testimonialsController.js';
-import { adminCreate as createService, adminDelete as deleteService, adminExportCsv as exportServicesCsv, adminGetHistory as getServiceHistory, adminGetOne as getService, adminImportCsv as importServicesCsv, adminListAll as listServices, adminSetEnabled as setServiceEnabled, adminSetOrder as setServiceOrder, adminUpdate as updateService } from '../controllers/servicesController.js';
+import { adminBulkDelete as bulkDeleteServices, adminCreate as createService, adminDelete as deleteService, adminExportCsv as exportServicesCsv, adminGetHistory as getServiceHistory, adminGetOne as getService, adminImportCsv as importServicesCsv, adminListAll as listServices, adminSetEnabled as setServiceEnabled, adminSetOrder as setServiceOrder, adminUpdate as updateService } from '../controllers/servicesController.js';
 import { adminCreate as createSocialLink, adminDelete as deleteSocialLink, adminExportCsv as exportSocialLinksCsv, adminListAll as listSocialLinks, adminSetEnabled as setSocialLinkEnabled, adminUpdate as updateSocialLink } from '../controllers/socialLinksController.js';
 import { adminGetPage, adminGetPageHistory, adminSetPage } from '../controllers/pageContentController.js';
 import { listLogoAssets, uploadLogoAsset, uploadMiddleware } from '../controllers/assetsController.js';
@@ -33,7 +33,7 @@ import {
 } from '../controllers/listViewController.js';
 import { initiateMigration } from '../controllers/migrateController.js';
 import { list as listAuditLogs } from '../controllers/auditLogController.js';
-import { exportDatabase, importDatabase, dbImportUpload } from '../controllers/dbAdminController.js';
+import { exportDatabase, importDatabase, dbImportUpload, getCollectionCounts } from '../controllers/dbAdminController.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { authorize } from '../middleware/authorize.js';
 import { requirePermission } from '../middleware/requirePermission.js';
@@ -70,6 +70,7 @@ router.patch('/testimonials/:id/order',      requirePermission('testimonials.edi
 // ── Services ──────────────────────────────────────────────────────────────────
 router.get('/services/export',    requirePermission('services.view'),   asyncHandler(exportServicesCsv));
 router.post('/services/import',   requirePermission('services.edit'),   asyncHandler(importServicesCsv));
+router.delete('/services/bulk',   requirePermission('services.delete'), asyncHandler(bulkDeleteServices));
 router.get('/services/:id/history', requirePermission('services.view'), asyncHandler(getServiceHistory));
 router.get('/services/:id',       requirePermission('services.view'),   asyncHandler(getService));
 router.put('/services/:id',       requirePermission('services.edit'),   asyncHandler(updateService));
@@ -144,8 +145,9 @@ router.post('/migrate', asyncHandler(initiateMigration));
 router.get('/audit-logs', authorize('super_admin'), asyncHandler(listAuditLogs));
 
 // ── Database Import / Export (super_admin only) ───────────────────────────────
-router.get('/db/export', authorize('super_admin'), asyncHandler(exportDatabase));
-router.post('/db/import', authorize('super_admin'), dbImportUpload, asyncHandler(importDatabase));
+router.get('/db/collections', authorize('super_admin'), asyncHandler(getCollectionCounts));
+router.get('/db/export',      authorize('super_admin'), asyncHandler(exportDatabase));
+router.post('/db/import',     authorize('super_admin'), dbImportUpload, asyncHandler(importDatabase));
 
 // ── Users (super_admin only) ──────────────────────────────────────────────────
 router.get('/users/rollup', asyncHandler(userRollup));

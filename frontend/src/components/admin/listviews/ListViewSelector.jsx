@@ -13,8 +13,11 @@ function ViewContextMenu({ view, onEdit, onDuplicate, onDelete, onSetDefault, on
     return () => document.removeEventListener('mousedown', handleClick);
   }, [onClose]);
 
-  const item = (icon, label, onClick, danger = false) => (
-    <button type="button" onClick={() => { onClick(); onClose(); }}
+  const item = (icon, label, onClick, danger = false, confirm = false) => (
+    <button type="button" onClick={() => {
+      if (confirm && !window.confirm(`Delete list view "${view.name}"? This cannot be undone.`)) { onClose(); return; }
+      onClick(); onClose();
+    }}
       className={`flex items-center gap-2.5 w-full px-3 py-2 text-xs font-medium rounded-lg text-left transition-all ${
         danger ? 'text-rose-400 hover:bg-rose-500/10' : 'text-zinc-300 hover:bg-zinc-800/60'
       }`}>
@@ -37,7 +40,7 @@ function ViewContextMenu({ view, onEdit, onDuplicate, onDelete, onSetDefault, on
       )}
       {!view.is_system && item('solar:star-linear', view.is_favorite ? 'Remove from Favorites' : 'Add to Favorites', onFavorite)}
       {!view.is_system && <div className="my-1.5 border-t border-zinc-800" />}
-      {!view.is_system && item('solar:trash-bin-minimalistic-linear', 'Delete', onDelete, true)}
+      {!view.is_system && item('solar:trash-bin-minimalistic-linear', 'Delete', onDelete, true, true)}
     </div>
   );
 }

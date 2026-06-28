@@ -85,6 +85,8 @@ export const adminApi = {
   createService: (data) => request('/api/admin/services', { method: 'POST', body: JSON.stringify(data) }),
   updateService: (id, data) => request(`/api/admin/services/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteService: (id) => request(`/api/admin/services/${id}`, { method: 'DELETE' }),
+  bulkDeleteServices: (ids) =>
+    request('/api/admin/services/bulk', { method: 'DELETE', body: JSON.stringify({ ids }) }),
   setServiceEnabled: (id, enabled) =>
     request(`/api/admin/services/${id}/enabled`, { method: 'PATCH', body: JSON.stringify({ enabled }) }),
   setServiceOrder: (id, sort_order) =>
@@ -186,6 +188,8 @@ export const adminApi = {
   },
 
   // Database import / export
+  getDbCollections: () => request('/api/admin/db/collections'),
+
   exportDatabase: async (collections = []) => {
     const token = getToken();
     const qs = collections.length ? `?collections=${collections.join(',')}` : '';
@@ -197,13 +201,17 @@ export const adminApi = {
       throw new Error(err.message || `Export failed: HTTP ${response.status}`);
     }
     const blob = await response.blob();
-    const cd = response.headers.get('Content-Disposition') || '';
+    const cd    = response.headers.get('Content-Disposition') || '';
     const match = cd.match(/filename="([^"]+)"/);
-    const filename = match?.[1] || `kodeaura7-db-export.zip`;
+    const filename     = match?.[1] || `kodeaura7-db-export.zip`;
+    const collCount    = parseInt(response.headers.get('X-Export-Collections') || '0', 10);
+    const recordCount  = parseInt(response.headers.get('X-Export-Records') || '0', 10);
+    const exportType   = response.headers.get('X-Export-Type') || 'full';
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = filename; a.click();
     setTimeout(() => URL.revokeObjectURL(url), 60000);
+    return { filename, sizeBytes: blob.size, collCount, recordCount, exportType };
   },
 
   importDatabase: async (file, strategy) => {

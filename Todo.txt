@@ -21,6 +21,8 @@ no testimonial record migration between environments.
 
 and I am getting multiple record creation of social media again anad again. 
 
+1.5: 
+super admin can update user role.
 
 
 
@@ -28,4 +30,26 @@ Pending::::::::::::::::::
 
 
 1.4
-download button to download all data saved in database. Within seperated files. So that can also be import from other environments using import button. So create import and export whole databse button too for super admin User
+download button to download all data saved in database. Within seperated files. So that can also be import from other environments
+ using import button. So create import and export whole databse button too for super admin User
+
+checkbox to export databse.
+
+
+
+
+
+
+
+delete listviews
+delete services.
+column sequence in listviews
+user profile from site.
+
+
+submited form for customer user.
+
+
+persmission not working.
+
+

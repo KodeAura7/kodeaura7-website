@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Icon from '../../components/Icon';
 import { useAuth } from '../../hooks/useAuth';
 import { adminApi } from '../../services/adminApi';
@@ -66,8 +66,34 @@ function RollupCard({ label, total, active, icon, color }) {
   );
 }
 
-const ROLES = ['customer', 'admin', 'super_admin'];
 const STATUSES = ['active', 'inactive'];
+
+const ROLE_OPTIONS = [
+  {
+    value: 'customer',
+    label: 'Customer',
+    desc: 'View-only access to assigned resources',
+    icon: 'solar:user-linear',
+    badge: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+    accent: '#06B6D4',
+  },
+  {
+    value: 'admin',
+    label: 'Admin',
+    desc: 'Standard admin access to manage content and CRM',
+    icon: 'solar:shield-linear',
+    badge: 'bg-zinc-800 text-zinc-400 border-zinc-700',
+    accent: '#71717A',
+  },
+  {
+    value: 'super_admin',
+    label: 'Super Admin',
+    desc: 'Unrestricted access including user and system management',
+    icon: 'solar:crown-linear',
+    badge: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+    accent: '#6366F1',
+  },
+];
 
 function UserModal({ initial, onClose, onSaved }) {
   const isEdit = Boolean(initial);
@@ -159,23 +185,45 @@ function UserModal({ initial, onClose, onSaved }) {
               className="form-input"
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400 ml-0.5">Role</label>
-              <select name="role" value={values.role} onChange={handleChange} className="form-input">
-                {ROLES.map((r) => (
-                  <option key={r} value={r}>{r.replace('_', ' ')}</option>
-                ))}
-              </select>
+          {/* Role picker */}
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-zinc-400 ml-0.5">Role</label>
+            <div className="space-y-2">
+              {ROLE_OPTIONS.map((r) => (
+                <label key={r.value}
+                  className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                    values.role === r.value
+                      ? 'border-indigo-500/30 bg-indigo-500/6'
+                      : 'border-zinc-800 bg-[#1A1A1D] hover:border-zinc-700'
+                  }`}>
+                  <input type="radio" name="role" value={r.value} checked={values.role === r.value}
+                    onChange={handleChange} className="sr-only" />
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                    style={{ background: `color-mix(in srgb,${r.accent} 12%,transparent)`, color: r.accent }}>
+                    <Icon icon={r.icon} width={15} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm font-medium leading-tight ${values.role === r.value ? 'text-zinc-100' : 'text-zinc-400'}`}>{r.label}</p>
+                    <p className="text-[10px] text-zinc-600 mt-0.5 leading-snug">{r.desc}</p>
+                  </div>
+                  <div className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
+                    values.role === r.value ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-600'
+                  }`}>
+                    {values.role === r.value && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                  </div>
+                </label>
+              ))}
             </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400 ml-0.5">Status</label>
-              <select name="status" value={values.status} onChange={handleChange} className="form-input">
-                {STATUSES.map((s) => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
-            </div>
+          </div>
+
+          {/* Status */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-zinc-400 ml-0.5">Status</label>
+            <select name="status" value={values.status} onChange={handleChange} className="form-input">
+              {STATUSES.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
           </div>
           {error ? (
             <p className="text-xs text-rose-400 flex items-center gap-1.5">
@@ -205,14 +253,68 @@ function UserModal({ initial, onClose, onSaved }) {
 }
 
 function RoleBadge({ role }) {
-  const styles = {
-    super_admin: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-    admin: 'bg-zinc-800 text-zinc-400 border-zinc-700'
-  };
+  const r = ROLE_OPTIONS.find(o => o.value === role);
   return (
-    <span className={`inline-block border rounded-full px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-wider ${styles[role] || styles.admin}`}>
+    <span className={`inline-block border rounded-full px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-wider ${r?.badge || 'bg-zinc-800 text-zinc-400 border-zinc-700'}`}>
       {role.replace('_', ' ')}
     </span>
+  );
+}
+
+function InlineRolePicker({ userId, currentRole, isSelf, onChanged }) {
+  const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const ref = useRef();
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const handleSelect = async (role) => {
+    setOpen(false);
+    if (role === currentRole) return;
+    setSaving(true);
+    try { await onChanged(userId, role); } finally { setSaving(false); }
+  };
+
+  return (
+    <div ref={ref} className="relative inline-flex items-center gap-1">
+      <button
+        disabled={isSelf || saving}
+        onClick={() => setOpen(o => !o)}
+        title={isSelf ? "Can't change your own role" : 'Change role'}
+        className={`group flex items-center gap-1.5 transition-opacity ${isSelf ? 'cursor-default' : 'cursor-pointer hover:opacity-80'} disabled:opacity-50`}>
+        <RoleBadge role={currentRole} />
+        {!isSelf && !saving && (
+          <Icon icon="solar:alt-arrow-down-linear" width={10}
+            className={`text-zinc-600 group-hover:text-zinc-400 transition-transform duration-150 ${open ? 'rotate-180' : ''}`} />
+        )}
+        {saving && <Icon icon="solar:loading-linear" width={11} className="animate-spin text-zinc-500" />}
+      </button>
+
+      {open && (
+        <div className="absolute left-0 top-full mt-1.5 z-30 w-44 bg-[#111113] border border-zinc-800 rounded-xl shadow-xl overflow-hidden py-1">
+          {ROLE_OPTIONS.map(opt => (
+            <button key={opt.value} onClick={() => handleSelect(opt.value)}
+              className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-all ${
+                opt.value === currentRole
+                  ? 'bg-indigo-500/10 text-indigo-300'
+                  : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100'
+              }`}>
+              <div className="w-5 h-5 rounded-md flex items-center justify-center shrink-0"
+                style={{ background: `color-mix(in srgb,${opt.accent} 12%,transparent)`, color: opt.accent }}>
+                <Icon icon={opt.icon} width={12} />
+              </div>
+              <span className="flex-1 capitalize font-medium text-xs">{opt.label}</span>
+              {opt.value === currentRole && <Icon icon="solar:check-read-linear" width={11} className="text-indigo-400 shrink-0" />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -271,6 +373,16 @@ export default function Users() {
     setModal(null);
     success(isNew ? 'User created' : 'User updated', name ? `${name} saved.` : undefined);
     load();
+  };
+
+  const handleRoleChange = async (userId, newRole) => {
+    try {
+      const updated = await adminApi.updateUser(userId, { role: newRole });
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: updated.role } : u));
+      success('Role updated', `Changed to ${newRole.replace('_', ' ')}.`);
+    } catch (e) {
+      toastError('Failed to update role', e.message);
+    }
   };
 
   return (
@@ -371,7 +483,13 @@ export default function Users() {
                         <tr key={u.id} className="hover:bg-zinc-800/30 transition-colors">
                           {visibleCols.has('name') && <td className="px-4 py-3 text-zinc-200 font-medium whitespace-nowrap">{u.name}</td>}
                           {visibleCols.has('email') && <td className="px-4 py-3 text-zinc-400 whitespace-nowrap">{u.email}</td>}
-                          {visibleCols.has('role') && <td className="px-4 py-3 whitespace-nowrap"><RoleBadge role={u.role} /></td>}
+                          {visibleCols.has('role') && (
+                            <td className="px-4 py-3 whitespace-nowrap">
+                              {isSuperAdmin
+                                ? <InlineRolePicker userId={u.id} currentRole={u.role} isSelf={u.id === me?.id} onChanged={handleRoleChange} />
+                                : <RoleBadge role={u.role} />}
+                            </td>
+                          )}
                           {visibleCols.has('status') && <td className="px-4 py-3 whitespace-nowrap"><StatusDot status={u.status} /></td>}
                           {visibleCols.has('last_login') && <td className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">{u.last_login ? new Date(u.last_login).toLocaleDateString() : '—'}</td>}
                           {visibleCols.has('created_at') && <td className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">{new Date(u.created_at).toLocaleDateString()}</td>}
