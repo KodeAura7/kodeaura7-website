@@ -46,9 +46,9 @@ CREATE TABLE IF NOT EXISTS dashboards (
 CREATE INDEX IF NOT EXISTS dashboards_created_by_idx ON dashboards (created_by);
 CREATE INDEX IF NOT EXISTS dashboards_created_at_idx ON dashboards (created_at DESC);
 
--- ── Seed: default dashboard ───────────────────────────────────────────────────
+-- ── Seed: default dashboard (only if none exists) ────────────────────────────
 INSERT INTO dashboards (name, description, is_default, widgets)
-VALUES (
+SELECT
   'Overview',
   'Default overview dashboard with key metrics.',
   true,
@@ -62,11 +62,11 @@ VALUES (
     {"id":"w7","type":"chart","title":"Testimonials by Rating","col":0,"row":3,"w":2,"h":2,"config":{"source":"testimonials","chartType":"bar","groupBy":"rating","metric":{"fn":"count","field":"*"},"filters":[],"color":"#F59E0B"}},
     {"id":"w8","type":"chart","title":"Users by Role","col":2,"row":3,"w":2,"h":2,"config":{"source":"users","chartType":"pie","groupBy":"role","metric":{"fn":"count","field":"*"},"filters":[],"color":"#8B5CF6"}}
   ]'::jsonb
-) ON CONFLICT DO NOTHING;
+WHERE NOT EXISTS (SELECT 1 FROM dashboards WHERE is_default = true);
 
--- ── Seed: example reports ─────────────────────────────────────────────────────
+-- ── Seed: example reports (only if no reports exist) ─────────────────────────
 INSERT INTO reports (name, description, report_type, is_public, config)
-VALUES
+SELECT name, description, report_type, is_public, config FROM (VALUES
   ('Contacts Overview', 'All contacts with status and service', 'tabular', true,
    '{"source":"contacts","columns":["name","email","service","status","created_at"],"filters":[],"sort":{"field":"created_at","dir":"desc"},"limit":500}'::jsonb),
   ('Contacts by Status', 'Contact count grouped by status', 'summary', true,
@@ -77,4 +77,5 @@ VALUES
    '{"source":"services","columns":["name","slug","enabled","show_on_home","created_at"],"filters":[],"sort":{"field":"sort_order","dir":"asc"},"limit":200}'::jsonb),
   ('Testimonials by Rating', 'Review count per rating', 'summary', true,
    '{"source":"testimonials","groupBy":"rating","aggregations":[{"fn":"count","field":"*","alias":"Reviews"},{"fn":"avg","field":"rating","alias":"Avg Rating"}],"filters":[],"sort":{"field":"rating","dir":"desc"},"chart":{"enabled":true,"type":"bar"}}'::jsonb)
-ON CONFLICT DO NOTHING;
+) AS v(name, description, report_type, is_public, config)
+WHERE NOT EXISTS (SELECT 1 FROM reports);

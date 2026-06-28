@@ -30,7 +30,7 @@ const SOURCES = {
   services: {
     label: 'Services',
     table: 'services',
-    baseWhere: 'deleted_at IS NULL',
+    baseWhere: null,
     fields: {
       name:         { label: 'Name',         type: 'text',    sortable: true },
       slug:         { label: 'Slug',         type: 'text',    sortable: true },

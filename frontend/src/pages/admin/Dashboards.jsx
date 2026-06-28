@@ -5,8 +5,8 @@ import { adminApi } from '../../services/adminApi';
 import { useToast } from '../../contexts/ToastContext';
 import ReportChart from '../../components/admin/reports/ReportChart';
 
-// ── Widget data hook ──────────────────────────────────────────────────────────
-function useWidgetData(widget) {
+// ── Widget data hook — staggered by index to avoid simultaneous requests ──────
+function useWidgetData(widget, index = 0) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,17 +14,21 @@ function useWidgetData(widget) {
   useEffect(() => {
     if (!widget?.config?.source) { setLoading(false); return; }
     setLoading(true); setError(null);
-    adminApi.getWidgetData({ ...widget.config, type: widget.type })
-      .then(({ data: d }) => { setData(d); setLoading(false); })
-      .catch((err) => { setError(err.message); setLoading(false); });
-  }, [widget?.id, widget?.config, widget?.type]);
+    // Stagger widget requests by 200ms per position to prevent rate-limit bursts
+    const timer = setTimeout(() => {
+      adminApi.getWidgetData({ ...widget.config, type: widget.type })
+        .then(({ data: d }) => { setData(d); setLoading(false); })
+        .catch((err) => { setError(err.message); setLoading(false); });
+    }, index * 200);
+    return () => clearTimeout(timer);
+  }, [widget?.id, widget?.config, widget?.type, index]);
 
   return { data, loading, error };
 }
 
 // ── KPI Widget ────────────────────────────────────────────────────────────────
-function KPIWidget({ widget }) {
-  const { data, loading, error } = useWidgetData(widget);
+function KPIWidget({ widget, index }) {
+  const { data, loading, error } = useWidgetData(widget, index);
   const { title, config } = widget;
   const color = config?.color ?? '#6366F1';
   const icon  = config?.icon  ?? 'solar:chart-square-linear';
@@ -58,8 +62,8 @@ function KPIWidget({ widget }) {
 }
 
 // ── Chart Widget ──────────────────────────────────────────────────────────────
-function ChartWidget({ widget }) {
-  const { data, loading, error } = useWidgetData(widget);
+function ChartWidget({ widget, index }) {
+  const { data, loading, error } = useWidgetData(widget, index);
   const { title, config } = widget;
   const color = config?.color ?? '#6366F1';
   const chartType = config?.chartType ?? 'bar';
@@ -99,8 +103,8 @@ function ChartWidget({ widget }) {
 }
 
 // ── Table Widget ──────────────────────────────────────────────────────────────
-function TableWidget({ widget }) {
-  const { data, loading, error } = useWidgetData(widget);
+function TableWidget({ widget, index }) {
+  const { data, loading, error } = useWidgetData(widget, index);
   const { title, config } = widget;
 
   const rows = data?.rows ?? [];
@@ -140,10 +144,10 @@ function TableWidget({ widget }) {
 }
 
 // ── Widget dispatcher ─────────────────────────────────────────────────────────
-function Widget({ widget }) {
-  if (widget.type === 'kpi')   return <KPIWidget widget={widget} />;
-  if (widget.type === 'chart') return <ChartWidget widget={widget} />;
-  if (widget.type === 'table') return <TableWidget widget={widget} />;
+function Widget({ widget, index }) {
+  if (widget.type === 'kpi')   return <KPIWidget widget={widget} index={index} />;
+  if (widget.type === 'chart') return <ChartWidget widget={widget} index={index} />;
+  if (widget.type === 'table') return <TableWidget widget={widget} index={index} />;
   return null;
 }
 
@@ -162,17 +166,17 @@ function DashboardView({ dashboard }) {
       {/* KPIs row */}
       {kpis.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          {kpis.map((w) => <Widget key={w.id} widget={w} />)}
+          {kpis.map((w, i) => <Widget key={w.id} widget={w} index={i} />)}
         </div>
       )}
 
       {/* Charts / tables grid */}
       {charts.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-          {charts.map((w) => (
+          {charts.map((w, i) => (
             <div key={w.id}
               className={`${W_CLASSES[Math.min(w.w ?? 2, 4)]} ${H_CLASSES[Math.min(w.h ?? 2, 3)]}`}>
-              <Widget widget={w} />
+              <Widget widget={w} index={kpis.length + i} />
             </div>
           ))}
         </div>
