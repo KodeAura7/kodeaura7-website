@@ -107,8 +107,23 @@ async function upsertRecord(col, record, strategy) {
 
 // ── Export ────────────────────────────────────────────────────────────────────
 
+// Returns record counts for every collection without exporting data.
+export async function getCollectionCounts(req, res) {
+  const results = [];
+  for (const col of COLLECTIONS) {
+    try {
+      const { rows } = await query(`SELECT COUNT(*)::int AS count FROM "${col.table}"`);
+      results.push({ name: col.name, table: col.table, count: rows[0].count });
+    } catch {
+      results.push({ name: col.name, table: col.table, count: 0 });
+    }
+  }
+  res.json({ collections: results });
+}
+
 export async function exportDatabase(req, res) {
   const include = (req.query.collections || '').split(',').filter(Boolean);
+  const exportType = include.length ? 'selective' : 'full';
 
   const zip = new AdmZip();
   const manifest = {
@@ -116,6 +131,7 @@ export async function exportDatabase(req, res) {
     exportedBy: req.user?.email || 'unknown',
     appVersion: APP_VERSION,
     schemaVersion: SCHEMA_VERSION,
+    exportType,
     collections: [],
   };
 
@@ -136,22 +152,34 @@ export async function exportDatabase(req, res) {
   zip.addFile('manifest.json', Buffer.from(JSON.stringify(manifest, null, 2), 'utf-8'));
 
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  const filename = `kodeaura7-db-${timestamp}.zip`;
+  const filename = `kodeaura7-db-${exportType}-${timestamp}.zip`;
+  const zipBuffer = zip.toBuffer();
+
+  const totalRecords = manifest.collections.reduce((s, c) => s + (c.count || 0), 0);
 
   auditLog({
     ...actor(req),
     action: 'db.export',
     objectType: 'database',
     objectLabel: filename,
-    details: { collections: manifest.collections.map(c => c.name), schemaVersion: SCHEMA_VERSION },
+    details: {
+      exportType,
+      collections: manifest.collections.map(c => c.name),
+      totalRecords,
+      schemaVersion: SCHEMA_VERSION,
+    },
   });
 
   res.set({
     'Content-Type': 'application/zip',
     'Content-Disposition': `attachment; filename="${filename}"`,
+    'X-Export-Collections': manifest.collections.length,
+    'X-Export-Records': totalRecords,
+    'X-Export-Type': exportType,
     'Cache-Control': 'no-store',
+    'Access-Control-Expose-Headers': 'Content-Disposition, X-Export-Collections, X-Export-Records, X-Export-Type',
   });
-  res.send(zip.toBuffer());
+  res.send(zipBuffer);
 }
 
 // ── Import ────────────────────────────────────────────────────────────────────

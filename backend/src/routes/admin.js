@@ -33,7 +33,7 @@ import {
 } from '../controllers/listViewController.js';
 import { initiateMigration } from '../controllers/migrateController.js';
 import { list as listAuditLogs } from '../controllers/auditLogController.js';
-import { exportDatabase, importDatabase, dbImportUpload } from '../controllers/dbAdminController.js';
+import { exportDatabase, importDatabase, dbImportUpload, getCollectionCounts } from '../controllers/dbAdminController.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { authorize } from '../middleware/authorize.js';
 import { requirePermission } from '../middleware/requirePermission.js';
@@ -144,8 +144,9 @@ router.post('/migrate', asyncHandler(initiateMigration));
 router.get('/audit-logs', authorize('super_admin'), asyncHandler(listAuditLogs));
 
 // ── Database Import / Export (super_admin only) ───────────────────────────────
-router.get('/db/export', authorize('super_admin'), asyncHandler(exportDatabase));
-router.post('/db/import', authorize('super_admin'), dbImportUpload, asyncHandler(importDatabase));
+router.get('/db/collections', authorize('super_admin'), asyncHandler(getCollectionCounts));
+router.get('/db/export',      authorize('super_admin'), asyncHandler(exportDatabase));
+router.post('/db/import',     authorize('super_admin'), dbImportUpload, asyncHandler(importDatabase));
 
 // ── Users (super_admin only) ──────────────────────────────────────────────────
 router.get('/users/rollup', asyncHandler(userRollup));
