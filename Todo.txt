@@ -25,9 +25,10 @@ and I am getting multiple record creation of social media again anad again.
 super admin can update user role.
 
 
-
-Pending::::::::::::::::::
-
+delete listviews
+delete services.
+column sequence in listviews
+user profile from site.
 
 1.4
 download button to download all data saved in database. Within seperated files. So that can also be import from other environments
@@ -36,20 +37,12 @@ download button to download all data saved in database. Within seperated files. 
 checkbox to export databse.
 
 
+Pending::::::::::::::::::
 
 
 
 
 
-delete listviews
-delete services.
-column sequence in listviews
-user profile from site.
-
-
-submited form for customer user.
-
-
-persmission not working.
+change listview in better design layout.
 
 
