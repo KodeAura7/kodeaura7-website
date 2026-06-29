@@ -3,6 +3,7 @@ import Icon from '../components/Icon';
 
 const ToastCtx = createContext(null);
 
+
 const ICONS = {
   success: 'solar:check-circle-bold',
   error: 'solar:danger-circle-bold',

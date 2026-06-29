@@ -5,6 +5,7 @@ import { adminApi } from '../../services/adminApi';
 import { useToast } from '../../contexts/ToastContext';
 import ReportChart from '../../components/admin/reports/ReportChart';
 
+
 // ── Widget data hook — staggered by index to avoid simultaneous requests ──────
 function useWidgetData(widget, index = 0) {
   const [data, setData] = useState(null);

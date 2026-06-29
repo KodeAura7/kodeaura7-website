@@ -31,3 +31,4 @@ CREATE TRIGGER trg_prune_audit_logs
   AFTER INSERT ON audit_logs
   FOR EACH STATEMENT
   EXECUTE FUNCTION prune_audit_logs();
+

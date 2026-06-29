@@ -10,3 +10,4 @@ DELETE FROM reports
 WHERE id NOT IN (
   SELECT MIN(id::text)::uuid FROM reports GROUP BY name
 );
+

@@ -2,7 +2,6 @@ import { query } from '../database/pool.js';
 import { logAction } from './auditLogService.js';
 
 // ─── Source Definitions ───────────────────────────────────────────────────────
-
 const SOURCES = {
   contacts: {
     label: 'Contacts',
