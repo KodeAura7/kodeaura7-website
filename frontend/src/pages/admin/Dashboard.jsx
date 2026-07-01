@@ -5,9 +5,9 @@ import { adminApi } from '../../services/adminApi';
 
 function StatCard({ icon, label, value, color = 'indigo', loading = false }) {
   const colors = {
-    indigo: 'bg-indigo-500/10 text-indigo-400',
-    cyan:   'bg-cyan-500/10 text-cyan-400',
-    emerald:'bg-emerald-500/10 text-emerald-400',
+    indigo: 'bg-primary-500/10 text-primary-400',
+    cyan:   'bg-secondary-500/10 text-secondary-400',
+    emerald:'bg-success-500/10 text-success-400',
   };
   return (
     <div className="bg-[#111113] border border-zinc-800 rounded-2xl p-6 flex items-center gap-5">
@@ -54,7 +54,7 @@ export default function Dashboard() {
       </div>
 
       {error ? (
-        <div className="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-4 text-sm text-rose-400 mb-6">
+        <div className="bg-error-500/10 border border-error-500/20 rounded-2xl p-4 text-sm text-error-400 mb-6">
           {error}
         </div>
       ) : null}
@@ -71,7 +71,7 @@ export default function Dashboard() {
         <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
           <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between">
             <h2 className="font-display font-semibold text-sm text-zinc-100">Latest Contacts</h2>
-            <Link to="/admin/contacts" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">View all</Link>
+            <Link to="/admin/contacts" className="text-xs text-primary-400 hover:text-primary-300 transition-colors">View all</Link>
           </div>
           {!data ? (
             <div className="px-5 py-8 flex items-center justify-center gap-2 text-zinc-700">
@@ -104,7 +104,7 @@ export default function Dashboard() {
         <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
           <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between">
             <h2 className="font-display font-semibold text-sm text-zinc-100">Latest Subscribers</h2>
-            <Link to="/admin/newsletter" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">View all</Link>
+            <Link to="/admin/newsletter" className="text-xs text-primary-400 hover:text-primary-300 transition-colors">View all</Link>
           </div>
           {!data ? (
             <div className="px-5 py-8 flex items-center justify-center gap-2 text-zinc-700">

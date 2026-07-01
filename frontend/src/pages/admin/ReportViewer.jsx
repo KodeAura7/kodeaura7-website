@@ -7,11 +7,11 @@ import { useToast } from '../../contexts/ToastContext';
 import ReportChart from '../../components/admin/reports/ReportChart';
 
 const SOURCE_COLORS = {
-  contacts: 'text-indigo-400 bg-indigo-500/10',
-  newsletter: 'text-cyan-400 bg-cyan-500/10',
-  services: 'text-emerald-400 bg-emerald-500/10',
-  testimonials: 'text-amber-400 bg-amber-500/10',
-  users: 'text-purple-400 bg-purple-500/10',
+  contacts: 'text-primary-400 bg-primary-500/10',
+  newsletter: 'text-secondary-400 bg-secondary-500/10',
+  services: 'text-success-400 bg-success-500/10',
+  testimonials: 'text-warning-400 bg-warning-500/10',
+  users: 'text-accent-400 bg-accent-500/10',
 };
 
 function fmt(value, type) {
@@ -126,7 +126,7 @@ export default function ReportViewer() {
             Export CSV
           </button>
           <Link to={`/admin/reports/${id}/edit`}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-all shadow-lg shadow-indigo-900/30">
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-medium transition-all shadow-lg shadow-primary-900/30">
             <Icon icon="solar:pen-linear" width={14} />
             Edit
           </Link>

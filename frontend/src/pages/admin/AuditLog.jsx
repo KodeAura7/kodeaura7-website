@@ -27,24 +27,24 @@ const ACTION_LABELS = {
 };
 
 const ACTION_ICONS = {
-  'user.login':               { icon: 'solar:login-3-linear',               color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-  'contact.status_update':    { icon: 'solar:tag-linear',                    color: 'text-indigo-400',  bg: 'bg-indigo-500/10'  },
-  'contact.bulk_status_update':{ icon: 'solar:tag-linear',                   color: 'text-indigo-400',  bg: 'bg-indigo-500/10'  },
-  'contact.delete':           { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
-  'contact.bulk_delete':      { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
-  'newsletter.delete':        { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
-  'newsletter.bulk_delete':   { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
-  'service.create':           { icon: 'solar:add-circle-linear',            color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-  'service.update':           { icon: 'solar:pen-linear',                    color: 'text-amber-400',   bg: 'bg-amber-500/10'   },
-  'service.delete':           { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
-  'service.bulk_delete':      { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
-  'service.toggle_enabled':   { icon: 'solar:eye-linear',                    color: 'text-sky-400',     bg: 'bg-sky-500/10'     },
-  'testimonial.delete':       { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
-  'admin_user.create':        { icon: 'solar:user-plus-rounded-linear',      color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-  'admin_user.update':        { icon: 'solar:user-check-rounded-linear',     color: 'text-amber-400',   bg: 'bg-amber-500/10'   },
-  'admin_user.delete':        { icon: 'solar:user-minus-rounded-linear',     color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
-  'permission.update':        { icon: 'solar:shield-keyhole-linear',         color: 'text-violet-400',  bg: 'bg-violet-500/10'  },
-  'permission.bulk_update':   { icon: 'solar:shield-keyhole-linear',         color: 'text-violet-400',  bg: 'bg-violet-500/10'  },
+  'user.login':               { icon: 'solar:login-3-linear',               color: 'text-success-400', bg: 'bg-success-500/10' },
+  'contact.status_update':    { icon: 'solar:tag-linear',                    color: 'text-primary-400',  bg: 'bg-primary-500/10'  },
+  'contact.bulk_status_update':{ icon: 'solar:tag-linear',                   color: 'text-primary-400',  bg: 'bg-primary-500/10'  },
+  'contact.delete':           { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-error-400',    bg: 'bg-error-500/10'    },
+  'contact.bulk_delete':      { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-error-400',    bg: 'bg-error-500/10'    },
+  'newsletter.delete':        { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-error-400',    bg: 'bg-error-500/10'    },
+  'newsletter.bulk_delete':   { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-error-400',    bg: 'bg-error-500/10'    },
+  'service.create':           { icon: 'solar:add-circle-linear',            color: 'text-success-400', bg: 'bg-success-500/10' },
+  'service.update':           { icon: 'solar:pen-linear',                    color: 'text-warning-400',   bg: 'bg-warning-500/10'   },
+  'service.delete':           { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-error-400',    bg: 'bg-error-500/10'    },
+  'service.bulk_delete':      { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-error-400',    bg: 'bg-error-500/10'    },
+  'service.toggle_enabled':   { icon: 'solar:eye-linear',                    color: 'text-info-400',     bg: 'bg-info-500/10'     },
+  'testimonial.delete':       { icon: 'solar:trash-bin-minimalistic-linear', color: 'text-error-400',    bg: 'bg-error-500/10'    },
+  'admin_user.create':        { icon: 'solar:user-plus-rounded-linear',      color: 'text-success-400', bg: 'bg-success-500/10' },
+  'admin_user.update':        { icon: 'solar:user-check-rounded-linear',     color: 'text-warning-400',   bg: 'bg-warning-500/10'   },
+  'admin_user.delete':        { icon: 'solar:user-minus-rounded-linear',     color: 'text-error-400',    bg: 'bg-error-500/10'    },
+  'permission.update':        { icon: 'solar:shield-keyhole-linear',         color: 'text-accent-400',  bg: 'bg-accent-500/10'  },
+  'permission.bulk_update':   { icon: 'solar:shield-keyhole-linear',         color: 'text-accent-400',  bg: 'bg-accent-500/10'  },
 };
 
 const OBJECT_TYPE_LABELS = {
@@ -89,7 +89,7 @@ function DetailsPopover({ details }) {
   return (
     <div className="relative inline-block">
       <button onClick={() => setOpen((o) => !o)}
-        className="text-xs text-zinc-500 hover:text-indigo-400 underline underline-offset-2 transition-colors">
+        className="text-xs text-zinc-500 hover:text-primary-400 underline underline-offset-2 transition-colors">
         view
       </button>
       {open && (
@@ -151,7 +151,7 @@ export default function AuditLog() {
       />
 
       {error && (
-        <div className="mb-4 bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400">{error}</div>
+        <div className="mb-4 bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400">{error}</div>
       )}
 
       <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">

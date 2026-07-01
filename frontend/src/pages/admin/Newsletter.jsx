@@ -109,7 +109,7 @@ export default function Newsletter() {
 
   const SortIcon = ({ col }) =>
     sort === col ? (
-      <Icon icon={dir === 'asc' ? 'solar:sort-from-bottom-to-top-linear' : 'solar:sort-from-top-to-bottom-linear'} width={13} className="text-indigo-400" />
+      <Icon icon={dir === 'asc' ? 'solar:sort-from-bottom-to-top-linear' : 'solar:sort-from-top-to-bottom-linear'} width={13} className="text-primary-400" />
     ) : (
       <Icon icon="solar:sort-linear" width={13} className="text-zinc-600" />
     );
@@ -139,15 +139,15 @@ export default function Newsletter() {
         onPin={lv.togglePin}
       />
 
-      {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div> : null}
+      {error ? <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400 mb-4">{error}</div> : null}
 
       {/* Bulk toolbar */}
       {checkedIds.size > 0 && (
-        <div className="mb-4 flex flex-wrap items-center gap-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3">
-          <span className="text-xs text-indigo-400 font-medium">{checkedIds.size} selected</span>
+        <div className="mb-4 flex flex-wrap items-center gap-3 bg-primary-500/10 border border-primary-500/20 rounded-xl px-4 py-3">
+          <span className="text-xs text-primary-400 font-medium">{checkedIds.size} selected</span>
           <div className="flex items-center gap-2 ml-auto">
             <button onClick={() => setMigrateOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-indigo-500/50 text-zinc-300 hover:text-indigo-300 text-xs font-medium transition-all">
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-primary-500/50 text-zinc-300 hover:text-primary-300 text-xs font-medium transition-all">
               <Icon icon="solar:transfer-horizontal-linear" width={13} />
               Migrate
             </button>
@@ -156,7 +156,7 @@ export default function Newsletter() {
                 <>
                   <span className="text-xs text-zinc-500">Delete {checkedIds.size}?</span>
                   <button onClick={handleBulkDelete} disabled={bulkDeleting}
-                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-rose-500 text-white hover:bg-rose-400 transition-all disabled:opacity-50">
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-error-500 text-white hover:bg-error-400 transition-all disabled:opacity-50">
                     <Icon icon={bulkDeleting ? 'solar:loading-linear' : 'solar:check-read-linear'} width={11} className={bulkDeleting ? 'animate-spin' : ''} />
                     {bulkDeleting ? 'Deleting…' : 'Confirm'}
                   </button>
@@ -164,7 +164,7 @@ export default function Newsletter() {
                 </>
               ) : (
                 <button onClick={() => setBulkDeleteConfirm(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#18181B] border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs font-medium transition-all">
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#18181B] border border-error-500/30 text-error-400 hover:bg-error-500/10 text-xs font-medium transition-all">
                   <Icon icon="solar:trash-bin-minimalistic-linear" width={13} />
                   Delete ({checkedIds.size})
                 </button>
@@ -212,7 +212,7 @@ export default function Newsletter() {
               <tr className="bg-[#18181B] border-b border-zinc-800">
                 <th className="w-10 px-4 py-3">
                   <input type="checkbox" checked={allChecked} ref={(el) => { if (el) el.indeterminate = someChecked; }}
-                    onChange={toggleAll} className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer" />
+                    onChange={toggleAll} className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-primary-500 cursor-pointer" />
                 </th>
                 {visibleOrdered.map(({ key, label }) => (
                   <th key={key} onClick={() => handleSort(key)}
@@ -245,7 +245,7 @@ export default function Newsletter() {
                   <tr key={s.id} className="hover:bg-zinc-800/30 transition-colors">
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       <input type="checkbox" checked={checkedIds.has(s.id)} onChange={() => toggleOne(s.id)}
-                        className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer" />
+                        className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-primary-500 cursor-pointer" />
                     </td>
                     {visibleOrdered.map(({ key }) => {
                       if (key === 'email')         return <td key={key} className="px-4 py-3 text-zinc-200">{s.email}</td>;
@@ -255,7 +255,7 @@ export default function Newsletter() {
                     {canDo('newsletter.delete') && (
                       <td className="px-4 py-3 text-right">
                         <button onClick={() => handleDelete(s.id)} disabled={deleting === s.id}
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-40" title="Delete">
+                          className="p-1.5 rounded-lg text-zinc-500 hover:text-error-400 hover:bg-error-500/10 transition-all disabled:opacity-40" title="Delete">
                           <Icon icon="solar:trash-bin-minimalistic-linear" width={16} />
                         </button>
                       </td>

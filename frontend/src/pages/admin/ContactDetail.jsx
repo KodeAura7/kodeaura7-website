@@ -80,7 +80,7 @@ export default function ContactDetail() {
   if (error && !contact) {
     return (
       <div className="p-6 md:p-8 max-w-3xl mx-auto">
-        <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 text-sm text-rose-400">{error}</div>
+        <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-4 text-sm text-error-400">{error}</div>
       </div>
     );
   }
@@ -105,7 +105,7 @@ export default function ContactDetail() {
           <button
             onClick={handleDelete}
             disabled={deleting}
-            className="inline-flex items-center gap-2 border border-rose-500/20 text-rose-400 hover:bg-rose-500/10 rounded-xl px-3 py-2 text-xs font-medium transition-all disabled:opacity-50"
+            className="inline-flex items-center gap-2 border border-error-500/20 text-error-400 hover:bg-error-500/10 rounded-xl px-3 py-2 text-xs font-medium transition-all disabled:opacity-50"
           >
             <Icon icon={deleting ? 'solar:loading-linear' : 'solar:trash-bin-minimalistic-linear'} width={14} className={deleting ? 'animate-spin' : ''} />
             {deleting ? 'Deleting…' : 'Delete'}
@@ -114,7 +114,7 @@ export default function ContactDetail() {
       </div>
 
       {error ? (
-        <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div>
+        <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400 mb-4">{error}</div>
       ) : null}
 
       {/* Status update */}
@@ -126,7 +126,7 @@ export default function ContactDetail() {
           <select
             value={newStatus}
             onChange={(e) => setNewStatus(e.target.value)}
-            className="bg-[#18181B] border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500/50 transition-all"
+            className="bg-[#18181B] border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-zinc-200 focus:outline-none focus:border-primary-500/50 transition-all"
           >
             {CONTACT_STATUSES.map((s) => (
               <option key={s} value={s}>{STATUS_LABEL[s]}</option>
@@ -135,7 +135,7 @@ export default function ContactDetail() {
           <button
             onClick={handleStatusSave}
             disabled={saving || newStatus === contact.status}
-            className="px-4 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white text-sm font-medium transition-all disabled:opacity-50"
+            className="px-4 py-1.5 rounded-lg bg-primary-500 hover:bg-primary-400 text-white text-sm font-medium transition-all disabled:opacity-50"
           >
             {saving ? 'Saving…' : 'Save'}
           </button>

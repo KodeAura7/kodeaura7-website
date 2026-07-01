@@ -31,7 +31,7 @@ function useWidgetData(widget, index = 0) {
 function KPIWidget({ widget, index }) {
   const { data, loading, error } = useWidgetData(widget, index);
   const { title, config } = widget;
-  const color = config?.color ?? '#6366F1';
+  const color = config?.color ?? '#1C63F3';
   const icon  = config?.icon  ?? 'solar:chart-square-linear';
 
   const formatValue = (v) => {
@@ -53,7 +53,7 @@ function KPIWidget({ widget, index }) {
       {loading ? (
         <div className="h-8 w-20 rounded-lg bg-zinc-800 animate-pulse" />
       ) : error ? (
-        <p className="text-xs text-rose-400">{error}</p>
+        <p className="text-xs text-error-400">{error}</p>
       ) : (
         <p className="text-3xl font-display font-bold text-zinc-100">{formatValue(data?.value)}</p>
       )}
@@ -66,7 +66,7 @@ function KPIWidget({ widget, index }) {
 function ChartWidget({ widget, index }) {
   const { data, loading, error } = useWidgetData(widget, index);
   const { title, config } = widget;
-  const color = config?.color ?? '#6366F1';
+  const color = config?.color ?? '#1C63F3';
   const chartType = config?.chartType ?? 'bar';
 
   const rows = data?.rows ?? [];
@@ -81,7 +81,7 @@ function ChartWidget({ widget, index }) {
           <Icon icon="solar:loading-linear" width={20} className="animate-spin text-zinc-700" />
         </div>
       ) : error ? (
-        <div className="flex-1 flex items-center justify-center text-xs text-rose-400">{error}</div>
+        <div className="flex-1 flex items-center justify-center text-xs text-error-400">{error}</div>
       ) : rows.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center text-zinc-700 gap-2">
           <Icon icon="solar:chart-square-linear" width={24} />
@@ -94,7 +94,7 @@ function ChartWidget({ widget, index }) {
             data={rows}
             xKey={labelKey}
             yKeys={numericKeys}
-            colors={[color, '#06B6D4', '#10B981', '#F59E0B', '#8B5CF6']}
+            colors={[color, '#0AA9D6', '#10B981', '#F59E0B', '#8B5CF6']}
             height={180}
           />
         </div>
@@ -119,7 +119,7 @@ function TableWidget({ widget, index }) {
           <Icon icon="solar:loading-linear" width={20} className="animate-spin text-zinc-700" />
         </div>
       ) : error ? (
-        <div className="flex-1 flex items-center justify-center text-xs text-rose-400">{error}</div>
+        <div className="flex-1 flex items-center justify-center text-xs text-error-400">{error}</div>
       ) : (
         <div className="flex-1 overflow-auto">
           <table className="w-full text-xs">
@@ -188,7 +188,7 @@ function DashboardView({ dashboard }) {
           <Icon icon="solar:widget-linear" width={36} />
           <p className="text-sm text-zinc-500">This dashboard has no widgets yet.</p>
           <Link to={`/admin/dashboards/${dashboard.id}/edit`}
-            className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+            className="text-xs text-primary-400 hover:text-primary-300 transition-colors">
             Add widgets →
           </Link>
         </div>
@@ -242,7 +242,7 @@ function DashboardHome() {
           <p className="text-sm text-zinc-500 mt-1">{dashboards.length} dashboard{dashboards.length !== 1 ? 's' : ''}</p>
         </div>
         <Link to="/admin/dashboards/new"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-all shadow-lg shadow-indigo-900/30">
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-medium transition-all shadow-lg shadow-primary-900/30">
           <Icon icon="solar:add-circle-linear" width={16} />
           New Dashboard
         </Link>
@@ -254,7 +254,7 @@ function DashboardHome() {
           {dashboards.map((d) => (
             <button key={d.id} onClick={() => setActiveDash(d)}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all
-                ${activeDash?.id === d.id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/30' : 'bg-[#18181B] border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-600'}`}>
+                ${activeDash?.id === d.id ? 'bg-primary-600 text-white shadow-lg shadow-primary-900/30' : 'bg-[#18181B] border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-600'}`}>
               <Icon icon={d.is_default ? 'solar:home-linear' : 'solar:widget-linear'} width={13} />
               {d.name}
               {d.is_default && <span className="text-xs opacity-60">· Default</span>}
@@ -279,7 +279,7 @@ function DashboardHome() {
               </Link>
               {!activeDash.is_default && (
                 <button onClick={() => setDeleteConfirm(activeDash)}
-                  className="p-2 rounded-xl border border-zinc-800 text-zinc-600 hover:text-rose-400 hover:border-rose-500/40 hover:bg-rose-500/10 transition-all">
+                  className="p-2 rounded-xl border border-zinc-800 text-zinc-600 hover:text-error-400 hover:border-error-500/40 hover:bg-error-500/10 transition-all">
                   <Icon icon="solar:trash-bin-minimalistic-linear" width={14} />
                 </button>
               )}
@@ -293,7 +293,7 @@ function DashboardHome() {
           <div className="text-center">
             <p className="text-sm font-medium text-zinc-500">No dashboards yet</p>
             <Link to="/admin/dashboards/new"
-              className="inline-flex items-center gap-1.5 mt-3 text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+              className="inline-flex items-center gap-1.5 mt-3 text-xs text-primary-400 hover:text-primary-300 transition-colors">
               <Icon icon="solar:add-circle-linear" width={13} />
               Create your first dashboard
             </Link>
@@ -313,7 +313,7 @@ function DashboardHome() {
                 Cancel
               </button>
               <button onClick={handleDelete}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-medium transition-all">
+                className="flex-1 px-4 py-2.5 rounded-xl bg-error-600 hover:bg-error-500 text-white text-sm font-medium transition-all">
                 Delete
               </button>
             </div>

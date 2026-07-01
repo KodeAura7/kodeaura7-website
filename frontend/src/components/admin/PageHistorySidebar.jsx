@@ -50,8 +50,8 @@ export default function PageHistorySidebar({ page, historyKey, actionLabel = 'sa
               {history.map((h) => (
                 <div key={h.id} className="py-3 border-b border-zinc-800/50 last:border-0">
                   <div className="flex items-start gap-2">
-                    <div className="w-6 h-6 rounded-full bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center shrink-0 mt-0.5">
-                      <Icon icon="solar:user-linear" width={11} className="text-indigo-400" />
+                    <div className="w-6 h-6 rounded-full bg-primary-500/15 border border-primary-500/25 flex items-center justify-center shrink-0 mt-0.5">
+                      <Icon icon="solar:user-linear" width={11} className="text-primary-400" />
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs text-zinc-300 font-medium truncate">

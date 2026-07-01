@@ -31,10 +31,10 @@ export default function Home() {
       />
       <section className="relative pt-32 md:pt-44 pb-20 md:pb-28">
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
-          <div className="fade-up inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/50 border border-zinc-800 text-xs font-medium text-zinc-300 backdrop-blur-sm mb-8">
-            <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" /></span>
+          {/* <div className="fade-up inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/50 border border-zinc-800 text-xs font-medium text-zinc-300 backdrop-blur-sm mb-8">
+            <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-success-500" /></span>
             Trusted by 150+ businesses across India
-          </div>
+          </div> */}
           <h1 className="fade-up delay-1 font-display font-semibold text-5xl md:text-7xl tracking-tighter leading-[1.04] mb-6 max-w-4xl mx-auto">
             We Build <span className="text-gradient">Growth Systems</span> That Drive Results.
           </h1>
@@ -42,11 +42,11 @@ export default function Home() {
             KodeAura7 is a premium digital technology agency from Dehradun. We design, build, and scale the websites, CRMs, and campaigns that turn ambitious businesses into market leaders.
           </p>
           <div className="fade-up delay-3 flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Link to="/#contact" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-indigo-500 text-white rounded-full text-sm font-medium hover:bg-indigo-400 transition-all shadow-[0_0_30px_rgba(99,102,241,0.3)] hover:shadow-[0_0_40px_rgba(99,102,241,0.5)] hover:-translate-y-0.5">Start Your Project <Icon icon="solar:arrow-right-linear" width={18} /></Link>
+            <Link to="/#contact" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary-500 text-white rounded-full text-sm font-medium hover:bg-primary-400 transition-all shadow-[0_0_30px_rgba(51, 112, 246,0.3)] hover:shadow-[0_0_40px_rgba(51, 112, 246,0.5)] hover:-translate-y-0.5">Start Your Project <Icon icon="solar:arrow-right-linear" width={18} /></Link>
             <Link to="/portfolio" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/5 backdrop-blur-sm text-zinc-100 rounded-full text-sm font-medium hover:bg-white/10 transition-all border border-zinc-800 hover:border-zinc-600">View Our Work <Icon icon="solar:arrow-down-linear" width={18} /></Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl w-full mx-auto text-left">
-            {[['150+', 'Projects Delivered'], ['4+', 'Years Experience'], ['98%', 'Client Satisfaction']].map(([value, label], index) => (
+            {[['8+','Digital Services'],['100%','Custom Solutions'],['24/7','Dedicated Support']].map(([value, label], index) => (
               <div key={label} className={`rounded-2xl border border-zinc-800 bg-[#111113] p-6 ${index === 1 ? 'animate-float-delayed' : index === 2 ? 'animate-float-delayed-more' : 'animate-float'}`}>
                 <p className="font-display font-semibold text-3xl text-gradient">{value}</p>
                 <p className="text-xs uppercase tracking-widest text-zinc-500 mt-2 font-mono">{label}</p>
@@ -113,12 +113,12 @@ export default function Home() {
               const delay = t.delay ?? `${(idx % 6) * 0.5}s`;
               const rating = t.rating ?? 5;
               return (
-                <div key={t.id ?? t.name} className="bg-[#111113] rounded-2xl p-6 border border-zinc-800 hover:border-indigo-500/20 hover:shadow-[0_0_30px_rgba(99,102,241,0.07)] transition-all duration-500" style={{ animation: `float 6s ease-in-out ${delay} infinite` }}>
-                  <div className="flex gap-1 mb-4 text-amber-400">{Array.from({ length: 5 }).map((_, i) => <Icon key={i} icon={i < rating ? 'solar:star-bold' : 'solar:star-linear'} width={16} />)}</div>
+                <div key={t.id ?? t.name} className="bg-[#111113] rounded-2xl p-6 border border-zinc-800 hover:border-primary-500/20 hover:shadow-[0_0_30px_rgba(51, 112, 246,0.07)] transition-all duration-500" style={{ animation: `float 6s ease-in-out ${delay} infinite` }}>
+                  <div className="flex gap-1 mb-4 text-warning-400">{Array.from({ length: 5 }).map((_, i) => <Icon key={i} icon={i < rating ? 'solar:star-bold' : 'solar:star-linear'} width={16} />)}</div>
                   <p className="text-sm text-zinc-300 leading-relaxed font-medium italic">{quote}</p>
                   <div className="h-px bg-zinc-800 my-5" />
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500/20 to-cyan-500/20 border border-zinc-700 flex items-center justify-center font-display text-xs font-semibold text-zinc-200 shrink-0">{initials}</div>
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500/20 to-secondary-500/20 border border-zinc-700 flex items-center justify-center font-display text-xs font-semibold text-zinc-200 shrink-0">{initials}</div>
                     <div><p className="text-sm text-zinc-100 font-semibold">{t.name}</p><p className="text-xs text-zinc-500">{role}</p></div>
                   </div>
                 </div>
@@ -139,7 +139,7 @@ export default function Home() {
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-6"><Icon icon="solar:letter-linear" width={12} /> Contact Us</div>
             <h2 className="font-display font-semibold text-3xl md:text-5xl tracking-tighter leading-tight mb-6">Let's Build the <span className="text-gradient">Digital Future.</span></h2>
             <p className="text-zinc-400 leading-relaxed max-w-md mb-10">Tell us about your project and we'll get back within one business day. No commitment, no pressure - just a conversation about what's possible.</p>
-            <div className="space-y-5"><a href="mailto:info@kodeaura7.in" className="flex items-center gap-4 group"><div className="w-11 h-11 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-indigo-400 group-hover:border-indigo-500/40 transition-all"><Icon icon="solar:letter-linear" width={20} /></div><div><p className="text-xs uppercase tracking-widest text-zinc-500 font-mono">Email</p><p className="text-sm text-zinc-200 group-hover:text-indigo-300 transition-colors">info@kodeaura7.in</p></div></a><div className="flex items-center gap-4"><div className="w-11 h-11 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-cyan-400"><Icon icon="solar:map-point-linear" width={20} /></div><div><p className="text-xs uppercase tracking-widest text-zinc-500 font-mono">Location</p><p className="text-sm text-zinc-200">Dehradun, Uttarakhand, India</p></div></div></div>
+            <div className="space-y-5"><a href="mailto:info@kodeaura7.in" className="flex items-center gap-4 group"><div className="w-11 h-11 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-primary-400 group-hover:border-primary-500/40 transition-all"><Icon icon="solar:letter-linear" width={20} /></div><div><p className="text-xs uppercase tracking-widest text-zinc-500 font-mono">Email</p><p className="text-sm text-zinc-200 group-hover:text-primary-300 transition-colors">info@kodeaura7.in</p></div></a><div className="flex items-center gap-4"><div className="w-11 h-11 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-secondary-400"><Icon icon="solar:map-point-linear" width={20} /></div><div><p className="text-xs uppercase tracking-widest text-zinc-500 font-mono">Location</p><p className="text-sm text-zinc-200">Dehradun, Uttarakhand, India</p></div></div></div>
           </div>
           <ContactForm />
         </div>

@@ -64,7 +64,7 @@ function NavItem({ to, label, icon, onClick }) {
       className={({ isActive }) =>
         `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
           isActive
-            ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+            ? 'bg-primary-500/10 text-primary-400 border border-primary-500/20'
             : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60 border border-transparent'
         }`
       }
@@ -76,8 +76,8 @@ function NavItem({ to, label, icon, onClick }) {
 }
 
 const ROLE_COLORS = {
-  super_admin: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-  admin:       'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
+  super_admin: 'bg-warning-500/10 border-warning-500/20 text-warning-400',
+  admin:       'bg-primary-500/10 border-primary-500/20 text-primary-400',
   customer:    'bg-zinc-800 border-zinc-700 text-zinc-400',
 };
 
@@ -126,8 +126,8 @@ function SidebarContent({ close }) {
         {user && (
           <div className="px-3 py-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800 mb-2">
             <div className="flex items-center gap-2.5 mb-1.5">
-              <div className="w-7 h-7 rounded-full bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center shrink-0">
-                <Icon icon="solar:user-linear" width={14} className="text-indigo-400" />
+              <div className="w-7 h-7 rounded-full bg-primary-500/15 border border-primary-500/30 flex items-center justify-center shrink-0">
+                <Icon icon="solar:user-linear" width={14} className="text-primary-400" />
               </div>
               <div className="min-w-0">
                 <p className="text-xs text-zinc-100 font-medium truncate">{user.name}</p>
@@ -141,7 +141,7 @@ function SidebarContent({ close }) {
         )}
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-zinc-500 hover:text-rose-400 hover:bg-rose-500/5 transition-all"
+          className="flex w-full items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-zinc-500 hover:text-error-400 hover:bg-error-500/5 transition-all"
         >
           <Icon icon="solar:logout-2-linear" width={16} />
           Sign out

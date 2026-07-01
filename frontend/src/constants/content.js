@@ -26,8 +26,8 @@ export const projects = [
 ];
 
 export const values = [
-  { title: 'Craft Over Speed', icon: 'solar:palette-linear', accent: '#6366F1', desc: "We don't ship fast and fix later. Every pixel and every line of code is intentional." },
-  { title: 'Transparent Partnership', icon: 'solar:hand-shake-linear', accent: '#06B6D4', desc: 'No black boxes. You get weekly updates, clear timelines, and honest communication.' },
+  { title: 'Craft Over Speed', icon: 'solar:palette-linear', accent: '#1C63F3', desc: "We don't ship fast and fix later. Every pixel and every line of code is intentional." },
+  { title: 'Transparent Partnership', icon: 'solar:hand-shake-linear', accent: '#0AA9D6', desc: 'No black boxes. You get weekly updates, clear timelines, and honest communication.' },
   { title: 'Systems Thinking', icon: 'solar:cpu-bolt-linear', accent: '#8B5CF6', desc: 'We design every solution to work as part of your wider growth ecosystem.' },
   { title: 'Results, Not Deliverables', icon: 'solar:graph-up-linear', accent: '#F59E0B', desc: 'Our success metric is your ROI - not the number of pages or features shipped.' }
 ];

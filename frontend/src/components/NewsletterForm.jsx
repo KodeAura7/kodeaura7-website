@@ -13,13 +13,13 @@ export default function NewsletterForm() {
         value={form.values.email}
         onChange={form.handleChange}
         placeholder="Your email"
-        className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all"
+        className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all"
       />
-      <button className="bg-indigo-500 text-white rounded-xl py-2.5 text-sm font-medium hover:bg-indigo-400 transition-all">
+      <button className="bg-primary-500 text-white rounded-xl py-2.5 text-sm font-medium hover:bg-primary-400 transition-all">
         {form.status === 'loading' ? 'Joining...' : 'Join'}
       </button>
-      {form.errors.email ? <p className="text-xs text-rose-400">{form.errors.email}</p> : null}
-      {form.status === 'success' ? <p className="text-xs text-emerald-400">You're on the list.</p> : null}
+      {form.errors.email ? <p className="text-xs text-error-400">{form.errors.email}</p> : null}
+      {form.status === 'success' ? <p className="text-xs text-success-400">You're on the list.</p> : null}
     </form>
   );
 }

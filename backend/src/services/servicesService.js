@@ -18,8 +18,8 @@ function validatePayload(payload) {
     .replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
   const name = String(payload.name || '').trim();
   const icon = String(payload.icon || '').trim();
-  const accent = String(payload.accent || '#6366F1').trim();
-  const light = String(payload.light || '#A5B4FC').trim();
+  const accent = String(payload.accent || '#1C63F3').trim();
+  const light = String(payload.light || '#8BB3FD').trim();
   const description = String(payload.description || payload.desc || '').trim();
   const p1 = String(payload.p1 || '').trim();
   const p2 = String(payload.p2 || '').trim();

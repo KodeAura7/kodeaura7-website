@@ -5,7 +5,7 @@ import { api } from '../services/api';
 function Field({ field, value, onChange, error }) {
   const wide = field.width === 'full';
   const inputClass =
-    'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all';
+    'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all';
 
   let control;
   if (field.field_type === 'textarea') {
@@ -53,10 +53,10 @@ function Field({ field, value, onChange, error }) {
     <div className={`space-y-1.5 ${wide ? 'sm:col-span-2' : ''}`}>
       <label className="text-xs font-medium text-zinc-400 ml-0.5">
         {field.label}
-        {field.required && <span className="text-rose-400 ml-0.5">*</span>}
+        {field.required && <span className="text-error-400 ml-0.5">*</span>}
       </label>
       {control}
-      {error ? <p className="text-xs text-rose-400">{error}</p> : null}
+      {error ? <p className="text-xs text-error-400">{error}</p> : null}
     </div>
   );
 }
@@ -131,13 +131,13 @@ export default function ContactForm() {
   if (status === 'success') {
     return (
       <div className="bg-[#111113] border border-zinc-800 rounded-3xl p-8 flex flex-col items-center justify-center gap-3 min-h-[240px] text-center">
-        <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-          <Icon icon="solar:check-circle-bold" width={24} className="text-emerald-400" />
+        <div className="w-12 h-12 rounded-full bg-success-500/10 border border-success-500/20 flex items-center justify-center">
+          <Icon icon="solar:check-circle-bold" width={24} className="text-success-400" />
         </div>
         <h3 className="font-display font-semibold text-lg text-zinc-100">Message Sent!</h3>
         <p className="text-sm text-zinc-400">Thanks! We will be in touch shortly.</p>
         <button onClick={() => { setStatus('idle'); const init = {}; formFields.forEach(f => { init[f.name] = ''; }); setValues(init); }}
-          className="mt-2 text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+          className="mt-2 text-xs text-primary-400 hover:text-primary-300 transition-colors">
           Send another message
         </button>
       </div>
@@ -170,7 +170,7 @@ export default function ContactForm() {
       </div>
 
       {typeof status === 'string' && !['idle', 'loading', 'success'].includes(status) && (
-        <p className="sm:col-span-2 text-xs text-rose-400 flex items-center gap-1.5">
+        <p className="sm:col-span-2 text-xs text-error-400 flex items-center gap-1.5">
           <Icon icon="solar:danger-circle-linear" width={13} />
           {status}
         </p>

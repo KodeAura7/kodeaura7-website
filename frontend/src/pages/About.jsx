@@ -14,7 +14,7 @@ const DEFAULT = {
     eyebrow: 'About KodeAura7',
     title: 'We Engineer',
     gradient: 'Digital Growth',
-    description: 'KodeAura7 is a full-service digital technology agency from Dehradun, India. We partner with businesses to design, build, and scale their digital infrastructure.'
+    description: 'KodeAura7 is a full-service digital technology agency, India. We partner with businesses to design, build, and scale their digital infrastructure.'
   },
   story: {
     subtitle: 'Our Story',
@@ -25,10 +25,9 @@ const DEFAULT = {
       'Our edge is our breadth. We think in systems - how your website, your CRM, your ads, and your automations work together to create compounding growth.'
     ],
     stats: [
-      { value: '150+', label: 'Projects Delivered' },
-      { value: '4+', label: 'Years of Experience' },
-      { value: '2Cr+', label: 'Revenue for Clients' },
-      { value: '98%', label: 'Client Satisfaction' }
+      { value: '8+', label: 'DIGITAL SERVICES' },
+      { value: '100%', label: 'CUSTOM SOLUTIONS' },
+      { value: '24/7', label: 'DEDICATED SUPPORT' },
     ]
   },
   values: {
@@ -64,7 +63,7 @@ export default function About() {
       <SEO
         title="About Us | Digital Agency, Dehradun"
         path="/about"
-        description="KodeAura7 is a full-service digital technology agency from Dehradun, India. We design, build, and scale digital infrastructure — websites, CRMs, and campaigns — for ambitious businesses worldwide."
+        description="KodeAura7 is a full-service digital technology agency, India. We design, build, and scale digital infrastructure — websites, CRMs, and campaigns — for ambitious businesses worldwide."
         keywords="about KodeAura7, digital agency Dehradun, software company India, web development team, Salesforce partner India"
       />
 
@@ -108,7 +107,7 @@ export default function About() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {(values.items || []).map((v) => (
-              <div key={v.title} className="bg-[#111113] rounded-2xl p-8 border border-zinc-800 hover:border-indigo-500/30 hover:shadow-[0_0_30px_rgba(99,102,241,0.07)] transition-all duration-500">
+              <div key={v.title} className="bg-[#111113] rounded-2xl p-8 border border-zinc-800 hover:border-primary-500/30 hover:shadow-[0_0_30px_rgba(51, 112, 246,0.07)] transition-all duration-500">
                 <div className="w-12 h-12 rounded-2xl bg-[#18181B] border border-zinc-800 flex items-center justify-center mb-6"
                   style={{ color: v.accent, borderColor: `color-mix(in srgb,${v.accent} 40%,transparent)` }}>
                   <Icon icon={v.icon} width={24} />
@@ -131,7 +130,7 @@ export default function About() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {(tech.items || []).map((t) => (
               <div key={t.label} className="group bg-[#111113] border border-zinc-800 rounded-2xl p-6 flex flex-col items-center gap-3 hover:border-zinc-600 transition-all duration-300">
-                <Icon icon={t.icon} width={32} className="text-zinc-400 group-hover:text-indigo-400 transition-colors" />
+                <Icon icon={t.icon} width={32} className="text-zinc-400 group-hover:text-primary-400 transition-colors" />
                 <span className="text-xs text-zinc-500 font-mono">{t.label}</span>
               </div>
             ))}

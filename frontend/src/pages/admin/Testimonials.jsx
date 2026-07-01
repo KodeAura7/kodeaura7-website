@@ -19,7 +19,7 @@ function StarPicker({ value, onChange }) {
           onClick={() => onChange(star)}
           onMouseEnter={() => setHovered(star)}
           onMouseLeave={() => setHovered(0)}
-          className="text-amber-400 transition-transform hover:scale-110"
+          className="text-warning-400 transition-transform hover:scale-110"
         >
           <Icon
             icon={(hovered || value) >= star ? 'solar:star-bold' : 'solar:star-linear'}
@@ -42,7 +42,7 @@ function StarRow({ rating }) {
           key={i}
           icon={i < rating ? 'solar:star-bold' : 'solar:star-linear'}
           width={13}
-          className={i < rating ? 'text-amber-400' : 'text-zinc-700'}
+          className={i < rating ? 'text-warning-400' : 'text-zinc-700'}
         />
       ))}
     </span>
@@ -80,7 +80,7 @@ function OrderCell({ id, initialOrder, onSaved, onError }) {
         onBlur={commit}
         onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); commit(); inputRef.current?.blur(); } }}
         disabled={saving}
-        className="w-14 bg-[#18181B] border border-zinc-800 rounded-lg px-2 py-1 text-xs text-zinc-200 text-center focus:outline-none focus:border-indigo-500/50 transition-all disabled:opacity-50"
+        className="w-14 bg-[#18181B] border border-zinc-800 rounded-lg px-2 py-1 text-xs text-zinc-200 text-center focus:outline-none focus:border-primary-500/50 transition-all disabled:opacity-50"
       />
       {saving ? <Icon icon="solar:loading-linear" width={12} className="text-zinc-600 animate-spin shrink-0" /> : null}
     </div>
@@ -302,7 +302,7 @@ export default function Testimonials() {
               onClick={() => { setMyPanelOpen((v) => !v); if (formOpen) closeForm(); }}
               className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all border ${
                 myPanelOpen && !formOpen
-                  ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400'
+                  ? 'bg-primary-500/10 border-primary-500/30 text-primary-400'
                   : 'bg-[#18181B] border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100'
               }`}
             >
@@ -312,7 +312,7 @@ export default function Testimonials() {
           ) : null}
           <button
             onClick={openNewForm}
-            className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)]"
+            className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(51, 112, 246,0.2)]"
           >
             <Icon icon="solar:add-circle-linear" width={16} />
             Add Review
@@ -344,45 +344,45 @@ export default function Testimonials() {
               <form onSubmit={handleReviewSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-zinc-400">Display Name <span className="text-rose-500">*</span></label>
+                    <label className="text-xs font-medium text-zinc-400">Display Name <span className="text-error-500">*</span></label>
                     <input
                       type="text"
                       value={reviewForm.name}
                       onChange={(e) => setReviewForm((p) => ({ ...p, name: e.target.value }))}
                       placeholder="Name shown on the testimonial"
                       required
-                      className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all"
+                      className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-zinc-400">Designation / Role <span className="text-rose-500">*</span></label>
+                    <label className="text-xs font-medium text-zinc-400">Designation / Role <span className="text-error-500">*</span></label>
                     <input
                       type="text"
                       value={reviewForm.designation}
                       onChange={(e) => setReviewForm((p) => ({ ...p, designation: e.target.value }))}
                       placeholder="e.g. CEO at Acme Inc."
                       required
-                      className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all"
+                      className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all"
                     />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-zinc-400">Rating <span className="text-rose-500">*</span></label>
+                  <label className="text-xs font-medium text-zinc-400">Rating <span className="text-error-500">*</span></label>
                   <StarPicker value={reviewForm.rating} onChange={(v) => setReviewForm((p) => ({ ...p, rating: v }))} />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-zinc-400">Review <span className="text-rose-500">*</span></label>
+                  <label className="text-xs font-medium text-zinc-400">Review <span className="text-error-500">*</span></label>
                   <textarea
                     value={reviewForm.review}
                     onChange={(e) => setReviewForm((p) => ({ ...p, review: e.target.value }))}
                     placeholder="Share your thoughts… (minimum 20 characters)"
                     required
                     rows={3}
-                    className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all resize-none"
+                    className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all resize-none"
                   />
                 </div>
                 {reviewMsg.text ? (
-                  <p className={`text-xs flex items-center gap-1.5 ${reviewMsg.type === 'error' ? 'text-rose-400' : 'text-emerald-400'}`}>
+                  <p className={`text-xs flex items-center gap-1.5 ${reviewMsg.type === 'error' ? 'text-error-400' : 'text-success-400'}`}>
                     <Icon icon={reviewMsg.type === 'error' ? 'solar:danger-circle-linear' : 'solar:check-circle-linear'} width={13} />
                     {reviewMsg.text}
                   </p>
@@ -391,7 +391,7 @@ export default function Testimonials() {
                   <button
                     type="submit"
                     disabled={reviewSaving}
-                    className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60"
+                    className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60"
                   >
                     <Icon icon={reviewSaving ? 'solar:loading-linear' : 'solar:star-linear'} width={15} className={reviewSaving ? 'animate-spin' : ''} />
                     {reviewSaving ? 'Saving…' : editId ? 'Save Changes' : 'Submit Review'}
@@ -414,7 +414,7 @@ export default function Testimonials() {
                     <span className="text-xs text-zinc-600">·</span>
                     <span className="text-xs text-zinc-500">{t.designation}</span>
                     <StarRow rating={t.rating} />
-                    <span className={`ml-auto text-[10px] px-2 py-0.5 rounded-full font-mono ${t.visible ? 'bg-emerald-500/10 text-emerald-400' : 'bg-zinc-800 text-zinc-500'}`}>
+                    <span className={`ml-auto text-[10px] px-2 py-0.5 rounded-full font-mono ${t.visible ? 'bg-success-500/10 text-success-400' : 'bg-zinc-800 text-zinc-500'}`}>
                       {t.visible ? 'visible' : 'hidden'}
                     </span>
                   </div>
@@ -424,7 +424,7 @@ export default function Testimonials() {
                 <div className="flex items-center gap-1 shrink-0">
                   <button
                     onClick={() => openEditForm(t)}
-                    className="p-1.5 rounded-lg text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all"
+                    className="p-1.5 rounded-lg text-zinc-500 hover:text-primary-400 hover:bg-primary-500/10 transition-all"
                     title="Edit"
                   >
                     <Icon icon="solar:pen-linear" width={15} />
@@ -433,7 +433,7 @@ export default function Testimonials() {
                     <button
                       onClick={() => handleDelete(t.id)}
                       disabled={deleting === t.id}
-                      className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-30"
+                      className="p-1.5 rounded-lg text-zinc-500 hover:text-error-400 hover:bg-error-500/10 transition-all disabled:opacity-30"
                       title="Delete"
                     >
                       <Icon icon="solar:trash-bin-minimalistic-linear" width={15} />
@@ -458,45 +458,45 @@ export default function Testimonials() {
           <form onSubmit={handleReviewSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-400">Display Name <span className="text-rose-500">*</span></label>
+                <label className="text-xs font-medium text-zinc-400">Display Name <span className="text-error-500">*</span></label>
                 <input
                   type="text"
                   value={reviewForm.name}
                   onChange={(e) => setReviewForm((p) => ({ ...p, name: e.target.value }))}
                   placeholder="Name shown on the testimonial"
                   required
-                  className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all"
+                  className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-400">Designation / Role <span className="text-rose-500">*</span></label>
+                <label className="text-xs font-medium text-zinc-400">Designation / Role <span className="text-error-500">*</span></label>
                 <input
                   type="text"
                   value={reviewForm.designation}
                   onChange={(e) => setReviewForm((p) => ({ ...p, designation: e.target.value }))}
                   placeholder="e.g. CEO at Acme Inc."
                   required
-                  className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all"
+                  className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all"
                 />
               </div>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400">Rating <span className="text-rose-500">*</span></label>
+              <label className="text-xs font-medium text-zinc-400">Rating <span className="text-error-500">*</span></label>
               <StarPicker value={reviewForm.rating} onChange={(v) => setReviewForm((p) => ({ ...p, rating: v }))} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400">Review <span className="text-rose-500">*</span></label>
+              <label className="text-xs font-medium text-zinc-400">Review <span className="text-error-500">*</span></label>
               <textarea
                 value={reviewForm.review}
                 onChange={(e) => setReviewForm((p) => ({ ...p, review: e.target.value }))}
                 placeholder="Share your thoughts… (minimum 20 characters)"
                 required
                 rows={3}
-                className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all resize-none"
+                className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all resize-none"
               />
             </div>
             {reviewMsg.text ? (
-              <p className={`text-xs flex items-center gap-1.5 ${reviewMsg.type === 'error' ? 'text-rose-400' : 'text-emerald-400'}`}>
+              <p className={`text-xs flex items-center gap-1.5 ${reviewMsg.type === 'error' ? 'text-error-400' : 'text-success-400'}`}>
                 <Icon icon={reviewMsg.type === 'error' ? 'solar:danger-circle-linear' : 'solar:check-circle-linear'} width={13} />
                 {reviewMsg.text}
               </p>
@@ -505,7 +505,7 @@ export default function Testimonials() {
               <button
                 type="submit"
                 disabled={reviewSaving}
-                className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60"
+                className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60"
               >
                 <Icon icon={reviewSaving ? 'solar:loading-linear' : 'solar:star-linear'} width={15} className={reviewSaving ? 'animate-spin' : ''} />
                 {reviewSaving ? 'Saving…' : 'Submit Review'}
@@ -519,23 +519,23 @@ export default function Testimonials() {
       ) : null}
 
       {importMsg.text ? (
-        <div className={`border rounded-xl p-3 text-sm mb-4 flex items-center gap-2 ${importMsg.type === 'error' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'}`}>
+        <div className={`border rounded-xl p-3 text-sm mb-4 flex items-center gap-2 ${importMsg.type === 'error' ? 'bg-error-500/10 border-error-500/20 text-error-400' : 'bg-success-500/10 border-success-500/20 text-success-400'}`}>
           <Icon icon={importMsg.type === 'error' ? 'solar:danger-circle-linear' : 'solar:check-circle-linear'} width={15} />
           {importMsg.text}
         </div>
       ) : null}
 
       {error ? (
-        <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div>
+        <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400 mb-4">{error}</div>
       ) : null}
 
       {/* Bulk toolbar */}
       {checkedIds.size > 0 && (
-        <div className="mb-4 flex flex-wrap items-center gap-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3">
-          <span className="text-xs text-indigo-400 font-medium">{checkedIds.size} selected</span>
+        <div className="mb-4 flex flex-wrap items-center gap-3 bg-primary-500/10 border border-primary-500/20 rounded-xl px-4 py-3">
+          <span className="text-xs text-primary-400 font-medium">{checkedIds.size} selected</span>
           <div className="flex items-center gap-2 ml-auto">
             <button onClick={() => setMigrateOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-indigo-500/50 text-zinc-300 hover:text-indigo-300 text-xs font-medium transition-all">
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-primary-500/50 text-zinc-300 hover:text-primary-300 text-xs font-medium transition-all">
               <Icon icon="solar:transfer-horizontal-linear" width={13} />
               Migrate
             </button>
@@ -564,7 +564,7 @@ export default function Testimonials() {
               <tr className="bg-[#18181B] border-b border-zinc-800">
                 <th className="w-10 px-4 py-3">
                   <input type="checkbox" checked={allChecked} ref={(el) => { if (el) el.indeterminate = someChecked; }}
-                    onChange={toggleAll} className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer" />
+                    onChange={toggleAll} className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-primary-500 cursor-pointer" />
                 </th>
                 {['Order', 'Name', 'Designation', 'Rating', 'Review', 'Submitted By', 'Approved By', 'Visible'].map((h) => (
                   <th key={h} className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider whitespace-nowrap">
@@ -593,7 +593,7 @@ export default function Testimonials() {
                   <tr key={t.id} className="hover:bg-zinc-800/20 transition-colors">
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       <input type="checkbox" checked={checkedIds.has(t.id)} onChange={() => toggleOne(t.id)}
-                        className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer" />
+                        className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-primary-500 cursor-pointer" />
                     </td>
                     <td className="px-4 py-3">
                       <OrderCell
@@ -632,7 +632,7 @@ export default function Testimonials() {
                         onClick={() => handleToggle(t.id, t.visible)}
                         disabled={toggling === t.id}
                         className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 ${
-                          t.visible ? 'bg-emerald-500' : 'bg-zinc-700'
+                          t.visible ? 'bg-success-500' : 'bg-zinc-700'
                         }`}
                         title={t.visible ? 'Hide from site' : 'Show on site'}
                       >

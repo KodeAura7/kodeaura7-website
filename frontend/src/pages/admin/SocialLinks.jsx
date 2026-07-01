@@ -31,7 +31,7 @@ const SL_SORT_OPTIONS = [
   { value: 'name', label: 'Name' },
 ];
 
-const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all';
+const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all';
 
 const PRESET_ICONS = [
   { id: 'mdi:linkedin', label: 'LinkedIn' },
@@ -70,7 +70,7 @@ function IconPicker({ value, onChange }) {
             title={p.label}
             className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${
               value === p.id
-                ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400'
+                ? 'border-primary-500 bg-primary-500/10 text-primary-400'
                 : 'border-zinc-800 bg-[#18181B] text-zinc-400 hover:border-zinc-600 hover:text-zinc-100'
             }`}
           >
@@ -195,30 +195,30 @@ export default function SocialLinks() {
           </h1>
           <div className="flex items-center gap-2">
             {editItem && canDo('social_links.delete') ? (
-              <button onClick={() => handleDelete(editItem.id, editItem.name)} disabled={deleting} className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-rose-500/30 text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-50">
+              <button onClick={() => handleDelete(editItem.id, editItem.name)} disabled={deleting} className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-error-500/30 text-error-400 hover:bg-error-500/10 transition-all disabled:opacity-50">
                 <Icon icon={deleting ? 'solar:loading-linear' : 'solar:trash-bin-minimalistic-linear'} width={15} className={deleting ? 'animate-spin' : ''} />
                 Delete
               </button>
             ) : null}
-            <button onClick={handleSave} disabled={saving} className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60">
+            <button onClick={handleSave} disabled={saving} className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60">
               <Icon icon={saving ? 'solar:loading-linear' : 'solar:floppy-disk-linear'} width={15} className={saving ? 'animate-spin' : ''} />
               {saving ? 'Saving…' : 'Save'}
             </button>
           </div>
         </div>
 
-        {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-5">{error}</div> : null}
+        {error ? <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400 mb-5">{error}</div> : null}
 
         <div className="space-y-5">
           <div className="bg-[#111113] border border-zinc-800 rounded-2xl p-6 space-y-4">
             <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Details</h2>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400">Display Name <span className="text-rose-500">*</span></label>
+              <label className="text-xs font-medium text-zinc-400">Display Name <span className="text-error-500">*</span></label>
               <input type="text" value={form.name} onChange={(e) => setField('name', e.target.value)} placeholder="LinkedIn" className={INPUT} />
               <p className="text-[10px] text-zinc-700">Shown on hover in the footer.</p>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400">URL <span className="text-rose-500">*</span></label>
+              <label className="text-xs font-medium text-zinc-400">URL <span className="text-error-500">*</span></label>
               <input type="url" value={form.url} onChange={(e) => setField('url', e.target.value)} placeholder="https://linkedin.com/in/yourprofile" className={INPUT} />
             </div>
           </div>
@@ -233,13 +233,13 @@ export default function SocialLinks() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-zinc-400">Sort Order</label>
                 <input type="number" value={form.sort_order} onChange={(e) => setField('sort_order', parseInt(e.target.value) || 0)}
-                  className="w-24 bg-[#18181B] border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-zinc-100 text-center focus:outline-none focus:border-indigo-500/50 transition-all" />
+                  className="w-24 bg-[#18181B] border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-zinc-100 text-center focus:outline-none focus:border-primary-500/50 transition-all" />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-zinc-400">Enabled</label>
                 <div className="flex items-center gap-2 mt-0.5">
                   <button type="button" onClick={() => setField('enabled', !form.enabled)}
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${form.enabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}>
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${form.enabled ? 'bg-success-500' : 'bg-zinc-700'}`}>
                     <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${form.enabled ? 'translate-x-4' : 'translate-x-1'}`} />
                   </button>
                   <span className="text-xs text-zinc-400">{form.enabled ? 'Visible in footer' : 'Hidden'}</span>
@@ -275,13 +275,13 @@ export default function SocialLinks() {
           <p className="text-sm text-zinc-500 mt-1">{items ? `${items.length} total · ${enabledCount} visible` : '—'}</p>
         </div>
         {canDo('social_links.edit') && (
-          <button onClick={openNew} className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+          <button onClick={openNew} className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(51, 112, 246,0.2)]">
             <Icon icon="solar:add-circle-linear" width={16} />Add Link
           </button>
         )}
       </div>
 
-      {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div> : null}
+      {error ? <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400 mb-4">{error}</div> : null}
 
       <TableToolbar
         search={slSearch} onSearch={setSlSearch}
@@ -301,7 +301,7 @@ export default function SocialLinks() {
           </button>
         )}
         <button onClick={() => setMigrateOpen(true)} disabled={!someSelected}
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 border border-transparent transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-primary-400 hover:text-primary-300 hover:bg-primary-500/10 border border-transparent transition-all disabled:opacity-40 disabled:cursor-not-allowed">
           <Icon icon="solar:transfer-horizontal-linear" width={13} />
           {someSelected ? `Migrate (${selected.size})` : 'Migrate'}
         </button>
@@ -331,7 +331,7 @@ export default function SocialLinks() {
               <Icon icon="solar:share-circle-linear" width={28} />
               <p className="text-sm">{items.length === 0 ? 'No social links yet. Add your first one.' : 'No results match the current filters.'}</p>
               {items.length === 0 && canDo('social_links.edit') && (
-                <button onClick={openNew} className="mt-1 text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+                <button onClick={openNew} className="mt-1 text-xs text-primary-400 hover:text-primary-300 transition-colors">
                   + Add Link
                 </button>
               )}
@@ -340,7 +340,7 @@ export default function SocialLinks() {
             slFiltered.map((link) => (
               <div key={link.id} className="px-6 py-4 flex items-center gap-4 hover:bg-zinc-800/20 transition-colors group">
                 <button onClick={() => toggleSelect(link.id)}
-                  className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all shrink-0 ${selected.has(link.id) ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-600'}`}>
+                  className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all shrink-0 ${selected.has(link.id) ? 'border-primary-500 bg-primary-500' : 'border-zinc-600'}`}>
                   {selected.has(link.id) ? <Icon icon="solar:check-read-linear" width={9} className="text-white" /> : null}
                 </button>
                 {slCols.has('icon') && (
@@ -355,17 +355,17 @@ export default function SocialLinks() {
                 {slCols.has('iconify') && <span className="text-[10px] font-mono text-zinc-600">{link.icon}</span>}
                 {slCols.has('enabled') && (
                   <button onClick={() => handleToggleEnabled(link.id, link.enabled)} disabled={toggling === link.id}
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 shrink-0 ${link.enabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}>
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 shrink-0 ${link.enabled ? 'bg-success-500' : 'bg-zinc-700'}`}>
                     <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${link.enabled ? 'translate-x-4' : 'translate-x-1'}`} />
                   </button>
                 )}
                 {canDo('social_links.edit') && (
-                  <button onClick={() => openEdit(link)} className="p-1.5 rounded-lg text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all shrink-0">
+                  <button onClick={() => openEdit(link)} className="p-1.5 rounded-lg text-zinc-500 hover:text-primary-400 hover:bg-primary-500/10 transition-all shrink-0">
                     <Icon icon="solar:pen-linear" width={15} />
                   </button>
                 )}
                 {canDo('social_links.delete') && (
-                  <button onClick={() => handleDelete(link.id, link.name)} disabled={deleting} className="p-1.5 rounded-lg text-zinc-600 hover:text-rose-400 hover:bg-rose-500/10 transition-all shrink-0 disabled:opacity-40">
+                  <button onClick={() => handleDelete(link.id, link.name)} disabled={deleting} className="p-1.5 rounded-lg text-zinc-600 hover:text-error-400 hover:bg-error-500/10 transition-all shrink-0 disabled:opacity-40">
                     <Icon icon="solar:trash-bin-minimalistic-linear" width={15} />
                   </button>
                 )}

@@ -122,14 +122,14 @@ export async function forgotPassword(email) {
     <tr><td align="center">
       <table width="480" cellpadding="0" cellspacing="0" style="background:#111113;border:1px solid #27272A;border-radius:16px;padding:40px;">
         <tr><td style="text-align:center;padding-bottom:24px;">
-          <div style="display:inline-block;width:40px;height:40px;background:linear-gradient(135deg,#6366F1,#06B6D4);border-radius:10px;"></div>
+          <div style="display:inline-block;width:40px;height:40px;background:linear-gradient(135deg,#1C63F3,#0AA9D6);border-radius:10px;"></div>
           <p style="margin:12px 0 0;font-size:18px;font-weight:600;color:#F4F4F5;">KodeAura7</p>
         </td></tr>
         <tr><td>
           <h1 style="margin:0 0 8px;font-size:22px;font-weight:600;color:#F4F4F5;text-align:center;">Reset your password</h1>
           <p style="margin:0 0 24px;font-size:14px;color:#71717A;text-align:center;">Hi ${user.name}, we received a request to reset your password.</p>
           <div style="text-align:center;margin-bottom:24px;">
-            <a href="${resetUrl}" style="display:inline-block;background:#6366F1;color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:14px;font-weight:600;">Reset Password</a>
+            <a href="${resetUrl}" style="display:inline-block;background:#1C63F3;color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:14px;font-weight:600;">Reset Password</a>
           </div>
           <p style="margin:0 0 8px;font-size:12px;color:#52525B;text-align:center;">This link expires in 30 minutes. If you didn't request this, you can safely ignore this email.</p>
           <p style="margin:0;font-size:11px;color:#3F3F46;text-align:center;word-break:break-all;">${resetUrl}</p>

@@ -59,26 +59,26 @@ export default function Header() {
             user ? (
               <>
                 {isAdmin && (
-                  <Link to="/admin/dashboard" className="text-xs font-mono text-indigo-400 hover:text-indigo-300 transition-colors px-2 py-1 rounded-lg border border-indigo-500/20 bg-indigo-500/5 hover:bg-indigo-500/10">
+                  <Link to="/admin/dashboard" className="text-xs font-mono text-primary-400 hover:text-primary-300 transition-colors px-2 py-1 rounded-lg border border-primary-500/20 bg-primary-500/5 hover:bg-primary-500/10">
                     Admin
                   </Link>
                 )}
                 {isCustomer ? (
                   <Link to="/welcome" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity" title="My Profile">
-                    <div className="w-7 h-7 rounded-full bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
-                      <Icon icon="solar:user-linear" width={14} className="text-indigo-400" />
+                    <div className="w-7 h-7 rounded-full bg-primary-500/15 border border-primary-500/30 flex items-center justify-center">
+                      <Icon icon="solar:user-linear" width={14} className="text-primary-400" />
                     </div>
                     <span className="text-xs text-zinc-400 max-w-[130px] truncate">{user.email}</span>
                   </Link>
                 ) : (
                   <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-full bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
-                      <Icon icon="solar:user-linear" width={14} className="text-indigo-400" />
+                    <div className="w-7 h-7 rounded-full bg-primary-500/15 border border-primary-500/30 flex items-center justify-center">
+                      <Icon icon="solar:user-linear" width={14} className="text-primary-400" />
                     </div>
                     <span className="text-xs text-zinc-400 max-w-[130px] truncate" title={user.email}>{user.email}</span>
                   </div>
                 )}
-                <button onClick={handleLogout} className="text-sm font-medium text-zinc-400 hover:text-rose-400 transition-colors">
+                <button onClick={handleLogout} className="text-sm font-medium text-zinc-400 hover:text-error-400 transition-colors">
                   Sign out
                 </button>
               </>
@@ -129,16 +129,16 @@ export default function Header() {
                   <span className="truncate">{user.email}</span>
                 </div>
                 {isCustomer && (
-                  <Link to="/welcome" onClick={close} className="text-indigo-400 font-medium">
+                  <Link to="/welcome" onClick={close} className="text-primary-400 font-medium">
                     My Profile
                   </Link>
                 )}
                 {isAdmin && (
-                  <Link to="/admin/dashboard" onClick={close} className="text-indigo-400 font-medium">
+                  <Link to="/admin/dashboard" onClick={close} className="text-primary-400 font-medium">
                     Admin Panel
                   </Link>
                 )}
-                <button onClick={handleLogout} className="text-rose-400 font-medium text-left">
+                <button onClick={handleLogout} className="text-error-400 font-medium text-left">
                   Sign out
                 </button>
               </>

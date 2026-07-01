@@ -8,11 +8,11 @@ import ReportChart from '../../components/admin/reports/ReportChart';
 const STEPS = ['Source', 'Fields', 'Filters', 'Chart', 'Save'];
 
 const SOURCE_ICONS = {
-  contacts: { icon: 'solar:users-group-two-rounded-linear', color: 'text-indigo-400', bg: 'bg-indigo-500/15 border-indigo-500/30' },
-  newsletter: { icon: 'solar:letter-linear', color: 'text-cyan-400', bg: 'bg-cyan-500/15 border-cyan-500/30' },
-  services: { icon: 'solar:layers-linear', color: 'text-emerald-400', bg: 'bg-emerald-500/15 border-emerald-500/30' },
-  testimonials: { icon: 'solar:star-ring-linear', color: 'text-amber-400', bg: 'bg-amber-500/15 border-amber-500/30' },
-  users: { icon: 'solar:user-id-linear', color: 'text-purple-400', bg: 'bg-purple-500/15 border-purple-500/30' },
+  contacts: { icon: 'solar:users-group-two-rounded-linear', color: 'text-primary-400', bg: 'bg-primary-500/15 border-primary-500/30' },
+  newsletter: { icon: 'solar:letter-linear', color: 'text-secondary-400', bg: 'bg-secondary-500/15 border-secondary-500/30' },
+  services: { icon: 'solar:layers-linear', color: 'text-success-400', bg: 'bg-success-500/15 border-success-500/30' },
+  testimonials: { icon: 'solar:star-ring-linear', color: 'text-warning-400', bg: 'bg-warning-500/15 border-warning-500/30' },
+  users: { icon: 'solar:user-id-linear', color: 'text-accent-400', bg: 'bg-accent-500/15 border-accent-500/30' },
 };
 
 const AGG_FNS = [
@@ -48,7 +48,7 @@ function StepIndicator({ step }) {
       {STEPS.map((s, i) => (
         <div key={s} className="flex items-center">
           <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all
-            ${i === step ? 'bg-indigo-600 text-white' : i < step ? 'text-emerald-400' : 'text-zinc-600'}`}>
+            ${i === step ? 'bg-primary-600 text-white' : i < step ? 'text-success-400' : 'text-zinc-600'}`}>
             {i < step
               ? <Icon icon="solar:check-circle-linear" width={15} />
               : <span className="w-5 h-5 rounded-full border flex items-center justify-center text-xs
@@ -56,7 +56,7 @@ function StepIndicator({ step }) {
             <span className="hidden sm:inline">{s}</span>
           </div>
           {i < STEPS.length - 1 && (
-            <div className={`w-6 h-px mx-1 ${i < step ? 'bg-emerald-500/50' : 'bg-zinc-800'}`} />
+            <div className={`w-6 h-px mx-1 ${i < step ? 'bg-success-500/50' : 'bg-zinc-800'}`} />
           )}
         </div>
       ))}
@@ -97,13 +97,13 @@ function StepSource({ sources, config, setConfig }) {
         ].map((t) => (
           <button key={t.value} onClick={() => setConfig((c) => ({ ...c, type: t.value }))}
             className={`flex-1 flex items-start gap-3 p-4 rounded-2xl border transition-all text-left
-              ${config.type === t.value ? 'bg-indigo-500/10 border-indigo-500/40' : 'bg-[#111113] border-zinc-800 hover:border-zinc-700'}`}>
+              ${config.type === t.value ? 'bg-primary-500/10 border-primary-500/40' : 'bg-[#111113] border-zinc-800 hover:border-zinc-700'}`}>
             <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0
-              ${config.type === t.value ? 'bg-indigo-500/20' : 'bg-zinc-800'}`}>
-              <Icon icon={t.icon} width={18} className={config.type === t.value ? 'text-indigo-400' : 'text-zinc-500'} />
+              ${config.type === t.value ? 'bg-primary-500/20' : 'bg-zinc-800'}`}>
+              <Icon icon={t.icon} width={18} className={config.type === t.value ? 'text-primary-400' : 'text-zinc-500'} />
             </div>
             <div>
-              <p className={`font-medium text-sm ${config.type === t.value ? 'text-indigo-300' : 'text-zinc-300'}`}>{t.label}</p>
+              <p className={`font-medium text-sm ${config.type === t.value ? 'text-primary-300' : 'text-zinc-300'}`}>{t.label}</p>
               <p className="text-xs text-zinc-600 mt-0.5">{t.desc}</p>
             </div>
           </button>
@@ -134,7 +134,7 @@ function StepFields({ sources, config, setConfig }) {
             <h2 className="text-base font-semibold text-zinc-200">Select columns</h2>
             <p className="text-sm text-zinc-500 mt-0.5">Choose which fields appear in the report.</p>
           </div>
-          <button onClick={toggleAll} className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+          <button onClick={toggleAll} className="text-xs text-primary-400 hover:text-primary-300 transition-colors">
             {allSelected ? 'Deselect all' : 'Select all'}
           </button>
         </div>
@@ -143,8 +143,8 @@ function StepFields({ sources, config, setConfig }) {
             const checked = config.columns.includes(f.key);
             return (
               <label key={f.key} className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border cursor-pointer transition-all
-                ${checked ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-300' : 'bg-[#111113] border-zinc-800 text-zinc-400 hover:border-zinc-700'}`}>
-                <input type="checkbox" checked={checked} onChange={() => toggle(f.key)} className="accent-indigo-500 w-3.5 h-3.5" />
+                ${checked ? 'bg-primary-500/10 border-primary-500/30 text-primary-300' : 'bg-[#111113] border-zinc-800 text-zinc-400 hover:border-zinc-700'}`}>
+                <input type="checkbox" checked={checked} onChange={() => toggle(f.key)} className="accent-primary-500 w-3.5 h-3.5" />
                 <span className="text-sm">{f.label}</span>
                 <span className="ml-auto text-xs text-zinc-600">{f.type}</span>
               </label>
@@ -156,12 +156,12 @@ function StepFields({ sources, config, setConfig }) {
           <label className="block text-xs font-medium text-zinc-400 mb-2">Sort by</label>
           <div className="flex gap-2">
             <select value={config.sort?.field ?? ''} onChange={(e) => setConfig((c) => ({ ...c, sort: { ...c.sort, field: e.target.value } }))}
-              className="flex-1 px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none focus:border-indigo-500/50 transition-all">
+              className="flex-1 px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none focus:border-primary-500/50 transition-all">
               <option value="">— None —</option>
               {fields.map((f) => <option key={f.key} value={f.key}>{f.label}</option>)}
             </select>
             <select value={config.sort?.dir ?? 'desc'} onChange={(e) => setConfig((c) => ({ ...c, sort: { ...c.sort, dir: e.target.value } }))}
-              className="px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none focus:border-indigo-500/50 transition-all">
+              className="px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none focus:border-primary-500/50 transition-all">
               <option value="asc">Ascending</option>
               <option value="desc">Descending</option>
             </select>
@@ -172,7 +172,7 @@ function StepFields({ sources, config, setConfig }) {
           <label className="block text-xs font-medium text-zinc-400 mb-2">Row limit</label>
           <input type="number" min={1} max={2000} value={config.limit ?? 500}
             onChange={(e) => setConfig((c) => ({ ...c, limit: parseInt(e.target.value) || 500 }))}
-            className="w-32 px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none focus:border-indigo-500/50 transition-all" />
+            className="w-32 px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none focus:border-primary-500/50 transition-all" />
         </div>
       </div>
     );
@@ -187,7 +187,7 @@ function StepFields({ sources, config, setConfig }) {
       <div className="mb-5">
         <label className="block text-xs font-medium text-zinc-400 mb-2">Group by</label>
         <select value={config.groupBy ?? ''} onChange={(e) => setConfig((c) => ({ ...c, groupBy: e.target.value }))}
-          className="w-full px-3 py-2.5 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none focus:border-indigo-500/50 transition-all">
+          className="w-full px-3 py-2.5 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none focus:border-primary-500/50 transition-all">
           <option value="">— Select field —</option>
           <option value="month">Month (time series)</option>
           {fields.map((f) => <option key={f.key} value={f.key}>{f.label}</option>)}
@@ -198,7 +198,7 @@ function StepFields({ sources, config, setConfig }) {
         <div className="flex items-center justify-between mb-2">
           <label className="text-xs font-medium text-zinc-400">Aggregations</label>
           <button onClick={() => setConfig((c) => ({ ...c, aggregations: [...(c.aggregations ?? []), newAgg()] }))}
-            className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors">
+            className="text-xs text-primary-400 hover:text-primary-300 flex items-center gap-1 transition-colors">
             <Icon icon="solar:add-circle-linear" width={13} /> Add
           </button>
         </div>
@@ -221,10 +221,10 @@ function StepFields({ sources, config, setConfig }) {
               <input value={agg.alias} onChange={(e) => setConfig((c) => {
                 const a = [...c.aggregations]; a[idx] = { ...a[idx], alias: e.target.value }; return { ...c, aggregations: a };
               })} placeholder="Label (optional)"
-                className="flex-1 px-2 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 text-xs text-zinc-300 outline-none focus:border-indigo-500/50 transition-all" />
+                className="flex-1 px-2 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 text-xs text-zinc-300 outline-none focus:border-primary-500/50 transition-all" />
               {(config.aggregations ?? []).length > 1 && (
                 <button onClick={() => setConfig((c) => ({ ...c, aggregations: c.aggregations.filter((_, i) => i !== idx) }))}
-                  className="p-1 text-zinc-600 hover:text-rose-400 transition-colors">
+                  className="p-1 text-zinc-600 hover:text-error-400 transition-colors">
                   <Icon icon="solar:close-circle-linear" width={16} />
                 </button>
               )}
@@ -257,7 +257,7 @@ function StepFilters({ sources, config, setConfig }) {
           <p className="text-sm text-zinc-500 mt-0.5">Narrow down the data included in the report.</p>
         </div>
         <button onClick={addFilter}
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-all">
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-xs font-medium transition-all">
           <Icon icon="solar:add-circle-linear" width={13} />
           Add Filter
         </button>
@@ -267,7 +267,7 @@ function StepFilters({ sources, config, setConfig }) {
         <div className="flex flex-col items-center gap-3 py-10 text-zinc-700 bg-[#111113] border border-zinc-800 rounded-2xl">
           <Icon icon="solar:filter-linear" width={28} />
           <p className="text-sm text-zinc-500">No filters — all records will be included.</p>
-          <button onClick={addFilter} className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+          <button onClick={addFilter} className="text-xs text-primary-400 hover:text-primary-300 transition-colors">
             + Add filter
           </button>
         </div>
@@ -306,10 +306,10 @@ function StepFilters({ sources, config, setConfig }) {
                   ) : (
                     <input value={f.value} onChange={(e) => updateFilter(f.id, { value: e.target.value })}
                       placeholder="Value" type={fieldMeta?.type === 'date' ? 'date' : fieldMeta?.type === 'number' ? 'number' : 'text'}
-                      className="flex-1 min-w-[100px] px-2 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 text-xs text-zinc-300 outline-none focus:border-indigo-500/50 transition-all" />
+                      className="flex-1 min-w-[100px] px-2 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 text-xs text-zinc-300 outline-none focus:border-primary-500/50 transition-all" />
                   )
                 )}
-                <button onClick={() => removeFilter(f.id)} className="p-1 text-zinc-600 hover:text-rose-400 transition-colors">
+                <button onClick={() => removeFilter(f.id)} className="p-1 text-zinc-600 hover:text-error-400 transition-colors">
                   <Icon icon="solar:close-circle-linear" width={16} />
                 </button>
               </div>
@@ -342,7 +342,7 @@ function StepChart({ config, setConfig, previewData }) {
       <div className="mb-5 flex items-center gap-3">
         <label className="text-xs text-zinc-400">Show chart</label>
         <button onClick={() => setConfig((c) => ({ ...c, chart: { ...chart, enabled: !chart.enabled } }))}
-          className={`relative w-10 h-5 rounded-full transition-all ${chart.enabled !== false ? 'bg-indigo-600' : 'bg-zinc-700'}`}>
+          className={`relative w-10 h-5 rounded-full transition-all ${chart.enabled !== false ? 'bg-primary-600' : 'bg-zinc-700'}`}>
           <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${chart.enabled !== false ? 'translate-x-5' : ''}`} />
         </button>
       </div>
@@ -355,7 +355,7 @@ function StepChart({ config, setConfig, previewData }) {
               {CHART_TYPES.map((t) => (
                 <button key={t.value} onClick={() => setConfig((c) => ({ ...c, chart: { ...chart, type: t.value } }))}
                   className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-sm transition-all
-                    ${chart.type === t.value ? 'bg-indigo-500/15 border-indigo-500/40 text-indigo-300' : 'bg-[#111113] border-zinc-800 text-zinc-400 hover:border-zinc-700'}`}>
+                    ${chart.type === t.value ? 'bg-primary-500/15 border-primary-500/40 text-primary-300' : 'bg-[#111113] border-zinc-800 text-zinc-400 hover:border-zinc-700'}`}>
                   <Icon icon={t.icon} width={15} />
                   {t.label}
                 </button>
@@ -390,22 +390,22 @@ function StepSave({ config, setConfig, folders, isEdit }) {
 
       <div className="flex flex-col gap-4">
         <div>
-          <label className="block text-xs font-medium text-zinc-400 mb-1.5">Report name <span className="text-rose-500">*</span></label>
+          <label className="block text-xs font-medium text-zinc-400 mb-1.5">Report name <span className="text-error-500">*</span></label>
           <input value={config.name ?? ''} onChange={(e) => setConfig((c) => ({ ...c, name: e.target.value }))}
             placeholder="e.g. Contacts by Month"
-            className="w-full px-3 py-2.5 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-200 placeholder-zinc-600 outline-none focus:border-indigo-500/60 transition-all" />
+            className="w-full px-3 py-2.5 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-200 placeholder-zinc-600 outline-none focus:border-primary-500/60 transition-all" />
         </div>
         <div>
           <label className="block text-xs font-medium text-zinc-400 mb-1.5">Description</label>
           <textarea value={config.description ?? ''} onChange={(e) => setConfig((c) => ({ ...c, description: e.target.value }))}
             placeholder="Optional description…" rows={2}
-            className="w-full px-3 py-2.5 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-200 placeholder-zinc-600 outline-none focus:border-indigo-500/60 transition-all resize-none" />
+            className="w-full px-3 py-2.5 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-200 placeholder-zinc-600 outline-none focus:border-primary-500/60 transition-all resize-none" />
         </div>
         {folders.length > 0 && (
           <div>
             <label className="block text-xs font-medium text-zinc-400 mb-1.5">Folder</label>
             <select value={config.folderId ?? ''} onChange={(e) => setConfig((c) => ({ ...c, folderId: e.target.value || null }))}
-              className="w-full px-3 py-2.5 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none focus:border-indigo-500/50 transition-all">
+              className="w-full px-3 py-2.5 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none focus:border-primary-500/50 transition-all">
               <option value="">— No folder —</option>
               {folders.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
             </select>
@@ -413,7 +413,7 @@ function StepSave({ config, setConfig, folders, isEdit }) {
         )}
         <label className="flex items-center gap-3 cursor-pointer">
           <div onClick={() => setConfig((c) => ({ ...c, isPublic: !c.isPublic }))}
-            className={`relative w-10 h-5 rounded-full transition-all ${config.isPublic ? 'bg-indigo-600' : 'bg-zinc-700'}`}>
+            className={`relative w-10 h-5 rounded-full transition-all ${config.isPublic ? 'bg-primary-600' : 'bg-zinc-700'}`}>
             <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${config.isPublic ? 'translate-x-5' : ''}`} />
           </div>
           <div>
@@ -573,7 +573,7 @@ export default function ReportBuilder() {
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-medium text-zinc-400">Preview — {previewData.total} row{previewData.total !== 1 ? 's' : ''}</p>
             <button onClick={handlePreview} disabled={previewing}
-              className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors disabled:opacity-50">
+              className="text-xs text-primary-400 hover:text-primary-300 flex items-center gap-1 transition-colors disabled:opacity-50">
               <Icon icon={previewing ? 'solar:loading-linear' : 'solar:refresh-linear'} width={12} className={previewing ? 'animate-spin' : ''} />
               Refresh
             </button>
@@ -621,13 +621,13 @@ export default function ReportBuilder() {
           )}
           {step < STEPS.length - 1 ? (
             <button onClick={nextStep} disabled={!canNext()}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-all disabled:opacity-40 shadow-lg shadow-indigo-900/30">
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-medium transition-all disabled:opacity-40 shadow-lg shadow-primary-900/30">
               Next
               <Icon icon="solar:arrow-right-linear" width={14} />
             </button>
           ) : (
             <button onClick={handleSave} disabled={saving || !config.name?.trim()}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-all disabled:opacity-40 shadow-lg shadow-indigo-900/30">
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-medium transition-all disabled:opacity-40 shadow-lg shadow-primary-900/30">
               <Icon icon={saving ? 'solar:loading-linear' : 'solar:check-circle-linear'} width={15} className={saving ? 'animate-spin' : ''} />
               {saving ? 'Saving…' : (isEdit ? 'Update Report' : 'Save & Run')}
             </button>

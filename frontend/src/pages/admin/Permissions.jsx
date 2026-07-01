@@ -64,8 +64,8 @@ const ACTION_GROUPS = [
 ];
 
 const ROLES = [
-  { key: 'admin',    label: 'Admin',    color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' },
-  { key: 'customer', label: 'Customer', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' },
+  { key: 'admin',    label: 'Admin',    color: 'text-primary-400 bg-primary-500/10 border-primary-500/20' },
+  { key: 'customer', label: 'Customer', color: 'text-success-400 bg-success-500/10 border-success-500/20' },
 ];
 
 // ─── Toggle ───────────────────────────────────────────────────────────────────
@@ -79,7 +79,7 @@ function Toggle({ checked, onChange, disabled }) {
       disabled={disabled}
       onClick={() => onChange(!checked)}
       className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors disabled:opacity-40 ${
-        checked ? 'bg-emerald-500' : 'bg-zinc-700'
+        checked ? 'bg-success-500' : 'bg-zinc-700'
       }`}
     >
       <span
@@ -150,7 +150,7 @@ export default function Permissions() {
     return (
       <div className="p-8 flex items-center gap-3 text-zinc-500">
         {error
-          ? <p className="text-rose-400 text-sm">{error}</p>
+          ? <p className="text-error-400 text-sm">{error}</p>
           : <><Icon icon="solar:loading-linear" width={18} className="animate-spin" /><span className="text-sm">Loading…</span></>
         }
       </div>
@@ -170,19 +170,19 @@ export default function Permissions() {
         <button
           onClick={handleSave}
           disabled={saving || !dirty}
-          className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-50 shadow-[0_0_20px_rgba(99,102,241,0.2)]"
+          className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-50 shadow-[0_0_20px_rgba(51, 112, 246,0.2)]"
         >
           <Icon icon={saving ? 'solar:loading-linear' : 'solar:floppy-disk-linear'} width={15} className={saving ? 'animate-spin' : ''} />
           {saving ? 'Saving…' : dirty ? 'Save Changes' : 'Saved'}
         </button>
       </div>
 
-      {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-6">{error}</div> : null}
+      {error ? <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400 mb-6">{error}</div> : null}
 
       {/* Info banner */}
-      <div className="mb-6 flex items-start gap-3 bg-amber-500/8 border border-amber-500/20 rounded-xl p-4">
-        <Icon icon="solar:info-circle-linear" width={16} className="text-amber-400 shrink-0 mt-0.5" />
-        <p className="text-xs text-amber-300/80 leading-relaxed">
+      <div className="mb-6 flex items-start gap-3 bg-warning-500/8 border border-warning-500/20 rounded-xl p-4">
+        <Icon icon="solar:info-circle-linear" width={16} className="text-warning-400 shrink-0 mt-0.5" />
+        <p className="text-xs text-warning-300/80 leading-relaxed">
           Super admins always have full access regardless of these settings. Changes here apply to <strong>Admin</strong> and <strong>Customer</strong> roles only.
           Permission enforcement is applied at the API level — disabling an action prevents it across both the UI and direct API calls.
         </p>

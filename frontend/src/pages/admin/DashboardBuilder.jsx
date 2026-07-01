@@ -27,7 +27,7 @@ const AGG_FNS = [
   { value: 'max', label: 'Max' },
 ];
 
-const WIDGET_COLORS = ['#6366F1','#06B6D4','#10B981','#F59E0B','#8B5CF6','#EC4899','#F97316','#EF4444'];
+const WIDGET_COLORS = ['#1C63F3','#0AA9D6','#10B981','#F59E0B','#8B5CF6','#EC4899','#F97316','#EF4444'];
 
 const WIDGET_ICONS = [
   'solar:users-group-two-rounded-linear',
@@ -107,7 +107,7 @@ function WidgetConfigPanel({ widget, sources, onChange, onClose }) {
         <div>
           <label className="block text-xs font-medium text-zinc-500 mb-1.5">Title</label>
           <input value={widget.title} onChange={(e) => set({ title: e.target.value })}
-            className="w-full px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-200 outline-none focus:border-indigo-500/60 transition-all" />
+            className="w-full px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-200 outline-none focus:border-primary-500/60 transition-all" />
         </div>
 
         {/* Type */}
@@ -117,7 +117,7 @@ function WidgetConfigPanel({ widget, sources, onChange, onClose }) {
             {WIDGET_TYPES.map((t) => (
               <button key={t.value} onClick={() => set({ type: t.value, w: t.value === 'kpi' ? 1 : 2, h: t.value === 'kpi' ? 1 : 2 })}
                 className={`flex-1 flex flex-col items-center gap-1 p-2.5 rounded-xl border text-center text-xs transition-all
-                  ${widget.type === t.value ? 'bg-indigo-500/15 border-indigo-500/40 text-indigo-300' : 'bg-[#111113] border-zinc-800 text-zinc-500 hover:border-zinc-700'}`}>
+                  ${widget.type === t.value ? 'bg-primary-500/15 border-primary-500/40 text-primary-300' : 'bg-[#111113] border-zinc-800 text-zinc-500 hover:border-zinc-700'}`}>
                 <Icon icon={t.icon} width={14} />
                 {t.label}
               </button>
@@ -129,7 +129,7 @@ function WidgetConfigPanel({ widget, sources, onChange, onClose }) {
         <div>
           <label className="block text-xs font-medium text-zinc-500 mb-1.5">Data source</label>
           <select value={widget.config.source} onChange={(e) => setCfg({ source: e.target.value, groupBy: 'status' })}
-            className="w-full px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none transition-all focus:border-indigo-500/50">
+            className="w-full px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none transition-all focus:border-primary-500/50">
             {sources.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
           </select>
         </div>
@@ -157,7 +157,7 @@ function WidgetConfigPanel({ widget, sources, onChange, onClose }) {
           <div>
             <label className="block text-xs font-medium text-zinc-500 mb-1.5">Group by</label>
             <select value={widget.config.groupBy ?? ''} onChange={(e) => setCfg({ groupBy: e.target.value })}
-              className="w-full px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none transition-all focus:border-indigo-500/50">
+              className="w-full px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none transition-all focus:border-primary-500/50">
               <option value="">— Select field —</option>
               <option value="month">Month (time series)</option>
               {fields.map((f) => <option key={f.key} value={f.key}>{f.label}</option>)}
@@ -173,7 +173,7 @@ function WidgetConfigPanel({ widget, sources, onChange, onClose }) {
               {CHART_TYPES.map((t) => (
                 <button key={t.value} onClick={() => setCfg({ chartType: t.value })}
                   className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs transition-all
-                    ${widget.config.chartType === t.value ? 'bg-indigo-500/15 border-indigo-500/40 text-indigo-300' : 'bg-[#111113] border-zinc-800 text-zinc-500 hover:border-zinc-700'}`}>
+                    ${widget.config.chartType === t.value ? 'bg-primary-500/15 border-primary-500/40 text-primary-300' : 'bg-[#111113] border-zinc-800 text-zinc-500 hover:border-zinc-700'}`}>
                   {t.label}
                 </button>
               ))}
@@ -185,7 +185,7 @@ function WidgetConfigPanel({ widget, sources, onChange, onClose }) {
         <div>
           <label className="block text-xs font-medium text-zinc-500 mb-1.5">Width</label>
           <select value={widget.w ?? 2} onChange={(e) => set({ w: parseInt(e.target.value) })}
-            className="w-full px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none transition-all focus:border-indigo-500/50">
+            className="w-full px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none transition-all focus:border-primary-500/50">
             {SIZE_OPTIONS.map((s) => <option key={s.w} value={s.w}>{s.label}</option>)}
           </select>
         </div>
@@ -210,8 +210,8 @@ function WidgetConfigPanel({ widget, sources, onChange, onClose }) {
               {WIDGET_ICONS.map((ic) => (
                 <button key={ic} onClick={() => setCfg({ icon: ic })}
                   className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all
-                    ${widget.config.icon === ic ? 'bg-indigo-500/20 border border-indigo-500/50' : 'bg-[#111113] border border-zinc-800 hover:border-zinc-600'}`}>
-                  <Icon icon={ic} width={14} className={widget.config.icon === ic ? 'text-indigo-400' : 'text-zinc-500'} />
+                    ${widget.config.icon === ic ? 'bg-primary-500/20 border border-primary-500/50' : 'bg-[#111113] border border-zinc-800 hover:border-zinc-600'}`}>
+                  <Icon icon={ic} width={14} className={widget.config.icon === ic ? 'text-primary-400' : 'text-zinc-500'} />
                 </button>
               ))}
             </div>
@@ -223,7 +223,7 @@ function WidgetConfigPanel({ widget, sources, onChange, onClose }) {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-xs font-medium text-zinc-500">Preview</label>
-              <button onClick={fetchPreview} disabled={previewing} className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+              <button onClick={fetchPreview} disabled={previewing} className="text-xs text-primary-400 hover:text-primary-300 transition-colors">
                 <Icon icon={previewing ? 'solar:loading-linear' : 'solar:refresh-linear'} width={11} className={previewing ? 'animate-spin' : ''} />
               </button>
             </div>
@@ -233,7 +233,7 @@ function WidgetConfigPanel({ widget, sources, onChange, onClose }) {
                 data={preview.rows ?? []}
                 xKey={widget.config.groupBy === 'month' ? 'month' : (widget.config.groupBy ?? 'label')}
                 yKeys={['value']}
-                colors={[widget.config.color ?? '#6366F1']}
+                colors={[widget.config.color ?? '#1C63F3']}
                 height={140}
               />
             </div>
@@ -259,11 +259,11 @@ function WidgetConfigPanel({ widget, sources, onChange, onClose }) {
 // ── Canvas widget card ────────────────────────────────────────────────────────
 function CanvasWidget({ widget, selected, onSelect, onRemove }) {
   const W_COLS = { 1: 'col-span-1', 2: 'col-span-2', 3: 'col-span-3', 4: 'col-span-4' };
-  const bgColor = widget.type === 'kpi' ? `${widget.config?.color ?? '#6366F1'}12` : 'transparent';
+  const bgColor = widget.type === 'kpi' ? `${widget.config?.color ?? '#1C63F3'}12` : 'transparent';
 
   return (
     <div className={`${W_COLS[Math.min(widget.w ?? 2, 4)]} rounded-2xl border-2 transition-all cursor-pointer
-      ${selected ? 'border-indigo-500 shadow-lg shadow-indigo-500/20' : 'border-zinc-800 hover:border-zinc-700'}`}
+      ${selected ? 'border-primary-500 shadow-lg shadow-primary-500/20' : 'border-zinc-800 hover:border-zinc-700'}`}
       style={{ background: bgColor, minHeight: widget.type === 'kpi' ? 80 : 180 }}
       onClick={() => onSelect(widget.id)}>
       <div className="p-3 h-full flex flex-col gap-2">
@@ -274,7 +274,7 @@ function CanvasWidget({ widget, selected, onSelect, onRemove }) {
             <span className="text-xs font-medium text-zinc-400 truncate max-w-[120px]">{widget.title}</span>
           </div>
           <button onClick={(e) => { e.stopPropagation(); onRemove(widget.id); }}
-            className="p-1 rounded-lg text-zinc-700 hover:text-rose-400 hover:bg-rose-500/10 transition-all">
+            className="p-1 rounded-lg text-zinc-700 hover:text-error-400 hover:bg-error-500/10 transition-all">
             <Icon icon="solar:close-square-linear" width={13} />
           </button>
         </div>
@@ -359,13 +359,13 @@ export default function DashboardBuilder() {
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <input value={meta.name} onChange={(e) => setMeta((m) => ({ ...m, name: e.target.value }))}
             placeholder="Dashboard name…"
-            className="px-3 py-1.5 rounded-xl bg-[#18181B] border border-zinc-800 focus:border-indigo-500/60 text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all w-64" />
+            className="px-3 py-1.5 rounded-xl bg-[#18181B] border border-zinc-800 focus:border-primary-500/60 text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all w-64" />
           <input value={meta.description} onChange={(e) => setMeta((m) => ({ ...m, description: e.target.value }))}
             placeholder="Description (optional)"
-            className="px-3 py-1.5 rounded-xl bg-[#18181B] border border-zinc-800 focus:border-indigo-500/60 text-sm text-zinc-500 placeholder-zinc-600 outline-none transition-all flex-1 hidden md:block" />
+            className="px-3 py-1.5 rounded-xl bg-[#18181B] border border-zinc-800 focus:border-primary-500/60 text-sm text-zinc-500 placeholder-zinc-600 outline-none transition-all flex-1 hidden md:block" />
           <label className="hidden md:flex items-center gap-2 cursor-pointer text-xs text-zinc-400">
             <div onClick={() => setMeta((m) => ({ ...m, isDefault: !m.isDefault }))}
-              className={`relative w-8 h-4 rounded-full transition-all ${meta.isDefault ? 'bg-indigo-600' : 'bg-zinc-700'}`}>
+              className={`relative w-8 h-4 rounded-full transition-all ${meta.isDefault ? 'bg-primary-600' : 'bg-zinc-700'}`}>
               <span className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white transition-transform ${meta.isDefault ? 'translate-x-4' : ''}`} />
             </div>
             Default
@@ -395,7 +395,7 @@ export default function DashboardBuilder() {
             )}
           </div>
           <button onClick={handleSave} disabled={saving || !meta.name.trim()}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-all disabled:opacity-40 shadow-lg shadow-indigo-900/30">
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-medium transition-all disabled:opacity-40 shadow-lg shadow-primary-900/30">
             <Icon icon={saving ? 'solar:loading-linear' : 'solar:check-circle-linear'} width={15} className={saving ? 'animate-spin' : ''} />
             {saving ? 'Saving…' : (isEdit ? 'Update' : 'Create')}
           </button>

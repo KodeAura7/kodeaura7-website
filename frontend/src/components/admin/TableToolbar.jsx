@@ -32,7 +32,7 @@ function Popover({ trigger, children, align = 'left' }) {
 const btnCls = (active = false) =>
   `inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
     active
-      ? 'bg-indigo-500/15 text-indigo-400 border border-indigo-500/30'
+      ? 'bg-primary-500/15 text-primary-400 border border-primary-500/30'
       : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/70 border border-transparent'
   }`;
 
@@ -47,7 +47,7 @@ function FilterPopover({ filterGroups, filters, onFilter }) {
           <Icon icon="solar:filter-linear" width={13} />
           Filter
           {activeCount > 0 && (
-            <span className="ml-0.5 bg-indigo-500 text-white rounded-full px-1.5 py-px text-[9px] leading-none">
+            <span className="ml-0.5 bg-primary-500 text-white rounded-full px-1.5 py-px text-[9px] leading-none">
               {activeCount}
             </span>
           )}
@@ -71,7 +71,7 @@ function FilterPopover({ filterGroups, filters, onFilter }) {
                     key={opt.value}
                     onClick={() => { onFilter(group.key, opt.value); close(); }}
                     className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between ${
-                      filters[group.key] === opt.value ? 'bg-indigo-500/15 text-indigo-300' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
+                      filters[group.key] === opt.value ? 'bg-primary-500/15 text-primary-300' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
                     }`}
                   >
                     {opt.label}
@@ -84,7 +84,7 @@ function FilterPopover({ filterGroups, filters, onFilter }) {
           {activeCount > 0 && (
             <button
               onClick={() => { filterGroups.forEach((g) => onFilter(g.key, '')); close(); }}
-              className="w-full text-center text-[10px] text-zinc-600 hover:text-rose-400 transition-colors pt-1 border-t border-zinc-800"
+              className="w-full text-center text-[10px] text-zinc-600 hover:text-error-400 transition-colors pt-1 border-t border-zinc-800"
             >
               Clear all filters
             </button>
@@ -117,7 +117,7 @@ function SortPopover({ sortOptions, sort, dir, onSort }) {
                 close();
               }}
               className={`w-full text-left px-3 py-2 rounded-lg text-xs flex items-center justify-between transition-colors ${
-                sort === opt.value ? 'text-indigo-400 bg-indigo-500/10' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
+                sort === opt.value ? 'text-primary-400 bg-primary-500/10' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
               }`}
             >
               {opt.label}
@@ -125,7 +125,7 @@ function SortPopover({ sortOptions, sort, dir, onSort }) {
                 <Icon
                   icon={dir === 'asc' ? 'solar:sort-from-bottom-to-top-linear' : 'solar:sort-from-top-to-bottom-linear'}
                   width={11}
-                  className="text-indigo-400"
+                  className="text-primary-400"
                 />
               )}
             </button>
@@ -183,7 +183,7 @@ function ColumnsPopover({ columns, allOrdered, visibleCols, onToggle, onReset, o
                 onDrop={() => handleDrop(col.key)}
                 onDragEnd={() => { setDragKey(null); setDragOverKey(null); }}
                 className={`flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors select-none
-                  ${isDragOver ? 'bg-indigo-500/10 border border-indigo-500/30' : 'border border-transparent'}
+                  ${isDragOver ? 'bg-primary-500/10 border border-primary-500/30' : 'border border-transparent'}
                   ${dragKey === col.key ? 'opacity-40' : ''}`}
               >
                 {onReorder && (
@@ -195,7 +195,7 @@ function ColumnsPopover({ columns, allOrdered, visibleCols, onToggle, onReset, o
                   onClick={() => onToggle(col.key)}
                   className={`flex items-center gap-2 flex-1 text-left text-xs transition-colors ${active ? 'text-zinc-200' : 'text-zinc-600'} hover:text-zinc-300`}
                 >
-                  <div className={`w-3.5 h-3.5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${active ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-600'}`}>
+                  <div className={`w-3.5 h-3.5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${active ? 'border-primary-500 bg-primary-500' : 'border-zinc-600'}`}>
                     {active && <Icon icon="solar:check-read-linear" width={8} className="text-white" />}
                   </div>
                   {col.label}
@@ -256,7 +256,7 @@ export function TableToolbar({
             value={search}
             onChange={(e) => onSearch(e.target.value)}
             placeholder={placeholder}
-            className="w-full bg-[#111113] border border-zinc-800 rounded-xl pl-9 pr-3 py-2 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all"
+            className="w-full bg-[#111113] border border-zinc-800 rounded-xl pl-9 pr-3 py-2 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all"
           />
           {search && (
             <button

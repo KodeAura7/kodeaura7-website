@@ -6,7 +6,7 @@ import { useToast } from '../../contexts/ToastContext';
 import PageHistorySidebar from '../../components/admin/PageHistorySidebar';
 import MigrateModal from '../../components/admin/MigrateModal';
 
-const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all';
+const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all';
 
 const DEFAULT = {
   name: 'KodeAura7',
@@ -17,8 +17,8 @@ const DEFAULT = {
     universal: { url: '', alt: 'KodeAura7' },
   },
   colors: {
-    primary: '#6366F1',
-    secondary: '#06B6D4',
+    primary: '#1C63F3',
+    secondary: '#0AA9D6',
     accent: '#8B5CF6',
   },
 };
@@ -64,7 +64,7 @@ function ColorSwatch({ label, value, onChange }) {
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className={INPUT + ' font-mono text-xs'}
-          placeholder="#6366F1"
+          placeholder="#1C63F3"
           maxLength={7}
         />
       </div>
@@ -135,7 +135,7 @@ function AssetPickerModal({ onSelect, onClose }) {
               <span className="text-sm">Loading assets…</span>
             </div>
           )}
-          {err && <p className="text-sm text-rose-400 text-center py-6">{err}</p>}
+          {err && <p className="text-sm text-error-400 text-center py-6">{err}</p>}
           {!loading && !err && assets?.length === 0 && (
             <div className="text-center py-8">
               <Icon icon="solar:folder-open-linear" width={32} className="text-zinc-700 mx-auto mb-3" />
@@ -149,7 +149,7 @@ function AssetPickerModal({ onSelect, onClose }) {
                 <button
                   key={asset.name}
                   onClick={() => { onSelect(asset.url); onClose(); }}
-                  className="group flex flex-col items-center gap-2 p-3 rounded-xl border border-zinc-800 hover:border-indigo-500/40 hover:bg-indigo-500/5 transition-all"
+                  className="group flex flex-col items-center gap-2 p-3 rounded-xl border border-zinc-800 hover:border-primary-500/40 hover:bg-primary-500/5 transition-all"
                 >
                   <div className="w-full h-16 flex items-center justify-center overflow-hidden rounded-lg bg-[#18181B]">
                     <img src={asset.url} alt={asset.name} className="max-w-full max-h-full object-contain" />
@@ -231,7 +231,7 @@ function LogoSlot({ label, hint, value, onChange }) {
         </div>
       </div>
       {value.url && imgError ? (
-        <p className="text-xs text-rose-400 flex items-center gap-1.5">
+        <p className="text-xs text-error-400 flex items-center gap-1.5">
           <Icon icon="solar:close-circle-linear" width={13} />
           Image failed to load — check the URL
         </p>
@@ -306,14 +306,14 @@ export default function AdminBranding() {
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => setMigrateOpen(true)}
-            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-zinc-700 hover:border-indigo-500/40 text-indigo-400 hover:text-indigo-300 transition-all">
+            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-zinc-700 hover:border-primary-500/40 text-primary-400 hover:text-primary-300 transition-all">
             <Icon icon="solar:transfer-horizontal-linear" width={15} />
             Push to Env
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(99,102,241,0.2)]"
+            className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(51, 112, 246,0.2)]"
           >
             <Icon icon={saving ? 'solar:loading-linear' : 'solar:floppy-disk-linear'} width={15} className={saving ? 'animate-spin' : ''} />
             {saving ? 'Saving…' : 'Save'}
@@ -322,7 +322,7 @@ export default function AdminBranding() {
       </div>
 
       {error ? (
-        <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-6">{error}</div>
+        <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400 mb-6">{error}</div>
       ) : null}
 
       <div className="space-y-6">
@@ -395,12 +395,12 @@ export default function AdminBranding() {
           <div className="grid grid-cols-3 gap-4">
             <ColorSwatch
               label="Primary"
-              value={data.colors?.primary || '#6366F1'}
+              value={data.colors?.primary || '#1C63F3'}
               onChange={(v) => setColor('primary', v)}
             />
             <ColorSwatch
               label="Secondary"
-              value={data.colors?.secondary || '#06B6D4'}
+              value={data.colors?.secondary || '#0AA9D6'}
               onChange={(v) => setColor('secondary', v)}
             />
             <ColorSwatch

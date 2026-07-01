@@ -5,14 +5,14 @@ import {
 } from 'recharts';
 
 const PALETTE = [
-  '#6366F1','#06B6D4','#10B981','#F59E0B','#8B5CF6',
+  '#1C63F3','#0AA9D6','#10B981','#F59E0B','#8B5CF6',
   '#EC4899','#F97316','#14B8A6','#84CC16','#EF4444',
 ];
 
 const CHART_STYLE = {
   tooltip: {
     contentStyle: { background: '#18181B', border: '1px solid #27272A', borderRadius: 8, fontSize: 12, color: '#E4E4E7' },
-    cursor: { fill: 'rgba(99,102,241,0.08)' },
+    cursor: { fill: 'rgba(28,99,243,0.08)' },
   },
   axis: { tick: { fill: '#71717A', fontSize: 11 }, axisLine: false, tickLine: false },
   grid: { stroke: '#27272A', strokeDasharray: '3 3' },

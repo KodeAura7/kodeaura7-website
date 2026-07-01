@@ -11,11 +11,11 @@ const TYPE_ICONS = {
 };
 const TYPE_LABELS = { tabular: 'Tabular', summary: 'Summary', matrix: 'Matrix' };
 const SOURCE_COLORS = {
-  contacts: 'text-indigo-400',
-  newsletter: 'text-cyan-400',
-  services: 'text-emerald-400',
-  testimonials: 'text-amber-400',
-  users: 'text-purple-400',
+  contacts: 'text-primary-400',
+  newsletter: 'text-secondary-400',
+  services: 'text-success-400',
+  testimonials: 'text-warning-400',
+  users: 'text-accent-400',
 };
 
 function ReportCard({ report, onDelete, onFavorite, onRun }) {
@@ -46,9 +46,9 @@ function ReportCard({ report, onDelete, onFavorite, onRun }) {
           </div>
         </div>
         <button onClick={() => onFavorite(report.id)} title={report.is_favorite ? 'Unfavorite' : 'Favorite'}
-          className="p-1.5 rounded-lg text-zinc-600 hover:text-amber-400 transition-colors flex-shrink-0">
+          className="p-1.5 rounded-lg text-zinc-600 hover:text-warning-400 transition-colors flex-shrink-0">
           <Icon icon={report.is_favorite ? 'solar:star-bold' : 'solar:star-linear'} width={14}
-            className={report.is_favorite ? 'text-amber-400' : ''} />
+            className={report.is_favorite ? 'text-warning-400' : ''} />
         </button>
       </div>
 
@@ -70,7 +70,7 @@ function ReportCard({ report, onDelete, onFavorite, onRun }) {
 
       <div className="flex items-center gap-2 mt-auto pt-2 border-t border-zinc-800/60">
         <button onClick={handleRun} disabled={running}
-          className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-all disabled:opacity-50">
+          className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-500 text-white text-xs font-medium transition-all disabled:opacity-50">
           <Icon icon={running ? 'solar:loading-linear' : 'solar:play-circle-linear'} width={13} className={running ? 'animate-spin' : ''} />
           {running ? 'Running…' : 'Run'}
         </button>
@@ -80,7 +80,7 @@ function ReportCard({ report, onDelete, onFavorite, onRun }) {
           Edit
         </Link>
         <button onClick={() => onDelete(report.id, report.name)}
-          className="p-1.5 rounded-lg border border-zinc-800 hover:border-rose-500/40 text-zinc-600 hover:text-rose-400 hover:bg-rose-500/10 transition-all">
+          className="p-1.5 rounded-lg border border-zinc-800 hover:border-error-500/40 text-zinc-600 hover:text-error-400 hover:bg-error-500/10 transition-all">
           <Icon icon="solar:trash-bin-minimalistic-linear" width={13} />
         </button>
       </div>
@@ -177,7 +177,7 @@ export default function Reports() {
           </p>
         </div>
         <Link to="/admin/reports/new"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-all shadow-lg shadow-indigo-900/30">
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-medium transition-all shadow-lg shadow-primary-900/30">
           <Icon icon="solar:add-circle-linear" width={16} />
           New Report
         </Link>
@@ -189,14 +189,14 @@ export default function Reports() {
           <div className="text-xs font-medium text-zinc-500 uppercase tracking-wider px-2 mb-2">Folders</div>
           <button onClick={() => setActiveFolder(null)}
             className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all text-left w-full
-              ${!activeFolder ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/20' : 'text-zinc-400 hover:bg-zinc-800/70 hover:text-zinc-200'}`}>
+              ${!activeFolder ? 'bg-primary-500/15 text-primary-300 border border-primary-500/20' : 'text-zinc-400 hover:bg-zinc-800/70 hover:text-zinc-200'}`}>
             <Icon icon="solar:home-linear" width={14} />
             All Reports
           </button>
           {folders.map((f) => (
             <button key={f.id} onClick={() => setActiveFolder(f.id)}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all text-left w-full
-                ${activeFolder === f.id ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/20' : 'text-zinc-400 hover:bg-zinc-800/70 hover:text-zinc-200'}`}>
+                ${activeFolder === f.id ? 'bg-primary-500/15 text-primary-300 border border-primary-500/20' : 'text-zinc-400 hover:bg-zinc-800/70 hover:text-zinc-200'}`}>
               <Icon icon="solar:folder-linear" width={14} />
               <span className="truncate">{f.name}</span>
             </button>
@@ -206,10 +206,10 @@ export default function Reports() {
               <input value={newFolderName} onChange={(e) => setNewFolderName(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
                 placeholder="Folder name" autoFocus
-                className="w-full px-2 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 text-xs text-zinc-200 outline-none focus:border-indigo-500/60 transition-all" />
+                className="w-full px-2 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 text-xs text-zinc-200 outline-none focus:border-primary-500/60 transition-all" />
               <div className="flex gap-1">
                 <button onClick={handleCreateFolder}
-                  className="flex-1 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs transition-all">
+                  className="flex-1 py-1 rounded-lg bg-primary-600 hover:bg-primary-500 text-white text-xs transition-all">
                   Create
                 </button>
                 <button onClick={() => { setShowFolderForm(false); setNewFolderName(''); }}
@@ -235,16 +235,16 @@ export default function Reports() {
               <Icon icon="solar:magnifer-linear" width={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
               <input value={search} onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search reports…"
-                className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 focus:border-indigo-500/60 text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all" />
+                className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 focus:border-primary-500/60 text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all" />
             </div>
             <select value={filterType} onChange={(e) => setFilterType(e.target.value)}
-              className="px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none transition-all focus:border-indigo-500/40">
+              className="px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none transition-all focus:border-primary-500/40">
               <option value="all">All Types</option>
               <option value="tabular">Tabular</option>
               <option value="summary">Summary</option>
             </select>
             <select value={filterSource} onChange={(e) => setFilterSource(e.target.value)}
-              className="px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none transition-all focus:border-indigo-500/40">
+              className="px-3 py-2 rounded-xl bg-[#18181B] border border-zinc-800 text-sm text-zinc-300 outline-none transition-all focus:border-primary-500/40">
               <option value="all">All Sources</option>
               <option value="contacts">Contacts</option>
               <option value="newsletter">Newsletter</option>
@@ -277,7 +277,7 @@ export default function Reports() {
                 </p>
                 {!search && filterType === 'all' && filterSource === 'all' && (
                   <Link to="/admin/reports/new"
-                    className="inline-flex items-center gap-1.5 mt-3 text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+                    className="inline-flex items-center gap-1.5 mt-3 text-xs text-primary-400 hover:text-primary-300 transition-colors">
                     <Icon icon="solar:add-circle-linear" width={13} />
                     Create your first report
                   </Link>
@@ -307,7 +307,7 @@ export default function Reports() {
                     <tr key={r.id} className="hover:bg-zinc-800/30 transition-colors">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2.5">
-                          {r.is_favorite && <Icon icon="solar:star-bold" width={12} className="text-amber-400 flex-shrink-0" />}
+                          {r.is_favorite && <Icon icon="solar:star-bold" width={12} className="text-warning-400 flex-shrink-0" />}
                           <div>
                             <p className="text-sm text-zinc-200 font-medium">{r.name}</p>
                             {r.description && <p className="text-xs text-zinc-600 truncate max-w-xs">{r.description}</p>}
@@ -324,7 +324,7 @@ export default function Reports() {
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <button onClick={() => { handleRun(r.id).then(() => navigate(`/admin/reports/${r.id}/view`)); }}
-                            className="p-1.5 rounded-lg text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all" title="Run">
+                            className="p-1.5 rounded-lg text-zinc-500 hover:text-primary-400 hover:bg-primary-500/10 transition-all" title="Run">
                             <Icon icon="solar:play-circle-linear" width={15} />
                           </button>
                           <Link to={`/admin/reports/${r.id}/edit`}
@@ -332,11 +332,11 @@ export default function Reports() {
                             <Icon icon="solar:pen-linear" width={15} />
                           </Link>
                           <button onClick={() => handleFavorite(r.id)}
-                            className={`p-1.5 rounded-lg transition-all ${r.is_favorite ? 'text-amber-400' : 'text-zinc-600 hover:text-amber-400'}`} title="Favorite">
+                            className={`p-1.5 rounded-lg transition-all ${r.is_favorite ? 'text-warning-400' : 'text-zinc-600 hover:text-warning-400'}`} title="Favorite">
                             <Icon icon={r.is_favorite ? 'solar:star-bold' : 'solar:star-linear'} width={15} />
                           </button>
                           <button onClick={() => handleDelete(r.id, r.name)}
-                            className="p-1.5 rounded-lg text-zinc-600 hover:text-rose-400 hover:bg-rose-500/10 transition-all" title="Delete">
+                            className="p-1.5 rounded-lg text-zinc-600 hover:text-error-400 hover:bg-error-500/10 transition-all" title="Delete">
                             <Icon icon="solar:trash-bin-minimalistic-linear" width={15} />
                           </button>
                         </div>
@@ -355,8 +355,8 @@ export default function Reports() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-[#18181B] border border-zinc-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-rose-500/15 flex items-center justify-center">
-                <Icon icon="solar:trash-bin-minimalistic-linear" width={18} className="text-rose-400" />
+              <div className="w-10 h-10 rounded-xl bg-error-500/15 flex items-center justify-center">
+                <Icon icon="solar:trash-bin-minimalistic-linear" width={18} className="text-error-400" />
               </div>
               <div>
                 <h3 className="font-semibold text-zinc-100">Delete Report</h3>
@@ -372,7 +372,7 @@ export default function Reports() {
                 Cancel
               </button>
               <button onClick={confirmDelete}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-medium transition-all">
+                className="flex-1 px-4 py-2.5 rounded-xl bg-error-600 hover:bg-error-500 text-white text-sm font-medium transition-all">
                 Delete
               </button>
             </div>

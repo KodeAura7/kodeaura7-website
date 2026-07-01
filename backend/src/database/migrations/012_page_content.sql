@@ -9,7 +9,7 @@ INSERT INTO page_content (page, content) VALUES ('about', '{
     "eyebrow": "About KodeAura7",
     "title": "We Engineer",
     "gradient": "Digital Growth",
-    "description": "KodeAura7 is a full-service digital technology agency from Dehradun, India. We partner with businesses to design, build, and scale their digital infrastructure."
+    "description": "KodeAura7 is a full-service digital technology agency, India. We partner with businesses to design, build, and scale their digital infrastructure."
   },
   "story": {
     "subtitle": "Our Story",
@@ -20,10 +20,9 @@ INSERT INTO page_content (page, content) VALUES ('about', '{
       "Our edge is our breadth. We think in systems - how your website, your CRM, your ads, and your automations work together to create compounding growth."
     ],
     "stats": [
-      {"value": "150+", "label": "Projects Delivered"},
-      {"value": "4+", "label": "Years of Experience"},
-      {"value": "2Cr+", "label": "Revenue for Clients"},
-      {"value": "98%", "label": "Client Satisfaction"}
+      {"value": "8+", "label": "DIGITAL SERVICES"},
+      {"value": "100%", "label": "CUSTOM SOLUTIONS"},
+      {"value": "24/7", "label": "DEDICATED SUPPORT"},
     ]
   },
   "values": {

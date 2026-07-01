@@ -70,7 +70,7 @@ function FilterRow({ index, filter, fields, onChange, onRemove }) {
     onChange(index, { ...filter, operator: e.target.value, value: '', value_to: '' });
   };
 
-  const inputClass = 'bg-[#18181B] border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500/50 w-full';
+  const inputClass = 'bg-[#18181B] border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-primary-500/50 w-full';
   const selectClass = `${inputClass} cursor-pointer`;
 
   function renderValueInput() {
@@ -90,7 +90,7 @@ function FilterRow({ index, filter, fields, onChange, onRemove }) {
               <button key={opt} type="button" onClick={() => toggle(opt)}
                 className={`px-2.5 py-1 rounded-full text-[10px] font-medium border transition-all ${
                   selected.includes(opt)
-                    ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-300'
+                    ? 'bg-primary-500/20 border-primary-500/40 text-primary-300'
                     : 'bg-[#18181B] border-zinc-700 text-zinc-500 hover:border-zinc-500'
                 }`}>
                 {opt.replace(/_/g, ' ')}
@@ -172,7 +172,7 @@ function FilterRow({ index, filter, fields, onChange, onRemove }) {
 
       {/* Remove */}
       <button type="button" onClick={() => onRemove(index)}
-        className="p-1.5 rounded-lg text-zinc-600 hover:text-rose-400 hover:bg-rose-500/10 transition-all shrink-0 mt-0.5">
+        className="p-1.5 rounded-lg text-zinc-600 hover:text-error-400 hover:bg-error-500/10 transition-all shrink-0 mt-0.5">
         <Icon icon="solar:trash-bin-minimalistic-linear" width={14} />
       </button>
     </div>
@@ -216,7 +216,7 @@ export default function FilterBuilder({ fields, filters, onChange, logic, onLogi
               <button key={val} type="button" onClick={() => onLogicChange(val)}
                 className={`px-3 py-1 text-xs font-medium transition-all ${
                   logic === val
-                    ? 'bg-indigo-500 text-white'
+                    ? 'bg-primary-500 text-white'
                     : 'bg-[#18181B] text-zinc-500 hover:text-zinc-200'
                 }`}>
                 {val === 'AND' ? 'All Filters' : 'Any Filter'}
@@ -239,7 +239,7 @@ export default function FilterBuilder({ fields, filters, onChange, logic, onLogi
 
       {/* Add row */}
       <button type="button" onClick={addRow}
-        className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-indigo-400 transition-colors">
+        className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-primary-400 transition-colors">
         <Icon icon="solar:add-circle-linear" width={14} />
         Add Filter
       </button>

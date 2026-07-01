@@ -19,7 +19,7 @@ function ViewContextMenu({ view, onEdit, onDuplicate, onDelete, onSetDefault, on
       onClick(); onClose();
     }}
       className={`flex items-center gap-2.5 w-full px-3 py-2 text-xs font-medium rounded-lg text-left transition-all ${
-        danger ? 'text-rose-400 hover:bg-rose-500/10' : 'text-zinc-300 hover:bg-zinc-800/60'
+        danger ? 'text-error-400 hover:bg-error-500/10' : 'text-zinc-300 hover:bg-zinc-800/60'
       }`}>
       <Icon icon={icon} width={13} />
       {label}
@@ -53,27 +53,27 @@ function ViewItem({ view, isActive, onSelect, onEdit, onDuplicate, onDelete, onS
       <button type="button" onClick={() => onSelect(view.id)}
         className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-left transition-all ${
           isActive
-            ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/20'
+            ? 'bg-primary-500/15 text-primary-300 border border-primary-500/20'
             : 'text-zinc-300 hover:bg-zinc-800/60 border border-transparent'
         }`}>
         {view.is_system ? (
-          <Icon icon="solar:layers-minimalistic-linear" width={13} className={isActive ? 'text-indigo-400' : 'text-zinc-600'} />
+          <Icon icon="solar:layers-minimalistic-linear" width={13} className={isActive ? 'text-primary-400' : 'text-zinc-600'} />
         ) : (
-          <Icon icon="solar:filter-linear" width={13} className={isActive ? 'text-indigo-400' : 'text-zinc-600'} />
+          <Icon icon="solar:filter-linear" width={13} className={isActive ? 'text-primary-400' : 'text-zinc-600'} />
         )}
         <span className="flex-1 truncate text-xs font-medium">{view.name}</span>
         {view.filters?.length > 0 && (
           <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded-full ${
-            isActive ? 'bg-indigo-500/30 text-indigo-300' : 'bg-zinc-800 text-zinc-500'
+            isActive ? 'bg-primary-500/30 text-primary-300' : 'bg-zinc-800 text-zinc-500'
           }`}>
             {view.filters.length}
           </span>
         )}
         {view.is_pinned && (
-          <Icon icon="solar:pin-bold" width={10} className="text-amber-400 shrink-0" />
+          <Icon icon="solar:pin-bold" width={10} className="text-warning-400 shrink-0" />
         )}
         {view.is_favorite && !view.is_system && !view.is_pinned && (
-          <Icon icon="solar:star-bold" width={11} className="text-amber-400 shrink-0" />
+          <Icon icon="solar:star-bold" width={11} className="text-warning-400 shrink-0" />
         )}
         <button type="button" onClick={(e) => { e.stopPropagation(); setMenuOpen((o) => !o); }}
           className="shrink-0 opacity-0 group-hover:opacity-100 p-0.5 rounded-md text-zinc-500 hover:text-zinc-200 hover:bg-zinc-700/50 transition-all">
@@ -175,10 +175,10 @@ export default function ListViewSelector({
               <button key={v.id} type="button" onClick={() => onSelect(v.id)}
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
                   v.id === activeId
-                    ? 'bg-indigo-500/15 border-indigo-500/30 text-indigo-300'
+                    ? 'bg-primary-500/15 border-primary-500/30 text-primary-300'
                     : 'bg-[#18181B] border-zinc-700 text-zinc-400 hover:text-zinc-100 hover:border-zinc-500'
                 }`}>
-                <Icon icon="solar:pin-bold" width={10} className="text-amber-400" />
+                <Icon icon="solar:pin-bold" width={10} className="text-warning-400" />
                 {v.name}
               </button>
             ))}
@@ -191,15 +191,15 @@ export default function ListViewSelector({
           <button type="button" onClick={() => setDropdownOpen((o) => !o)}
             className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium border transition-all ${
               dropdownOpen
-                ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-300'
+                ? 'bg-primary-500/10 border-primary-500/30 text-primary-300'
                 : 'bg-[#18181B] border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:text-zinc-100'
             }`}>
-            <Icon icon="solar:filter-bold-duotone" width={15} className="text-indigo-400" />
+            <Icon icon="solar:filter-bold-duotone" width={15} className="text-primary-400" />
             <span className="max-w-[180px] truncate">
               {loading ? 'Loading…' : (activeView?.name ?? 'Select view')}
             </span>
             {activeFilterCount > 0 && (
-              <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-indigo-500/30 text-indigo-300 text-[9px] font-mono">
+              <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-primary-500/30 text-primary-300 text-[9px] font-mono">
                 {activeFilterCount}
               </span>
             )}
@@ -257,7 +257,7 @@ export default function ListViewSelector({
 
               <div className="border-t border-zinc-800 mt-1.5 pt-1.5 px-2">
                 <button type="button" onClick={() => { setDropdownOpen(false); setModal({ mode: 'create', data: null }); }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-indigo-400 hover:bg-indigo-500/10 transition-all">
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-primary-400 hover:bg-primary-500/10 transition-all">
                   <Icon icon="solar:add-circle-linear" width={13} />
                   New List View
                 </button>
@@ -278,7 +278,7 @@ export default function ListViewSelector({
         {activeView && activeFilterCount > 0 && (
           <div className="flex items-center gap-1.5 flex-wrap">
             {activeView.filters.slice(0, 3).map((f, i) => (
-              <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[10px] text-indigo-300 font-mono">
+              <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-500/10 border border-primary-500/20 text-[10px] text-primary-300 font-mono">
                 <Icon icon="solar:filter-linear" width={10} />
                 {f.field_name.replace(/_/g, ' ')} {f.operator.replace(/_/g, ' ')} {f.value ? `"${f.value.slice(0, 15)}${f.value.length > 15 ? '…' : ''}"` : ''}
               </span>

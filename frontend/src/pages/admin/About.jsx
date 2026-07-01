@@ -5,12 +5,12 @@ import { useToast } from '../../contexts/ToastContext';
 import PageHistorySidebar from '../../components/admin/PageHistorySidebar';
 import MigrateModal from '../../components/admin/MigrateModal';
 
-const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all';
+const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all';
 const TEXTAREA = INPUT + ' resize-none';
 
 const TABS = ['Hero', 'Story & Stats', 'Values', 'Tech Stack', 'CTA'];
 
-const DEFAULT_VALUE_ITEM = { title: '', icon: 'solar:star-linear', accent: '#6366F1', desc: '' };
+const DEFAULT_VALUE_ITEM = { title: '', icon: 'solar:star-linear', accent: '#1C63F3', desc: '' };
 const DEFAULT_TECH_ITEM = { label: '', icon: 'solar:code-square-linear' };
 
 function ColorInput({ label, value, onChange }) {
@@ -22,7 +22,7 @@ function ColorInput({ label, value, onChange }) {
           <div className="w-full h-full" style={{ background: value }} />
           <input type="color" value={value} onChange={e => onChange(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
         </label>
-        <input type="text" value={value} onChange={e => onChange(e.target.value)} className={INPUT + ' font-mono text-xs'} placeholder="#6366F1" />
+        <input type="text" value={value} onChange={e => onChange(e.target.value)} className={INPUT + ' font-mono text-xs'} placeholder="#1C63F3" />
       </div>
     </div>
   );
@@ -108,13 +108,13 @@ function StoryEditor({ data, onChange }) {
           {(data.paragraphs || []).map((p, i) => (
             <div key={i} className="flex gap-2 items-start">
               <textarea value={p} onChange={e => setParagraph(i, e.target.value)} rows={2} className={TEXTAREA + ' flex-1'} placeholder={`Paragraph ${i + 1}…`} />
-              <button onClick={() => removeParagraph(i)} className="mt-2 p-1.5 text-zinc-600 hover:text-rose-400 transition-colors shrink-0">
+              <button onClick={() => removeParagraph(i)} className="mt-2 p-1.5 text-zinc-600 hover:text-error-400 transition-colors shrink-0">
                 <Icon icon="solar:close-circle-linear" width={16} />
               </button>
             </div>
           ))}
         </div>
-        <button onClick={addParagraph} className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
+        <button onClick={addParagraph} className="inline-flex items-center gap-1.5 text-xs font-medium text-primary-400 hover:text-primary-300 transition-colors">
           <Icon icon="solar:add-circle-linear" width={14} />Add Paragraph
         </button>
       </SectionCard>
@@ -126,13 +126,13 @@ function StoryEditor({ data, onChange }) {
             <div key={i} className="flex gap-3 items-center">
               <input type="text" value={s.value} onChange={e => setStat(i, 'value', e.target.value)} placeholder="150+" className={INPUT} style={{ maxWidth: '100px' }} />
               <input type="text" value={s.label} onChange={e => setStat(i, 'label', e.target.value)} placeholder="Projects Delivered" className={INPUT} />
-              <button onClick={() => removeStat(i)} className="p-1.5 text-zinc-600 hover:text-rose-400 transition-colors shrink-0">
+              <button onClick={() => removeStat(i)} className="p-1.5 text-zinc-600 hover:text-error-400 transition-colors shrink-0">
                 <Icon icon="solar:close-circle-linear" width={16} />
               </button>
             </div>
           ))}
         </div>
-        <button onClick={addStat} className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
+        <button onClick={addStat} className="inline-flex items-center gap-1.5 text-xs font-medium text-primary-400 hover:text-primary-300 transition-colors">
           <Icon icon="solar:add-circle-linear" width={14} />Add Stat
         </button>
       </SectionCard>
@@ -169,7 +169,7 @@ function ValuesEditor({ data, onChange }) {
                 </div>
                 <span className="text-sm font-medium text-zinc-300">{item.title || `Value ${i + 1}`}</span>
               </div>
-              <button onClick={() => removeItem(i)} className="p-1.5 text-zinc-600 hover:text-rose-400 transition-colors">
+              <button onClick={() => removeItem(i)} className="p-1.5 text-zinc-600 hover:text-error-400 transition-colors">
                 <Icon icon="solar:trash-bin-minimalistic-linear" width={15} />
               </button>
             </div>
@@ -188,7 +188,7 @@ function ValuesEditor({ data, onChange }) {
           </div>
         ))}
       </div>
-      <button onClick={addItem} className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
+      <button onClick={addItem} className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-400 hover:text-primary-300 transition-colors">
         <Icon icon="solar:add-circle-linear" width={16} />Add Value Card
       </button>
     </div>
@@ -223,13 +223,13 @@ function TechEditor({ data, onChange }) {
               </div>
               <input type="text" value={item.icon} onChange={e => setItem(i, 'icon', e.target.value)} placeholder="solar:atom-linear" className={INPUT + ' font-mono text-xs'} style={{ maxWidth: '220px' }} />
               <input type="text" value={item.label} onChange={e => setItem(i, 'label', e.target.value)} placeholder="React" className={INPUT} />
-              <button onClick={() => removeItem(i)} className="p-1.5 text-zinc-600 hover:text-rose-400 transition-colors shrink-0">
+              <button onClick={() => removeItem(i)} className="p-1.5 text-zinc-600 hover:text-error-400 transition-colors shrink-0">
                 <Icon icon="solar:close-circle-linear" width={16} />
               </button>
             </div>
           ))}
         </div>
-        <button onClick={addItem} className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
+        <button onClick={addItem} className="inline-flex items-center gap-1.5 text-xs font-medium text-primary-400 hover:text-primary-300 transition-colors">
           <Icon icon="solar:add-circle-linear" width={14} />Add Technology
         </button>
       </SectionCard>
@@ -282,7 +282,7 @@ export default function AdminAbout() {
     return (
       <div className="p-8 flex items-center gap-3 text-zinc-500">
         {error ? (
-          <p className="text-rose-400 text-sm">{error}</p>
+          <p className="text-error-400 text-sm">{error}</p>
         ) : (
           <><Icon icon="solar:loading-linear" width={18} className="animate-spin" /><span className="text-sm">Loading…</span></>
         )}
@@ -299,7 +299,7 @@ export default function AdminAbout() {
         <nav className="space-y-0.5 px-2">
           {TABS.map((tab, i) => (
             <button key={tab} onClick={() => setActiveTab(i)}
-              className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === i ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/50'}`}>
+              className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === i ? 'bg-primary-500/10 text-primary-400 border border-primary-500/20' : 'text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/50'}`}>
               {tab}
             </button>
           ))}
@@ -317,19 +317,19 @@ export default function AdminAbout() {
             </div>
             <div className="flex items-center gap-2">
               <button onClick={() => setMigrateOpen(true)}
-                className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-zinc-700 hover:border-indigo-500/40 text-indigo-400 hover:text-indigo-300 transition-all">
+                className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-zinc-700 hover:border-primary-500/40 text-primary-400 hover:text-primary-300 transition-all">
                 <Icon icon="solar:transfer-horizontal-linear" width={15} />
                 Push to Env
               </button>
               <button onClick={handleSave} disabled={saving}
-                className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+                className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(51, 112, 246,0.2)]">
                 <Icon icon={saving ? 'solar:loading-linear' : 'solar:floppy-disk-linear'} width={15} className={saving ? 'animate-spin' : ''} />
                 {saving ? 'Saving…' : 'Save All'}
               </button>
             </div>
           </div>
 
-          {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-6">{error}</div> : null}
+          {error ? <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400 mb-6">{error}</div> : null}
 
           {/* Active section */}
           {activeTab === 0 && <HeroEditor data={content.hero || {}} onChange={v => setSection('hero', v)} />}

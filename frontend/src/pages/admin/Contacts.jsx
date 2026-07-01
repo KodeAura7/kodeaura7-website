@@ -25,7 +25,7 @@ function useDebounce(value, delay = 300) {
 
 function SortIcon({ col, sort, dir }) {
   if (sort !== col) return <Icon icon="solar:sort-linear" width={13} className="text-zinc-600" />;
-  return <Icon icon={dir === 'asc' ? 'solar:sort-from-bottom-to-top-linear' : 'solar:sort-from-top-to-bottom-linear'} width={13} className="text-indigo-400" />;
+  return <Icon icon={dir === 'asc' ? 'solar:sort-from-bottom-to-top-linear' : 'solar:sort-from-top-to-bottom-linear'} width={13} className="text-primary-400" />;
 }
 
 const STATUS_LABEL = { new: 'New', in_progress: 'In Progress', completed: 'Completed', closed: 'Closed' };
@@ -189,33 +189,33 @@ export default function Contacts() {
       />
 
       {error ? (
-        <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div>
+        <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400 mb-4">{error}</div>
       ) : null}
 
       {/* Bulk toolbar */}
       {checkedIds.size > 0 ? (
-        <div className="mb-4 flex flex-wrap items-center gap-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3">
-          <span className="text-xs text-indigo-400 font-medium">{checkedIds.size} selected</span>
+        <div className="mb-4 flex flex-wrap items-center gap-3 bg-primary-500/10 border border-primary-500/20 rounded-xl px-4 py-3">
+          <span className="text-xs text-primary-400 font-medium">{checkedIds.size} selected</span>
           <div className="flex items-center gap-2 ml-auto flex-wrap">
             {canDo('contacts.status_update') && (
               <>
                 <select
                   value={bulkStatus}
                   onChange={(e) => setBulkStatus(e.target.value)}
-                  className="bg-[#18181B] border border-zinc-700 rounded-lg px-3 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500/50"
+                  className="bg-[#18181B] border border-zinc-700 rounded-lg px-3 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-primary-500/50"
                 >
                   {CONTACT_STATUSES.map((s) => (
                     <option key={s} value={s}>{STATUS_LABEL[s]}</option>
                   ))}
                 </select>
                 <button onClick={handleBulkStatus} disabled={bulkLoading}
-                  className="px-3 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white text-xs font-medium transition-all disabled:opacity-60">
+                  className="px-3 py-1.5 rounded-lg bg-primary-500 hover:bg-primary-400 text-white text-xs font-medium transition-all disabled:opacity-60">
                   {bulkLoading ? 'Applying…' : 'Apply'}
                 </button>
               </>
             )}
             <button onClick={() => setMigrateOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-indigo-500/50 text-zinc-300 hover:text-indigo-300 text-xs font-medium transition-all">
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-primary-500/50 text-zinc-300 hover:text-primary-300 text-xs font-medium transition-all">
               <Icon icon="solar:transfer-horizontal-linear" width={13} />
               Migrate
             </button>
@@ -258,7 +258,7 @@ export default function Contacts() {
             <div className="flex items-center gap-1.5">
               <span className="text-xs text-zinc-500">Delete {checkedIds.size}?</span>
               <button onClick={handleBulkDelete} disabled={bulkDeleting}
-                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-rose-500 text-white hover:bg-rose-400 transition-all disabled:opacity-50">
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-error-500 text-white hover:bg-error-400 transition-all disabled:opacity-50">
                 <Icon icon={bulkDeleting ? 'solar:loading-linear' : 'solar:check-read-linear'} width={11} className={bulkDeleting ? 'animate-spin' : ''} />
                 {bulkDeleting ? 'Deleting…' : 'Confirm'}
               </button>
@@ -266,7 +266,7 @@ export default function Contacts() {
             </div>
           ) : (
             <button onClick={() => setBulkDeleteConfirm(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-transparent transition-all">
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-error-400 hover:text-error-300 hover:bg-error-500/10 border border-transparent transition-all">
               <Icon icon="solar:trash-bin-minimalistic-linear" width={13} />
               Delete ({checkedIds.size})
             </button>
@@ -282,7 +282,7 @@ export default function Contacts() {
               <tr className="bg-[#18181B] border-b border-zinc-800">
                 <th className="w-10 px-4 py-3">
                   <input type="checkbox" checked={allChecked} ref={(el) => { if (el) el.indeterminate = someChecked; }}
-                    onChange={toggleAll} className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer" />
+                    onChange={toggleAll} className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-primary-500 cursor-pointer" />
                 </th>
                 {visibleOrdered.map(({ key, label }) => (
                   <th key={key} onClick={() => handleSort(key)}
@@ -316,7 +316,7 @@ export default function Contacts() {
                     className="hover:bg-zinc-800/30 transition-colors cursor-pointer">
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       <input type="checkbox" checked={checkedIds.has(c.id)} onChange={() => toggleOne(c.id)}
-                        className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer" />
+                        className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-primary-500 cursor-pointer" />
                     </td>
                     {visibleOrdered.map(({ key }) => {
                       if (key === 'name')       return <td key={key} className="px-4 py-3 text-zinc-200 font-medium whitespace-nowrap">{c.name}</td>;
@@ -330,7 +330,7 @@ export default function Contacts() {
                     {canDo('contacts.delete') && (
                       <td className="px-4 py-3 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                         <button onClick={(e) => handleDelete(e, c.id)} disabled={deleting === c.id}
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-40" title="Delete">
+                          className="p-1.5 rounded-lg text-zinc-500 hover:text-error-400 hover:bg-error-500/10 transition-all disabled:opacity-40" title="Delete">
                           <Icon icon="solar:trash-bin-minimalistic-linear" width={16} />
                         </button>
                       </td>

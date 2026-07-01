@@ -20,7 +20,7 @@ function StarPicker({ value, onChange }) {
           onClick={() => onChange(star)}
           onMouseEnter={() => setHovered(star)}
           onMouseLeave={() => setHovered(0)}
-          className="text-amber-400 transition-transform hover:scale-110"
+          className="text-warning-400 transition-transform hover:scale-110"
         >
           <Icon
             icon={(hovered || value) >= star ? 'solar:star-bold' : 'solar:star-linear'}
@@ -120,14 +120,14 @@ export default function Welcome() {
         <Logo />
         <div className="flex items-center gap-4">
           <div className="hidden sm:flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center text-white text-xs font-semibold select-none">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-500 to-secondary-400 flex items-center justify-center text-white text-xs font-semibold select-none">
               {user?.name?.[0]?.toUpperCase() ?? '?'}
             </div>
             <span className="text-sm text-zinc-300 font-medium">{user?.name}</span>
           </div>
           <button
             onClick={logout}
-            className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-rose-400 transition-colors border border-zinc-800 hover:border-rose-500/30 rounded-lg px-3 py-1.5"
+            className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-error-400 transition-colors border border-zinc-800 hover:border-error-500/30 rounded-lg px-3 py-1.5"
           >
             <Icon icon="solar:logout-2-linear" width={14} />
             Sign out
@@ -140,7 +140,7 @@ export default function Welcome() {
         {/* Profile card */}
         <div className="text-center mb-10 fade-up">
           <div className="flex justify-center mb-5">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center shadow-[0_0_40px_rgba(99,102,241,0.3)]">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-secondary-400 flex items-center justify-center shadow-[0_0_40px_rgba(51, 112, 246,0.3)]">
               <span className="font-display font-semibold text-2xl text-white select-none">
                 {user?.name?.[0]?.toUpperCase() ?? '?'}
               </span>
@@ -165,8 +165,8 @@ export default function Welcome() {
         <div className="mb-8 fade-up">
           <div className="bg-[#111113] border border-zinc-800 rounded-2xl p-5 flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center shrink-0">
-                <Icon icon="solar:letter-linear" width={18} className="text-indigo-400" />
+              <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center shrink-0">
+                <Icon icon="solar:letter-linear" width={18} className="text-primary-400" />
               </div>
               <div>
                 <p className="text-sm font-medium text-zinc-200">Newsletter</p>
@@ -185,8 +185,8 @@ export default function Welcome() {
                 disabled={newsletterWorking}
                 className={`shrink-0 inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-medium transition-all disabled:opacity-60 ${
                   subscribed
-                    ? 'border border-zinc-700 hover:border-rose-500/40 text-zinc-400 hover:text-rose-400 bg-[#18181B]'
-                    : 'bg-indigo-500 hover:bg-indigo-400 text-white shadow-[0_0_20px_rgba(99,102,241,0.2)]'
+                    ? 'border border-zinc-700 hover:border-error-500/40 text-zinc-400 hover:text-error-400 bg-[#18181B]'
+                    : 'bg-primary-500 hover:bg-primary-400 text-white shadow-[0_0_20px_rgba(51, 112, 246,0.2)]'
                 }`}
               >
                 <Icon
@@ -226,37 +226,37 @@ export default function Welcome() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-zinc-400">Designation / Role <span className="text-rose-500">*</span></label>
+                  <label className="text-xs font-medium text-zinc-400">Designation / Role <span className="text-error-500">*</span></label>
                   <input
                     type="text"
                     value={review.designation}
                     onChange={(e) => setReview((p) => ({ ...p, designation: e.target.value }))}
                     placeholder="e.g. CEO at Acme Inc."
                     required
-                    className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all"
+                    className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-400">Rating <span className="text-rose-500">*</span></label>
+                <label className="text-xs font-medium text-zinc-400">Rating <span className="text-error-500">*</span></label>
                 <StarPicker value={review.rating} onChange={(v) => setReview((p) => ({ ...p, rating: v }))} />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-400">Your Review <span className="text-rose-500">*</span></label>
+                <label className="text-xs font-medium text-zinc-400">Your Review <span className="text-error-500">*</span></label>
                 <textarea
                   value={review.review}
                   onChange={(e) => setReview((p) => ({ ...p, review: e.target.value }))}
                   placeholder="Share your experience with KodeAura7… (minimum 20 characters)"
                   required
                   rows={4}
-                  className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all resize-none"
+                  className="w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all resize-none"
                 />
               </div>
 
               {reviewMsg.text ? (
-                <p className={`text-xs flex items-center gap-1.5 ${reviewMsg.type === 'error' ? 'text-rose-400' : 'text-emerald-400'}`}>
+                <p className={`text-xs flex items-center gap-1.5 ${reviewMsg.type === 'error' ? 'text-error-400' : 'text-success-400'}`}>
                   <Icon icon={reviewMsg.type === 'error' ? 'solar:danger-circle-linear' : 'solar:check-circle-linear'} width={14} />
                   {reviewMsg.text}
                 </p>
@@ -265,7 +265,7 @@ export default function Welcome() {
               <button
                 type="submit"
                 disabled={reviewSaving}
-                className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)] disabled:opacity-60"
+                className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(51, 112, 246,0.2)] disabled:opacity-60"
               >
                 <Icon icon={reviewSaving ? 'solar:loading-linear' : 'solar:star-linear'} width={15} className={reviewSaving ? 'animate-spin' : ''} />
                 {reviewSaving ? 'Submitting…' : reviewExists ? 'Update Review' : 'Submit Review'}
@@ -286,14 +286,14 @@ export default function Welcome() {
           </div>
 
           {contactsError ? (
-            <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400">{contactsError}</div>
+            <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400">{contactsError}</div>
           ) : loadingContacts ? (
             <div className="bg-[#111113] border border-zinc-800 rounded-2xl p-6 text-center text-sm text-zinc-600">Loading…</div>
           ) : !contacts || contacts.length === 0 ? (
             <div className="bg-[#111113] border border-zinc-800 rounded-2xl p-8 text-center">
               <Icon icon="solar:inbox-linear" width={28} className="text-zinc-700 mx-auto mb-3" />
               <p className="text-sm text-zinc-600">No contact requests yet.</p>
-              <Link to="/" className="mt-3 inline-block text-xs text-indigo-500 hover:text-indigo-400 transition-colors">
+              <Link to="/" className="mt-3 inline-block text-xs text-primary-500 hover:text-primary-400 transition-colors">
                 Go to contact form
               </Link>
             </div>

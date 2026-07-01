@@ -124,8 +124,8 @@ function SelectiveExportModal({ onClose }) {
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
         <div className="w-full max-w-sm bg-[#111113] border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden">
           <div className="px-6 py-8 text-center space-y-4">
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center">
-              <Icon icon="solar:cloud-download-bold-duotone" width={28} className="text-emerald-400" />
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-success-500/15 border border-success-500/20 flex items-center justify-center">
+              <Icon icon="solar:cloud-download-bold-duotone" width={28} className="text-success-400" />
             </div>
             <div>
               <h3 className="text-base font-semibold text-zinc-100 mb-1">Export complete</h3>
@@ -161,8 +161,8 @@ function SelectiveExportModal({ onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center">
-              <Icon icon="solar:filter-bold-duotone" width={17} className="text-indigo-400" />
+            <div className="w-9 h-9 rounded-xl bg-primary-500/15 border border-primary-500/25 flex items-center justify-center">
+              <Icon icon="solar:filter-bold-duotone" width={17} className="text-primary-400" />
             </div>
             <div>
               <h2 className="text-sm font-semibold text-zinc-100">Selective Export</h2>
@@ -180,7 +180,7 @@ function SelectiveExportModal({ onClose }) {
             <Icon icon="solar:magnifer-linear" width={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
             <input ref={searchRef} type="text" value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search collections…"
-              className="w-full bg-[#18181B] border border-zinc-800 rounded-xl pl-8 pr-3.5 py-2 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all" />
+              className="w-full bg-[#18181B] border border-zinc-800 rounded-xl pl-8 pr-3.5 py-2 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all" />
             {search && (
               <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-200">
                 <Icon icon="solar:close-circle-linear" width={14} />
@@ -190,14 +190,14 @@ function SelectiveExportModal({ onClose }) {
           <div className="flex items-center justify-between">
             <label className="flex items-center gap-2 cursor-pointer select-none" onClick={toggleAll}>
               <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
-                allVisibleSelected ? 'border-indigo-500 bg-indigo-500' :
-                visible.some(c => selected.has(c.name)) ? 'border-indigo-500/60 bg-indigo-500/20' :
+                allVisibleSelected ? 'border-primary-500 bg-primary-500' :
+                visible.some(c => selected.has(c.name)) ? 'border-primary-500/60 bg-primary-500/20' :
                 'border-zinc-600'
               }`}>
                 {allVisibleSelected
                   ? <Icon icon="solar:check-read-linear" width={9} className="text-white" />
                   : visible.some(c => selected.has(c.name))
-                    ? <span className="w-1.5 h-1.5 rounded-sm bg-indigo-400" />
+                    ? <span className="w-1.5 h-1.5 rounded-sm bg-primary-400" />
                     : null}
               </div>
               <span className="text-xs font-medium text-zinc-400">
@@ -219,8 +219,8 @@ function SelectiveExportModal({ onClose }) {
         <div className="overflow-y-auto flex-1 px-2 py-2">
           {loadError ? (
             <div className="px-4 py-8 text-center">
-              <Icon icon="solar:danger-circle-linear" width={20} className="text-rose-400 mx-auto mb-2" />
-              <p className="text-sm text-rose-400">{loadError}</p>
+              <Icon icon="solar:danger-circle-linear" width={20} className="text-error-400 mx-auto mb-2" />
+              <p className="text-sm text-error-400">{loadError}</p>
             </div>
           ) : !collections ? (
             <div className="px-4 py-8 flex items-center justify-center gap-2 text-zinc-500">
@@ -244,11 +244,11 @@ function SelectiveExportModal({ onClose }) {
                     return (
                       <label key={col.name}
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all ${
-                          isSelected ? 'bg-indigo-500/5' : 'hover:bg-zinc-800/50'
+                          isSelected ? 'bg-primary-500/5' : 'hover:bg-zinc-800/50'
                         }`}>
                         <div onClick={() => toggle(col.name)}
                           className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all shrink-0 ${
-                            isSelected ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-600'
+                            isSelected ? 'border-primary-500 bg-primary-500' : 'border-zinc-600'
                           }`}>
                           {isSelected && <Icon icon="solar:check-read-linear" width={9} className="text-white" />}
                         </div>
@@ -284,7 +284,7 @@ function SelectiveExportModal({ onClose }) {
               Cancel
             </button>
             <button onClick={handleExport} disabled={!someSelected || exporting || !collections}
-              className="flex-[2] py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.15)]">
+              className="flex-[2] py-2.5 rounded-xl bg-success-500 hover:bg-success-400 text-white text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.15)]">
               <Icon icon={exporting ? 'solar:loading-linear' : 'solar:cloud-download-linear'} width={15} className={exporting ? 'animate-spin' : ''} />
               {exporting
                 ? 'Exporting…'
@@ -292,7 +292,7 @@ function SelectiveExportModal({ onClose }) {
             </button>
           </div>
           {!someSelected && collections && (
-            <p className="text-center text-[11px] text-rose-400 mt-2">Select at least one collection to export.</p>
+            <p className="text-center text-[11px] text-error-400 mt-2">Select at least one collection to export.</p>
           )}
         </div>
       </div>
@@ -308,21 +308,21 @@ const STRATEGIES = [
     label: 'Skip existing',
     desc: 'Import only new records. Any record that already exists is left unchanged.',
     icon: 'solar:skip-next-linear',
-    color: 'text-emerald-400',
+    color: 'text-success-400',
   },
   {
     value: 'replace',
     label: 'Replace existing',
     desc: 'Insert new records and overwrite all fields of existing records.',
     icon: 'solar:refresh-bold',
-    color: 'text-amber-400',
+    color: 'text-warning-400',
   },
   {
     value: 'merge',
     label: 'Merge (fill gaps)',
     desc: 'Insert new records and fill only NULL fields in existing records.',
     icon: 'solar:merge-cells-bold',
-    color: 'text-indigo-400',
+    color: 'text-primary-400',
   },
 ];
 
@@ -331,16 +331,16 @@ function CollectionRow({ col }) {
     <div className="flex items-start justify-between gap-4 py-2.5 border-b border-zinc-800/50 last:border-0">
       <div className="min-w-0">
         <p className="text-sm font-medium text-zinc-200">{COLLECTION_LABELS[col.name] || col.name}</p>
-        {col.error && <p className="text-xs text-rose-400 mt-0.5">{col.error}</p>}
+        {col.error && <p className="text-xs text-error-400 mt-0.5">{col.error}</p>}
         {col.errors?.map((e, i) => (
-          <p key={i} className="text-[10px] font-mono text-rose-400/70 truncate max-w-sm mt-0.5">{e}</p>
+          <p key={i} className="text-[10px] font-mono text-error-400/70 truncate max-w-sm mt-0.5">{e}</p>
         ))}
       </div>
       <div className="flex items-center gap-3 shrink-0 text-xs">
-        {col.created > 0 && <span className="flex items-center gap-1 text-emerald-400"><Icon icon="solar:add-circle-linear" width={12} />{col.created}</span>}
-        {col.updated > 0 && <span className="flex items-center gap-1 text-amber-400"><Icon icon="solar:refresh-linear" width={12} />{col.updated}</span>}
+        {col.created > 0 && <span className="flex items-center gap-1 text-success-400"><Icon icon="solar:add-circle-linear" width={12} />{col.created}</span>}
+        {col.updated > 0 && <span className="flex items-center gap-1 text-warning-400"><Icon icon="solar:refresh-linear" width={12} />{col.updated}</span>}
         {col.skipped > 0 && <span className="flex items-center gap-1 text-zinc-500"><Icon icon="solar:skip-next-linear" width={12} />{col.skipped}</span>}
-        {col.failed  > 0 && <span className="flex items-center gap-1 text-rose-400"><Icon icon="solar:danger-circle-linear" width={12} />{col.failed}</span>}
+        {col.failed  > 0 && <span className="flex items-center gap-1 text-error-400"><Icon icon="solar:danger-circle-linear" width={12} />{col.failed}</span>}
         <span className="text-zinc-700">/{col.total}</span>
       </div>
     </div>
@@ -354,8 +354,8 @@ function ImportResults({ result, onClose }) {
     <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
       <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center">
-            <Icon icon="solar:check-circle-bold" width={18} className="text-emerald-400" />
+          <div className="w-9 h-9 rounded-xl bg-success-500/15 border border-success-500/25 flex items-center justify-center">
+            <Icon icon="solar:check-circle-bold" width={18} className="text-success-400" />
           </div>
           <div>
             <h3 className="text-sm font-semibold text-zinc-100">Import Complete</h3>
@@ -370,10 +370,10 @@ function ImportResults({ result, onClose }) {
       </div>
       <div className="grid grid-cols-4 divide-x divide-zinc-800 border-b border-zinc-800">
         {[
-          { label: 'Created', val: summary.totalCreated, icon: 'solar:add-circle-linear',      color: 'text-emerald-400' },
-          { label: 'Updated', val: summary.totalUpdated, icon: 'solar:refresh-linear',          color: 'text-amber-400' },
+          { label: 'Created', val: summary.totalCreated, icon: 'solar:add-circle-linear',      color: 'text-success-400' },
+          { label: 'Updated', val: summary.totalUpdated, icon: 'solar:refresh-linear',          color: 'text-warning-400' },
           { label: 'Skipped', val: summary.totalSkipped, icon: 'solar:skip-next-linear',        color: 'text-zinc-400' },
-          { label: 'Failed',  val: summary.totalFailed,  icon: 'solar:danger-circle-linear',    color: summary.totalFailed > 0 ? 'text-rose-400' : 'text-zinc-600' },
+          { label: 'Failed',  val: summary.totalFailed,  icon: 'solar:danger-circle-linear',    color: summary.totalFailed > 0 ? 'text-error-400' : 'text-zinc-600' },
         ].map(({ label, val, icon, color }) => (
           <div key={label} className="px-4 py-4 text-center">
             <Icon icon={icon} width={16} className={`${color} mx-auto mb-1`} />
@@ -457,7 +457,7 @@ export default function SystemSettings() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <h1 className="font-display font-semibold text-2xl text-zinc-100">System Settings</h1>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 uppercase tracking-widest">Super Admin</span>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-error-500/10 border border-error-500/20 text-error-400 uppercase tracking-widest">Super Admin</span>
           </div>
           <p className="text-sm text-zinc-500">Database management and system-level operations.</p>
         </div>
@@ -475,8 +475,8 @@ export default function SystemSettings() {
           {/* ── Export Card ───────────────────────────────────────────────── */}
           <div className="bg-[#111113] border border-zinc-800 rounded-2xl p-6 flex flex-col gap-5">
             <div className="flex items-start gap-4">
-              <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
-                <Icon icon="solar:cloud-download-linear" width={20} className="text-emerald-400" />
+              <div className="w-11 h-11 rounded-xl bg-success-500/10 border border-success-500/20 flex items-center justify-center shrink-0">
+                <Icon icon="solar:cloud-download-linear" width={20} className="text-success-400" />
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-zinc-100">Export Database</h3>
@@ -492,7 +492,7 @@ export default function SystemSettings() {
               <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                 {Object.entries(COLLECTION_LABELS).map(([, label]) => (
                   <div key={label} className="flex items-center gap-1.5 text-xs text-zinc-500">
-                    <Icon icon="solar:check-read-linear" width={10} className="text-emerald-500/70 shrink-0" />
+                    <Icon icon="solar:check-read-linear" width={10} className="text-success-500/70 shrink-0" />
                     {label}
                   </div>
                 ))}
@@ -502,15 +502,15 @@ export default function SystemSettings() {
             {/* Action buttons */}
             {exportConfirm ? (
               <div className="space-y-2">
-                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 flex gap-2">
-                  <Icon icon="solar:danger-triangle-linear" width={14} className="text-amber-400 mt-0.5 shrink-0" />
+                <div className="bg-warning-500/10 border border-warning-500/20 rounded-xl p-3 flex gap-2">
+                  <Icon icon="solar:danger-triangle-linear" width={14} className="text-warning-400 mt-0.5 shrink-0" />
                   <p className="text-xs text-zinc-400">Exports all data including hashed admin passwords. Keep the ZIP secure.</p>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => setExportConfirm(false)} className="flex-1 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-sm font-medium transition-all">
                     Cancel
                   </button>
-                  <button onClick={handleExportAll} className="flex-1 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-medium transition-all inline-flex items-center justify-center gap-2">
+                  <button onClick={handleExportAll} className="flex-1 py-2 rounded-xl bg-success-500 hover:bg-success-400 text-white text-sm font-medium transition-all inline-flex items-center justify-center gap-2">
                     <Icon icon="solar:cloud-download-linear" width={14} />Confirm Export
                   </button>
                 </div>
@@ -519,15 +519,15 @@ export default function SystemSettings() {
               <div className="flex flex-col gap-2">
                 {/* Primary: Export All */}
                 <button onClick={() => setExportConfirm(true)} disabled={exporting}
-                  className="w-full inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(16,185,129,0.15)]">
+                  className="w-full inline-flex items-center justify-center gap-2 bg-success-500 hover:bg-success-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(16,185,129,0.15)]">
                   <Icon icon={exporting ? 'solar:loading-linear' : 'solar:cloud-download-linear'} width={15} className={exporting ? 'animate-spin' : ''} />
                   {exporting ? 'Exporting…' : 'Export Whole Database'}
                 </button>
 
                 {/* Secondary: Selective Export */}
                 <button onClick={() => setSelectiveOpen(true)} disabled={exporting}
-                  className="w-full inline-flex items-center justify-center gap-2 bg-[#18181B] border border-zinc-700 hover:border-indigo-500/40 hover:bg-indigo-500/5 text-zinc-300 hover:text-indigo-300 rounded-xl px-4 py-2.5 text-sm font-medium transition-all disabled:opacity-50">
-                  <Icon icon="solar:filter-bold-duotone" width={15} className="text-indigo-400" />
+                  className="w-full inline-flex items-center justify-center gap-2 bg-[#18181B] border border-zinc-700 hover:border-primary-500/40 hover:bg-primary-500/5 text-zinc-300 hover:text-primary-300 rounded-xl px-4 py-2.5 text-sm font-medium transition-all disabled:opacity-50">
+                  <Icon icon="solar:filter-bold-duotone" width={15} className="text-primary-400" />
                   Selective Export…
                 </button>
               </div>
@@ -537,8 +537,8 @@ export default function SystemSettings() {
           {/* ── Import Card ───────────────────────────────────────────────── */}
           <div className="bg-[#111113] border border-zinc-800 rounded-2xl p-6 flex flex-col gap-5">
             <div className="flex items-start gap-4">
-              <div className="w-11 h-11 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0">
-                <Icon icon="solar:cloud-upload-linear" width={20} className="text-indigo-400" />
+              <div className="w-11 h-11 rounded-xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center shrink-0">
+                <Icon icon="solar:cloud-upload-linear" width={20} className="text-primary-400" />
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-zinc-100">Import Database</h3>
@@ -555,8 +555,8 @@ export default function SystemSettings() {
               onDrop={handleFileDrop}
               onClick={() => !importFile && fileInputRef.current?.click()}
               className={`relative rounded-xl border-2 border-dashed transition-all cursor-pointer ${
-                dragOver ? 'border-indigo-500 bg-indigo-500/5' :
-                importFile ? 'border-emerald-500/40 bg-emerald-500/5 cursor-default' :
+                dragOver ? 'border-primary-500 bg-primary-500/5' :
+                importFile ? 'border-success-500/40 bg-success-500/5 cursor-default' :
                 'border-zinc-700 hover:border-zinc-500 bg-[#18181B]'
               }`}>
               <input ref={fileInputRef} type="file" accept=".zip" className="hidden" onChange={handleFileSelect} />
@@ -564,8 +564,8 @@ export default function SystemSettings() {
                 {importFile ? (
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 text-left min-w-0">
-                      <div className="w-9 h-9 rounded-lg bg-emerald-500/15 flex items-center justify-center shrink-0">
-                        <Icon icon="solar:zip-file-linear" width={18} className="text-emerald-400" />
+                      <div className="w-9 h-9 rounded-lg bg-success-500/15 flex items-center justify-center shrink-0">
+                        <Icon icon="solar:zip-file-linear" width={18} className="text-success-400" />
                       </div>
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-zinc-200 truncate">{importFile.name}</p>
@@ -573,7 +573,7 @@ export default function SystemSettings() {
                       </div>
                     </div>
                     <button onClick={e => { e.stopPropagation(); setImportFile(null); setImportResult(null); setImportError(''); }}
-                      className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all shrink-0">
+                      className="p-1.5 rounded-lg text-zinc-500 hover:text-error-400 hover:bg-error-500/10 transition-all shrink-0">
                       <Icon icon="solar:close-circle-linear" width={16} />
                     </button>
                   </div>
@@ -594,14 +594,14 @@ export default function SystemSettings() {
                 {STRATEGIES.map(s => (
                   <label key={s.value}
                     className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-                      strategy === s.value ? 'bg-indigo-500/8 border-indigo-500/25' : 'bg-[#18181B] border-zinc-800 hover:border-zinc-700'
+                      strategy === s.value ? 'bg-primary-500/8 border-primary-500/25' : 'bg-[#18181B] border-zinc-800 hover:border-zinc-700'
                     }`}>
                     <input type="radio" name="strategy" value={s.value} checked={strategy === s.value}
-                      onChange={() => setStrategy(s.value)} className="accent-indigo-500 mt-0.5 shrink-0" />
+                      onChange={() => setStrategy(s.value)} className="accent-primary-500 mt-0.5 shrink-0" />
                     <div>
                       <div className="flex items-center gap-1.5">
                         <Icon icon={s.icon} width={12} className={s.color} />
-                        <span className={`text-xs font-semibold ${strategy === s.value ? 'text-indigo-300' : 'text-zinc-300'}`}>{s.label}</span>
+                        <span className={`text-xs font-semibold ${strategy === s.value ? 'text-primary-300' : 'text-zinc-300'}`}>{s.label}</span>
                       </div>
                       <p className="text-[10px] text-zinc-600 mt-0.5 leading-relaxed">{s.desc}</p>
                     </div>
@@ -611,30 +611,30 @@ export default function SystemSettings() {
             </div>
 
             {importError && (
-              <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 flex gap-2">
-                <Icon icon="solar:danger-circle-linear" width={14} className="text-rose-400 mt-0.5 shrink-0" />
-                <p className="text-xs text-rose-400 break-words">{importError}</p>
+              <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 flex gap-2">
+                <Icon icon="solar:danger-circle-linear" width={14} className="text-error-400 mt-0.5 shrink-0" />
+                <p className="text-xs text-error-400 break-words">{importError}</p>
               </div>
             )}
 
             {importConfirm ? (
               <div className="space-y-2">
-                <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 flex gap-2">
-                  <Icon icon="solar:danger-triangle-linear" width={14} className="text-rose-400 mt-0.5 shrink-0" />
+                <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 flex gap-2">
+                  <Icon icon="solar:danger-triangle-linear" width={14} className="text-error-400 mt-0.5 shrink-0" />
                   <p className="text-xs text-zinc-400">
-                    <span className="text-rose-400 font-semibold">Warning:</span> This will modify live database records using the <strong>{STRATEGIES.find(s => s.value === strategy)?.label}</strong> strategy. This cannot be undone.
+                    <span className="text-error-400 font-semibold">Warning:</span> This will modify live database records using the <strong>{STRATEGIES.find(s => s.value === strategy)?.label}</strong> strategy. This cannot be undone.
                   </p>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => setImportConfirm(false)} className="flex-1 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-sm font-medium transition-all">Cancel</button>
-                  <button onClick={handleImport} className="flex-1 py-2 rounded-xl bg-rose-500 hover:bg-rose-400 text-white text-sm font-medium transition-all inline-flex items-center justify-center gap-2">
+                  <button onClick={handleImport} className="flex-1 py-2 rounded-xl bg-error-500 hover:bg-error-400 text-white text-sm font-medium transition-all inline-flex items-center justify-center gap-2">
                     <Icon icon="solar:cloud-upload-linear" width={14} />Confirm Import
                   </button>
                 </div>
               </div>
             ) : (
               <button onClick={() => setImportConfirm(true)} disabled={!importFile || importing}
-                className="w-full inline-flex items-center justify-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(99,102,241,0.15)]">
+                className="w-full inline-flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(51, 112, 246,0.15)]">
                 <Icon icon={importing ? 'solar:loading-linear' : 'solar:cloud-upload-linear'} width={16} className={importing ? 'animate-spin' : ''} />
                 {importing ? 'Importing…' : 'Import Database'}
               </button>

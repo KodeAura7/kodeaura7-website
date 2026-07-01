@@ -6,7 +6,7 @@ import MigrateModal from '../../components/admin/MigrateModal';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all';
+const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all';
 
 const FIELD_TYPES = [
   { value: 'text',     label: 'Text',      icon: 'solar:text-field-linear' },
@@ -46,7 +46,7 @@ function OptionsEditor({ options, onChange }) {
       <div className="flex items-center justify-between">
         <label className="text-xs font-medium text-zinc-400">Options</label>
         <button type="button" onClick={add}
-          className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors">
+          className="text-xs text-primary-400 hover:text-primary-300 flex items-center gap-1 transition-colors">
           <Icon icon="solar:add-circle-linear" width={12} /> Add option
         </button>
       </div>
@@ -60,7 +60,7 @@ function OptionsEditor({ options, onChange }) {
           <input value={opt.value} onChange={(e) => update(i, 'value', e.target.value)}
             placeholder="Value" className={INPUT + ' text-xs font-mono'} />
           <button type="button" onClick={() => remove(i)}
-            className="p-1.5 text-zinc-600 hover:text-rose-400 transition-colors shrink-0">
+            className="p-1.5 text-zinc-600 hover:text-error-400 transition-colors shrink-0">
             <Icon icon="solar:close-circle-linear" width={14} />
           </button>
         </div>
@@ -125,11 +125,11 @@ function EditDrawer({ field, isNew, onSave, onDelete, onClose }) {
         </div>
 
         <div className="p-6 space-y-5">
-          {err && <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-xs text-rose-400">{err}</div>}
+          {err && <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-xs text-error-400">{err}</div>}
 
           {isNew && (
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400">Field Name <span className="text-rose-400">*</span></label>
+              <label className="text-xs font-medium text-zinc-400">Field Name <span className="text-error-400">*</span></label>
               <input value={form.name} onChange={(e) => set('name', e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '_'))}
                 placeholder="e.g. phone_number" className={INPUT + ' font-mono'} />
               <p className="text-[10px] text-zinc-700">Lowercase, underscores only. Used as the form data key.</p>
@@ -137,7 +137,7 @@ function EditDrawer({ field, isNew, onSave, onDelete, onClose }) {
           )}
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-400">Label <span className="text-rose-400">*</span></label>
+            <label className="text-xs font-medium text-zinc-400">Label <span className="text-error-400">*</span></label>
             <input value={form.label} onChange={(e) => set('label', e.target.value)} placeholder="Full Name" className={INPUT} />
           </div>
 
@@ -146,7 +146,7 @@ function EditDrawer({ field, isNew, onSave, onDelete, onClose }) {
             <div className="grid grid-cols-4 gap-2">
               {FIELD_TYPES.map((t) => (
                 <button key={t.value} type="button" onClick={() => set('field_type', t.value)}
-                  className={`flex flex-col items-center gap-1.5 p-2.5 rounded-xl border text-xs transition-all ${form.field_type === t.value ? 'border-indigo-500 bg-indigo-500/10 text-indigo-300' : 'border-zinc-800 bg-[#18181B] text-zinc-500 hover:border-zinc-600'}`}>
+                  className={`flex flex-col items-center gap-1.5 p-2.5 rounded-xl border text-xs transition-all ${form.field_type === t.value ? 'border-primary-500 bg-primary-500/10 text-primary-300' : 'border-zinc-800 bg-[#18181B] text-zinc-500 hover:border-zinc-600'}`}>
                   <Icon icon={t.icon} width={16} />
                   {t.label}
                 </button>
@@ -165,7 +165,7 @@ function EditDrawer({ field, isNew, onSave, onDelete, onClose }) {
             <div className="flex gap-2">
               {[['half', 'Half width'], ['full', 'Full width']].map(([val, lbl]) => (
                 <button key={val} type="button" onClick={() => set('width', val)}
-                  className={`flex-1 py-2 rounded-xl border text-xs font-medium transition-all ${form.width === val ? 'border-indigo-500 bg-indigo-500/10 text-indigo-300' : 'border-zinc-800 bg-[#18181B] text-zinc-500 hover:border-zinc-600'}`}>
+                  className={`flex-1 py-2 rounded-xl border text-xs font-medium transition-all ${form.width === val ? 'border-primary-500 bg-primary-500/10 text-primary-300' : 'border-zinc-800 bg-[#18181B] text-zinc-500 hover:border-zinc-600'}`}>
                   {lbl}
                 </button>
               ))}
@@ -176,7 +176,7 @@ function EditDrawer({ field, isNew, onSave, onDelete, onClose }) {
             <label className="flex items-center gap-2.5 cursor-pointer">
               <div
                 onClick={() => set('required', !form.required)}
-                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${form.required ? 'bg-indigo-500' : 'bg-zinc-700'}`}>
+                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${form.required ? 'bg-primary-500' : 'bg-zinc-700'}`}>
                 <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${form.required ? 'translate-x-4' : 'translate-x-1'}`} />
               </div>
               <span className="text-xs text-zinc-300">Required</span>
@@ -184,7 +184,7 @@ function EditDrawer({ field, isNew, onSave, onDelete, onClose }) {
             <label className="flex items-center gap-2.5 cursor-pointer">
               <div
                 onClick={() => set('enabled', !form.enabled)}
-                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${form.enabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}>
+                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${form.enabled ? 'bg-success-500' : 'bg-zinc-700'}`}>
                 <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${form.enabled ? 'translate-x-4' : 'translate-x-1'}`} />
               </div>
               <span className="text-xs text-zinc-300">Visible on site</span>
@@ -198,13 +198,13 @@ function EditDrawer({ field, isNew, onSave, onDelete, onClose }) {
           {/* Actions */}
           <div className="pt-2 flex items-center gap-3">
             <button onClick={handleSave} disabled={saving}
-              className="flex-1 inline-flex items-center justify-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl py-2.5 text-sm font-medium transition-all disabled:opacity-60">
+              className="flex-1 inline-flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-400 text-white rounded-xl py-2.5 text-sm font-medium transition-all disabled:opacity-60">
               <Icon icon={saving ? 'solar:loading-linear' : 'solar:floppy-disk-linear'} width={15} className={saving ? 'animate-spin' : ''} />
               {saving ? 'Saving…' : isNew ? 'Create Field' : 'Save Changes'}
             </button>
             {!isNew && (
               <button onClick={handleDelete} disabled={deleting}
-                className="p-2.5 rounded-xl border border-rose-500/20 text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-50">
+                className="p-2.5 rounded-xl border border-error-500/20 text-error-400 hover:bg-error-500/10 transition-all disabled:opacity-50">
                 <Icon icon={deleting ? 'solar:loading-linear' : 'solar:trash-bin-minimalistic-linear'} width={16} className={deleting ? 'animate-spin' : ''} />
               </button>
             )}
@@ -229,7 +229,7 @@ function LivePreview({ fields }) {
         return (
           <div key={f.id} className={`space-y-1.5 ${cls}`}>
             <label className="text-xs font-medium text-zinc-400">
-              {f.label}{f.required && <span className="text-rose-400 ml-0.5">*</span>}
+              {f.label}{f.required && <span className="text-error-400 ml-0.5">*</span>}
             </label>
             {f.field_type === 'textarea' ? (
               <textarea rows={3} placeholder={f.placeholder} disabled
@@ -322,7 +322,7 @@ export default function ContactFormManager() {
     return (
       <div className="p-8 flex items-center gap-3 text-zinc-500">
         {error
-          ? <p className="text-rose-400 text-sm">{error}</p>
+          ? <p className="text-error-400 text-sm">{error}</p>
           : <><Icon icon="solar:loading-linear" width={18} className="animate-spin" /><span className="text-sm">Loading…</span></>
         }
       </div>
@@ -344,7 +344,7 @@ export default function ContactFormManager() {
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => setMigrateOpen(true)}
-            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-zinc-700 hover:border-indigo-500/40 text-indigo-400 hover:text-indigo-300 transition-all"
+            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-zinc-700 hover:border-primary-500/40 text-primary-400 hover:text-primary-300 transition-all"
           >
             <Icon icon="solar:transfer-horizontal-linear" width={16} />
             Push to Env
@@ -358,14 +358,14 @@ export default function ContactFormManager() {
           </button>
           <button
             onClick={() => setEditTarget('new')}
-            className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)]"
+            className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(51, 112, 246,0.2)]"
           >
             <Icon icon="solar:add-circle-linear" width={16} /> Add Field
           </button>
         </div>
       </div>
 
-      {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div> : null}
+      {error ? <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400 mb-4">{error}</div> : null}
 
       {/* Live preview */}
       {previewOpen && (
@@ -382,7 +382,7 @@ export default function ContactFormManager() {
             <Icon icon="solar:document-add-linear" width={32} className="text-zinc-700 mx-auto mb-3" />
             <p className="text-sm text-zinc-500">No fields yet.</p>
             <button onClick={() => setEditTarget('new')}
-              className="mt-3 text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+              className="mt-3 text-xs text-primary-400 hover:text-primary-300 transition-colors">
               Add your first field
             </button>
           </div>
@@ -407,7 +407,7 @@ export default function ContactFormManager() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm font-medium text-zinc-200">{field.label}</span>
                     {field.required && (
-                      <span className="text-[9px] text-rose-400 bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.5 rounded-md">required</span>
+                      <span className="text-[9px] text-error-400 bg-error-500/10 border border-error-500/20 px-1.5 py-0.5 rounded-md">required</span>
                     )}
                     <TypeBadge type={field.field_type} />
                     <span className={`text-[9px] px-1.5 py-0.5 rounded-md ${field.width === 'full' ? 'text-zinc-500 bg-zinc-800/60' : 'text-zinc-600 bg-zinc-800/40'}`}>
@@ -426,7 +426,7 @@ export default function ContactFormManager() {
                 <button
                   onClick={() => toggleEnabled(field)}
                   disabled={toggling === field.id}
-                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 shrink-0 ${field.enabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}
+                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 shrink-0 ${field.enabled ? 'bg-success-500' : 'bg-zinc-700'}`}
                 >
                   <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${field.enabled ? 'translate-x-4' : 'translate-x-1'}`} />
                 </button>
@@ -434,7 +434,7 @@ export default function ContactFormManager() {
                 {/* Edit */}
                 <button
                   onClick={() => setEditTarget(field)}
-                  className="p-1.5 rounded-lg text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all shrink-0"
+                  className="p-1.5 rounded-lg text-zinc-500 hover:text-primary-400 hover:bg-primary-500/10 transition-all shrink-0"
                   title="Edit field"
                 >
                   <Icon icon="solar:pen-linear" width={15} />

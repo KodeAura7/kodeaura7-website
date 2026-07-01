@@ -73,8 +73,8 @@ export default function ResetPassword() {
       >
         <div className="mt-8 space-y-5">
           <div className="flex justify-center">
-            <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shadow-[0_0_24px_rgba(16,185,129,0.1)]">
-              <Icon icon="solar:shield-check-linear" width={28} className="text-emerald-400" />
+            <div className="w-14 h-14 rounded-2xl bg-success-500/10 border border-success-500/20 flex items-center justify-center shadow-[0_0_24px_rgba(16,185,129,0.1)]">
+              <Icon icon="solar:shield-check-linear" width={28} className="text-success-400" />
             </div>
           </div>
           <div className="text-center space-y-2">
@@ -84,7 +84,7 @@ export default function ResetPassword() {
           <Link
             to="/sign-in"
             replace
-            className="w-full inline-flex items-center justify-center gap-2 bg-indigo-500 text-white rounded-xl py-3.5 text-sm font-medium hover:bg-indigo-400 transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)]"
+            className="w-full inline-flex items-center justify-center gap-2 bg-primary-500 text-white rounded-xl py-3.5 text-sm font-medium hover:bg-primary-400 transition-all shadow-[0_0_20px_rgba(51, 112, 246,0.2)]"
           >
             Sign In now <Icon icon="solar:arrow-right-linear" width={16} />
           </Link>

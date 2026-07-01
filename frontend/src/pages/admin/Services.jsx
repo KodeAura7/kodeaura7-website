@@ -46,14 +46,14 @@ const SVC_SORT_OPTIONS = [
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all';
+const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all';
 const TEXTAREA = INPUT + ' resize-none';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const EMPTY_FORM = {
   slug: '', name: '', icon: 'solar:code-square-linear',
-  accent: '#6366F1', light: '#A5B4FC', description: '',
+  accent: '#1C63F3', light: '#8BB3FD', description: '',
   p1: '', p2: '', cta_label: '',
   features: [],
   metrics: [{ value: '', label: '' }, { value: '', label: '' }, { value: '', label: '' }],
@@ -129,7 +129,7 @@ function ColorInput({ label, value, onChange }) {
   );
 }
 
-function Toggle({ value, onChange, colorOn = 'bg-emerald-500' }) {
+function Toggle({ value, onChange, colorOn = 'bg-success-500' }) {
   return (
     <button type="button" onClick={() => onChange(!value)}
       className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${value ? colorOn : 'bg-zinc-700'}`}>
@@ -138,7 +138,7 @@ function Toggle({ value, onChange, colorOn = 'bg-emerald-500' }) {
   );
 }
 
-function StatusBadge({ on, onLabel, offLabel, colorOn = 'bg-emerald-500/10 text-emerald-400', dotOn = 'bg-emerald-400' }) {
+function StatusBadge({ on, onLabel, offLabel, colorOn = 'bg-success-500/10 text-success-400', dotOn = 'bg-success-400' }) {
   return (
     <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full ${on ? colorOn : 'bg-zinc-800 text-zinc-500'}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${on ? dotOn : 'bg-zinc-600'}`} />
@@ -175,7 +175,7 @@ function OrderCell({ id, initialOrder, onSaved, onError }) {
         onBlur={commit}
         onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); commit(); ref.current?.blur(); } }}
         disabled={saving}
-        className="w-14 bg-[#18181B] border border-zinc-800 rounded-lg px-2 py-1 text-xs text-zinc-200 text-center focus:outline-none focus:border-indigo-500/50 disabled:opacity-50" />
+        className="w-14 bg-[#18181B] border border-zinc-800 rounded-lg px-2 py-1 text-xs text-zinc-200 text-center focus:outline-none focus:border-primary-500/50 disabled:opacity-50" />
       {saving ? <Icon icon="solar:loading-linear" width={12} className="text-zinc-600 animate-spin" /> : null}
     </div>
   );
@@ -228,15 +228,15 @@ function HistorySidebar({ serviceId, editMode, onRevert, open, onToggle, history
                         <span className="text-[10px] font-mono font-medium text-zinc-500">{FIELD_LABELS[c.field] || c.field}</span>
                         {editMode ? (
                           <button onClick={() => onRevert(c.field, c.from)}
-                            className="text-[10px] font-semibold text-indigo-400 hover:text-indigo-300 px-1.5 py-0.5 rounded bg-indigo-500/10 hover:bg-indigo-500/20 transition-all shrink-0 ml-2">
+                            className="text-[10px] font-semibold text-primary-400 hover:text-primary-300 px-1.5 py-0.5 rounded bg-primary-500/10 hover:bg-primary-500/20 transition-all shrink-0 ml-2">
                             Revert
                           </button>
                         ) : null}
                       </div>
                       <div className="flex items-start gap-1.5 text-[10px]">
-                        <span className="text-rose-400 line-through break-all">{historyDisplayValue(c.field, c.from)}</span>
+                        <span className="text-error-400 line-through break-all">{historyDisplayValue(c.field, c.from)}</span>
                         <Icon icon="solar:arrow-right-linear" width={8} className="text-zinc-700 mt-0.5 shrink-0" />
-                        <span className="text-emerald-400 break-all">{historyDisplayValue(c.field, c.to)}</span>
+                        <span className="text-success-400 break-all">{historyDisplayValue(c.field, c.to)}</span>
                       </div>
                     </div>
                   ))}
@@ -453,14 +453,14 @@ export default function AdminServices() {
                       <Icon icon="solar:history-linear" width={15} />
                       History
                     </button>
-                    <button onClick={enterEdit} className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+                    <button onClick={enterEdit} className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(51, 112, 246,0.2)]">
                       <Icon icon="solar:pen-linear" width={15} />Edit
                     </button>
                   </>
                 ) : (
                   <>
                     {currentItem && canDo('services.delete') ? (
-                      <button onClick={handleDelete} disabled={deleting} className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-rose-500/30 text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-50">
+                      <button onClick={handleDelete} disabled={deleting} className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-error-500/30 text-error-400 hover:bg-error-500/10 transition-all disabled:opacity-50">
                         <Icon icon={deleting ? 'solar:loading-linear' : 'solar:trash-bin-minimalistic-linear'} width={15} className={deleting ? 'animate-spin' : ''} />
                         Delete
                       </button>
@@ -468,7 +468,7 @@ export default function AdminServices() {
                     <button onClick={cancelEdit} className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-zinc-700 text-zinc-400 hover:text-zinc-100 hover:border-zinc-500 transition-all">
                       Cancel
                     </button>
-                    <button onClick={handleSave} disabled={saving} className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+                    <button onClick={handleSave} disabled={saving} className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(51, 112, 246,0.2)]">
                       <Icon icon={saving ? 'solar:loading-linear' : 'solar:floppy-disk-linear'} width={15} className={saving ? 'animate-spin' : ''} />
                       {saving ? 'Saving…' : 'Save'}
                     </button>
@@ -477,7 +477,7 @@ export default function AdminServices() {
               </div>
             </div>
 
-            {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-6">{error}</div> : null}
+            {error ? <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400 mb-6">{error}</div> : null}
 
             {/* ─── VIEW MODE ─── */}
             {!editMode && !isNew ? (
@@ -545,7 +545,7 @@ export default function AdminServices() {
                           const on = typeof feat === 'string' ? true : feat.enabled !== false;
                           return (
                             <li key={i} className={`flex items-center gap-2.5 text-sm ${on ? 'text-zinc-200' : 'text-zinc-600 line-through'}`}>
-                              <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${on ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-700'}`}>
+                              <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${on ? 'border-primary-500 bg-primary-500' : 'border-zinc-700'}`}>
                                 {on ? <Icon icon="solar:check-read-linear" width={10} className="text-white" /> : null}
                               </div>
                               {label}
@@ -578,7 +578,7 @@ export default function AdminServices() {
                       <StatusBadge on={currentItem.enabled} onLabel="Enabled" offLabel="Hidden" />
                     </ViewField>
                     <ViewField label="Show on Home">
-                      <StatusBadge on={currentItem.show_on_home} onLabel="Shown" offLabel="Hidden" colorOn="bg-indigo-500/10 text-indigo-400" dotOn="bg-indigo-400" />
+                      <StatusBadge on={currentItem.show_on_home} onLabel="Shown" offLabel="Hidden" colorOn="bg-primary-500/10 text-primary-400" dotOn="bg-primary-400" />
                     </ViewField>
                   </div>
                 </div>
@@ -590,13 +590,13 @@ export default function AdminServices() {
                   <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Identity</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-zinc-400">Name <span className="text-rose-500">*</span></label>
+                      <label className="text-xs font-medium text-zinc-400">Name <span className="text-error-500">*</span></label>
                       <input type="text" value={form.name}
                         onChange={e => { setField('name', e.target.value); if (!currentItem) setField('slug', toSlug(e.target.value)); }}
                         className={INPUT} />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-zinc-400">Slug <span className="text-rose-500">*</span></label>
+                      <label className="text-xs font-medium text-zinc-400">Slug <span className="text-error-500">*</span></label>
                       <input type="text" value={form.slug} onChange={e => setField('slug', e.target.value)} className={INPUT + ' font-mono text-xs'} />
                     </div>
                     <div className="space-y-1.5">
@@ -653,7 +653,7 @@ export default function AdminServices() {
                       <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">What's Included</h2>
                       <p className="text-[11px] text-zinc-700 mt-0.5">Check = visible. First 3 enabled appear on home cards.</p>
                     </div>
-                    <button onClick={addFeature} className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
+                    <button onClick={addFeature} className="inline-flex items-center gap-1.5 text-xs font-medium text-primary-400 hover:text-primary-300 transition-colors">
                       <Icon icon="solar:add-circle-linear" width={14} />Add
                     </button>
                   </div>
@@ -661,12 +661,12 @@ export default function AdminServices() {
                     {form.features.map((feat, i) => (
                       <div key={i} className="flex items-center gap-3">
                         <button type="button" onClick={() => toggleFeature(i)}
-                          className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${feat.enabled ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-600'}`}>
+                          className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${feat.enabled ? 'border-primary-500 bg-primary-500' : 'border-zinc-600'}`}>
                           {feat.enabled ? <Icon icon="solar:check-read-linear" width={11} className="text-white" /> : null}
                         </button>
                         <input type="text" value={feat.label} onChange={e => setFeatureLabel(i, e.target.value)}
                           placeholder="Feature item" className={`flex-1 ${INPUT} ${!feat.enabled ? 'opacity-50' : ''}`} />
-                        <button onClick={() => removeFeature(i)} className="p-1.5 text-zinc-600 hover:text-rose-400 transition-colors shrink-0">
+                        <button onClick={() => removeFeature(i)} className="p-1.5 text-zinc-600 hover:text-error-400 transition-colors shrink-0">
                           <Icon icon="solar:close-circle-linear" width={16} />
                         </button>
                       </div>
@@ -700,7 +700,7 @@ export default function AdminServices() {
                     <div className="space-y-1.5">
                       <label className="text-xs font-medium text-zinc-400">Sort Order</label>
                       <input type="number" value={form.sort_order} onChange={e => setField('sort_order', parseInt(e.target.value) || 0)}
-                        className="w-24 bg-[#18181B] border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-zinc-100 text-center focus:outline-none focus:border-indigo-500/50 transition-all" />
+                        className="w-24 bg-[#18181B] border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-zinc-100 text-center focus:outline-none focus:border-primary-500/50 transition-all" />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-xs font-medium text-zinc-400">Visible on site</label>
@@ -712,7 +712,7 @@ export default function AdminServices() {
                     <div className="space-y-1.5">
                       <label className="text-xs font-medium text-zinc-400">Show on home page</label>
                       <div className="flex items-center gap-2 mt-0.5">
-                        <Toggle value={form.show_on_home} onChange={v => setField('show_on_home', v)} colorOn="bg-indigo-500" />
+                        <Toggle value={form.show_on_home} onChange={v => setField('show_on_home', v)} colorOn="bg-primary-500" />
                         <span className="text-xs text-zinc-400">{form.show_on_home ? 'Shown' : 'Hidden from home'}</span>
                       </div>
                     </div>
@@ -775,7 +775,7 @@ export default function AdminServices() {
                 <Icon icon={importing ? 'solar:loading-linear' : 'solar:import-linear'} width={16} className={importing ? 'animate-spin' : ''} />
                 Import
               </button>
-              <button onClick={openNew} className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+              <button onClick={openNew} className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(51, 112, 246,0.2)]">
                 <Icon icon="solar:add-circle-linear" width={16} />Add Service
               </button>
             </>
@@ -801,12 +801,12 @@ export default function AdminServices() {
       />
 
       {importMsg.text ? (
-        <div className={`border rounded-xl p-3 text-sm mb-4 flex items-center gap-2 ${importMsg.type === 'error' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'}`}>
+        <div className={`border rounded-xl p-3 text-sm mb-4 flex items-center gap-2 ${importMsg.type === 'error' ? 'bg-error-500/10 border-error-500/20 text-error-400' : 'bg-success-500/10 border-success-500/20 text-success-400'}`}>
           <Icon icon={importMsg.type === 'error' ? 'solar:danger-circle-linear' : 'solar:check-circle-linear'} width={15} />
           {importMsg.text}
         </div>
       ) : null}
-      {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div> : null}
+      {error ? <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400 mb-4">{error}</div> : null}
 
       <TableToolbar
         search={svcSearch} onSearch={setSvcSearch}
@@ -826,7 +826,7 @@ export default function AdminServices() {
           </button>
         )}
         <button onClick={() => setMigrateOpen(true)} disabled={!someSelected}
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 border border-transparent transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-primary-400 hover:text-primary-300 hover:bg-primary-500/10 border border-transparent transition-all disabled:opacity-40 disabled:cursor-not-allowed">
           <Icon icon="solar:transfer-horizontal-linear" width={13} />
           {someSelected ? `Migrate (${selected.size})` : 'Migrate'}
         </button>
@@ -835,7 +835,7 @@ export default function AdminServices() {
             <div className="flex items-center gap-1.5">
               <span className="text-xs text-zinc-500">Delete {selected.size}?</span>
               <button onClick={handleBulkDelete} disabled={bulkDeleting}
-                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-rose-500 text-white hover:bg-rose-400 transition-all disabled:opacity-50">
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-error-500 text-white hover:bg-error-400 transition-all disabled:opacity-50">
                 <Icon icon={bulkDeleting ? 'solar:loading-linear' : 'solar:check-read-linear'} width={11} className={bulkDeleting ? 'animate-spin' : ''} />
                 {bulkDeleting ? 'Deleting…' : 'Confirm'}
               </button>
@@ -846,7 +846,7 @@ export default function AdminServices() {
             </div>
           ) : (
             <button onClick={() => setBulkDeleteConfirm(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-transparent transition-all">
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-error-400 hover:text-error-300 hover:bg-error-500/10 border border-transparent transition-all">
               <Icon icon="solar:trash-bin-minimalistic-linear" width={13} />
               Delete ({selected.size})
             </button>
@@ -861,7 +861,7 @@ export default function AdminServices() {
               <tr className="bg-[#18181B] border-b border-zinc-800">
                 <th className="px-4 py-3 w-10">
                   <button onClick={() => setSelected(allSelected ? new Set() : new Set((items || []).map(s => s.id)))}
-                    className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${allSelected ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-600'}`}>
+                    className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${allSelected ? 'border-primary-500 bg-primary-500' : 'border-zinc-600'}`}>
                     {allSelected ? <Icon icon="solar:check-read-linear" width={9} className="text-white" /> : null}
                   </button>
                 </th>
@@ -891,7 +891,7 @@ export default function AdminServices() {
                   <tr key={svc.id} className="hover:bg-zinc-800/20 transition-colors">
                     <td className="px-4 py-3">
                       <button onClick={() => toggleSelect(svc.id)}
-                        className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${selected.has(svc.id) ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-600'}`}>
+                        className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${selected.has(svc.id) ? 'border-primary-500 bg-primary-500' : 'border-zinc-600'}`}>
                         {selected.has(svc.id) ? <Icon icon="solar:check-read-linear" width={9} className="text-white" /> : null}
                       </button>
                     </td>
@@ -906,7 +906,7 @@ export default function AdminServices() {
                               <Icon icon={svc.icon || 'solar:code-square-linear'} width={16} />
                             </div>
                             <div>
-                              <button onClick={() => openRecord(svc)} className="text-zinc-200 font-medium hover:text-indigo-400 transition-colors text-left block leading-tight">{svc.name}</button>
+                              <button onClick={() => openRecord(svc)} className="text-zinc-200 font-medium hover:text-primary-400 transition-colors text-left block leading-tight">{svc.name}</button>
                               <p className="text-[10px] text-zinc-600 font-mono">{svc.slug}</p>
                             </div>
                           </div>
@@ -920,7 +920,7 @@ export default function AdminServices() {
                       );
                       if (key === 'home') return (
                         <td key={key} className="px-4 py-3 whitespace-nowrap">
-                          <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${svc.show_on_home ? 'bg-indigo-500/10 text-indigo-400' : 'bg-zinc-800 text-zinc-600'}`}>
+                          <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${svc.show_on_home ? 'bg-primary-500/10 text-primary-400' : 'bg-zinc-800 text-zinc-600'}`}>
                             {svc.show_on_home ? 'shown' : 'hidden'}
                           </span>
                         </td>
@@ -935,7 +935,7 @@ export default function AdminServices() {
                       if (key === 'site') return (
                         <td key={key} className="px-4 py-3 whitespace-nowrap">
                           <button onClick={() => handleToggleEnabled(svc.id, svc.enabled)} disabled={toggling === svc.id}
-                            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 ${svc.enabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}>
+                            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 ${svc.enabled ? 'bg-success-500' : 'bg-zinc-700'}`}>
                             <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${svc.enabled ? 'translate-x-4' : 'translate-x-1'}`} />
                           </button>
                         </td>
@@ -944,7 +944,7 @@ export default function AdminServices() {
                     })}
                     <td className="px-4 py-3 text-right">
                       <button onClick={() => { openRecord(svc); enterEdit(); }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all">
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-500 hover:text-primary-400 hover:bg-primary-500/10 transition-all">
                         <Icon icon="solar:pen-linear" width={13} />Edit
                       </button>
                     </td>
