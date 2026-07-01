@@ -22,7 +22,7 @@ INSERT INTO page_content (page, content) VALUES ('about', '{
     "stats": [
       {"value": "8+", "label": "DIGITAL SERVICES"},
       {"value": "100%", "label": "CUSTOM SOLUTIONS"},
-      {"value": "24/7", "label": "DEDICATED SUPPORT"},
+      {"value": "24/7", "label": "DEDICATED SUPPORT"}
     ]
   },
   "values": {
