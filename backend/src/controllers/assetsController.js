@@ -7,21 +7,16 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const LOGOS_DIR = path.resolve(__dirname, '../../assets/logos');
 const ALLOWED_EXT = new Set(['.png', '.jpg', '.jpeg', '.svg', '.webp', '.gif', '.avif']);
 
-function resolveBaseUrl(req) {
-  return process.env.API_BASE_URL || `${req.protocol}://${req.get('host')}`;
-}
-
 export async function listLogoAssets(req, res) {
   try {
     const files = await readdir(LOGOS_DIR);
     const images = files.filter(
       (f) => !f.startsWith('.') && ALLOWED_EXT.has(path.extname(f).toLowerCase())
     );
-    const base = resolveBaseUrl(req);
     res.json(
       images.map((name) => ({
         name,
-        url: `${base}/assets/logos/${encodeURIComponent(name)}`
+        url: `/assets/logos/${encodeURIComponent(name)}`
       }))
     );
   } catch {
@@ -57,9 +52,8 @@ export const uploadMiddleware = multer({
 
 export async function uploadLogoAsset(req, res) {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded.' });
-  const base = resolveBaseUrl(req);
   res.status(201).json({
     name: req.file.filename,
-    url: `${base}/assets/logos/${encodeURIComponent(req.file.filename)}`
+    url: `/assets/logos/${encodeURIComponent(req.file.filename)}`
   });
 }

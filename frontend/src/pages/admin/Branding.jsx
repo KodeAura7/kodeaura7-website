@@ -5,6 +5,7 @@ import { useSiteData } from '../../contexts/SiteDataContext';
 import { useToast } from '../../contexts/ToastContext';
 import PageHistorySidebar from '../../components/admin/PageHistorySidebar';
 import MigrateModal from '../../components/admin/MigrateModal';
+import { resolveAssetUrl } from '../../utils/assetUrl';
 
 const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all';
 
@@ -152,7 +153,7 @@ function AssetPickerModal({ onSelect, onClose }) {
                   className="group flex flex-col items-center gap-2 p-3 rounded-xl border border-zinc-800 hover:border-primary-500/40 hover:bg-primary-500/5 transition-all"
                 >
                   <div className="w-full h-16 flex items-center justify-center overflow-hidden rounded-lg bg-[#18181B]">
-                    <img src={asset.url} alt={asset.name} className="max-w-full max-h-full object-contain" />
+                    <img src={resolveAssetUrl(asset.url)} alt={asset.name} className="max-w-full max-h-full object-contain" />
                   </div>
                   <span className="text-[9px] text-zinc-600 group-hover:text-zinc-400 font-mono truncate w-full text-center">
                     {asset.name}
@@ -186,7 +187,7 @@ function LogoSlot({ label, hint, value, onChange }) {
         <div className="w-28 h-16 rounded-xl border border-zinc-800 bg-[#18181B] flex items-center justify-center shrink-0 overflow-hidden p-2">
           {value.url && !imgError ? (
             <img
-              src={value.url}
+              src={resolveAssetUrl(value.url)}
               alt={value.alt}
               className="max-w-full max-h-full object-contain"
               onError={() => setImgError(true)}
@@ -202,7 +203,7 @@ function LogoSlot({ label, hint, value, onChange }) {
           <Field label="Image URL" hint={hint}>
             <div className="flex gap-2">
               <input
-                type="url"
+                type="text"
                 value={value.url}
                 onChange={(e) => onChange({ ...value, url: e.target.value })}
                 placeholder="https://example.com/logo.svg"

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useSiteData } from '../contexts/SiteDataContext';
+import { resolveAssetUrl } from '../utils/assetUrl';
 
 export default function Logo({ to = '/', variant = 'universal' }) {
   const { branding } = useSiteData();
@@ -17,7 +18,7 @@ export default function Logo({ to = '/', variant = 'universal' }) {
     <Link to={to} className="flex items-center gap-2.5">
       {logoData?.url ? (
         <img
-          src={logoData.url}
+          src={resolveAssetUrl(logoData.url)}
           alt={logoData.alt || name}
           className="h-8 w-auto object-contain"
           onError={(e) => { e.currentTarget.style.display = 'none'; }}
