@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import AuraBackground from '../components/AuraBackground';
 import Icon from '../components/Icon';
 import SEO from '../components/SEO';
 import SectionHero from '../components/SectionHero';
@@ -26,6 +27,7 @@ export default function Portfolio() {
         description="A curated portfolio of KodeAura7 projects — websites, Salesforce CRM systems, dashboards, and performance advertising campaigns for ambitious businesses."
         keywords="web development portfolio, Salesforce projects, UI/UX case studies, digital marketing results, KodeAura7 portfolio, India software agency"
       />
+      <AuraBackground diffused />
       <SectionHero eyebrow="Our Work" title="Projects That" gradient="Move the Needle" description="A curated selection of websites, CRM systems, and digital experiences we've built for ambitious brands.">
         <div className="fade-up delay-3 flex flex-wrap items-center justify-center gap-3">
           {['4 Service Categories', '98% On-Time Delivery'].map((item) => <span key={item} className="bg-[#111113] border border-zinc-800 rounded-full px-5 py-2 text-sm font-medium text-zinc-300">{item}</span>)}
@@ -40,7 +42,7 @@ export default function Portfolio() {
           })}
         </div>
       </div>
-      <section className="py-20 border-t border-zinc-900"><div className="max-w-3xl mx-auto px-6 text-center"><h2 className="font-display font-semibold text-3xl md:text-5xl tracking-tighter mb-5">Have a Project in Mind?</h2><p className="text-zinc-400 text-lg leading-relaxed mb-10">Let's turn your idea into a product your users will love.</p><div className="flex flex-col sm:flex-row gap-4 justify-center"><Link to="/#contact" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary-500 text-white rounded-full text-sm font-medium hover:bg-primary-400 transition-all shadow-[0_0_30px_rgba(51, 112, 246,0.3)] hover:shadow-[0_0_40px_rgba(51, 112, 246,0.5)] hover:-translate-y-0.5">Start a Project <Icon icon="solar:arrow-right-linear" width={18} /></Link><Link to="/services" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/5 backdrop-blur-sm text-zinc-100 rounded-full text-sm font-medium hover:bg-white/10 transition-all border border-zinc-800 hover:border-zinc-600">View All Work</Link></div></div></section>
+      <section className="py-20"><div className="max-w-3xl mx-auto px-6 text-center"><h2 className="font-display font-semibold text-3xl md:text-5xl tracking-tighter mb-5">Have a Project in Mind?</h2><p className="text-zinc-400 text-lg leading-relaxed mb-10">Let's turn your idea into a product your users will love.</p><div className="flex flex-col sm:flex-row gap-4 justify-center"><Link to="/#contact" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary-500 text-white rounded-full text-sm font-medium hover:bg-primary-400 transition-all shadow-[0_0_30px_rgba(51, 112, 246,0.3)] hover:shadow-[0_0_40px_rgba(51, 112, 246,0.5)] hover:-translate-y-0.5">Start a Project <Icon icon="solar:arrow-right-linear" width={18} /></Link><Link to="/services" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/5 backdrop-blur-sm text-zinc-100 rounded-full text-sm font-medium hover:bg-white/10 transition-all border border-zinc-800 hover:border-zinc-600">View All Work</Link></div></div></section>
     </SiteLayout>
   );
 }

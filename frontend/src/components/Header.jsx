@@ -123,8 +123,16 @@ function UserMenu({ user, isAdmin, isCustomer, onLogout, onEditProfile }) {
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { user, loading, logout, updateUser } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const close = () => setMenuOpen(false);
 
@@ -143,7 +151,11 @@ export default function Header() {
   const isCustomer = !!user && !isAdmin;
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 glass-panel border-b border-zinc-800/60">
+    <header
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+        scrolled ? 'glass-panel border-b border-zinc-800/60' : 'bg-transparent border-b border-transparent'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-6 h-16 md:h-20 flex items-center justify-between gap-6">
         <Logo variant="header" />
 

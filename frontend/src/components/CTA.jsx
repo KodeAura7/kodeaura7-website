@@ -3,7 +3,7 @@ import Icon from './Icon';
 
 export default function CTA({ title, body, primary = 'Get in Touch', secondary, compact = false }) {
   return (
-    <section className={`${compact ? 'py-20' : 'py-20 md:py-28'} border-t border-zinc-900`}>
+    <section className={compact ? 'py-20' : 'py-20 md:py-28'}>
       <div className="max-w-7xl mx-auto px-6">
         <div className="relative overflow-hidden bg-[#111113] rounded-3xl p-12 md:p-16 border border-zinc-800 text-center">
           <div className="absolute -top-20 -right-20 w-72 h-72 bg-primary-500/15 rounded-full blur-[80px]" />
