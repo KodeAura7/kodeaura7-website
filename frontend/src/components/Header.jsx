@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import EditProfileModal from './EditProfileModal';
 import Icon from './Icon';
 import Logo from './Logo';
 import { useAuth } from '../hooks/useAuth';
@@ -12,9 +13,117 @@ const NAV = [
   { label: 'Contact', to: '/#contact' },
 ];
 
+function UserMenu({ user, isAdmin, isCustomer, onLogout, onEditProfile }) {
+  const [open, setOpen] = useState(false);
+  const closeTimer = useRef(null);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function handleClick(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  useEffect(() => () => clearTimeout(closeTimer.current), []);
+
+  const openMenu = () => {
+    clearTimeout(closeTimer.current);
+    setOpen(true);
+  };
+
+  const scheduleClose = () => {
+    closeTimer.current = setTimeout(() => setOpen(false), 150);
+  };
+
+  const initial = (user.name || user.email || '?')[0].toUpperCase();
+
+  return (
+    <div ref={ref} className="relative" onMouseEnter={openMenu} onMouseLeave={scheduleClose}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center gap-2 hover:opacity-85 transition-opacity"
+      >
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-secondary-400 flex items-center justify-center text-white text-xs font-semibold select-none shrink-0">
+          {initial}
+        </div>
+        <span className="hidden lg:inline text-sm text-zinc-300 font-medium max-w-[120px] truncate">
+          {user.name || user.email}
+        </span>
+        <Icon
+          icon="solar:alt-arrow-down-linear"
+          width={13}
+          className={`hidden lg:inline text-zinc-500 transition-transform ${open ? 'rotate-180' : ''}`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-full pt-2 w-64 z-50">
+          <div className="bg-[#111113] border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden">
+            <div className="px-4 py-3 border-b border-zinc-800">
+              <p className="text-sm font-medium text-zinc-100 truncate">{user.name || 'Account'}</p>
+              <p className="text-xs text-zinc-500 truncate">{user.email}</p>
+              {isAdmin && (
+                <span className="inline-block mt-1.5 text-[10px] font-mono text-primary-400 px-1.5 py-0.5 rounded-full border border-primary-500/20 bg-primary-500/5">
+                  {user.role === 'super_admin' ? 'Super Admin' : 'Admin'}
+                </span>
+              )}
+            </div>
+
+            <div className="py-1.5">
+              <button
+                type="button"
+                onClick={() => { setOpen(false); onEditProfile(); }}
+                className="flex items-center gap-2.5 w-full px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800/60 transition-colors text-left"
+              >
+                <Icon icon="solar:pen-linear" width={14} />
+                Edit Profile
+              </button>
+              {isCustomer && (
+                <Link
+                  to="/welcome"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800/60 transition-colors"
+                >
+                  <Icon icon="solar:user-linear" width={14} />
+                  My Profile
+                </Link>
+              )}
+              {isAdmin && (
+                <Link
+                  to="/admin/dashboard"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800/60 transition-colors"
+                >
+                  <Icon icon="solar:widget-linear" width={14} />
+                  Admin Panel
+                </Link>
+              )}
+            </div>
+
+            <div className="border-t border-zinc-800 py-1.5">
+              <button
+                type="button"
+                onClick={() => { setOpen(false); onLogout(); }}
+                className="flex items-center gap-2.5 w-full px-4 py-2 text-sm text-error-400 hover:bg-error-500/10 transition-colors text-left"
+              >
+                <Icon icon="solar:logout-2-linear" width={14} />
+                Sign out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user, loading, logout } = useAuth();
+  const [editOpen, setEditOpen] = useState(false);
+  const { user, loading, logout, updateUser } = useAuth();
   const navigate = useNavigate();
 
   const close = () => setMenuOpen(false);
@@ -54,34 +163,16 @@ export default function Header() {
         </nav>
 
         {/* Desktop auth + CTA */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-4">
           {!loading && (
             user ? (
-              <>
-                {isAdmin && (
-                  <Link to="/admin/dashboard" className="text-xs font-mono text-primary-400 hover:text-primary-300 transition-colors px-2 py-1 rounded-lg border border-primary-500/20 bg-primary-500/5 hover:bg-primary-500/10">
-                    Admin
-                  </Link>
-                )}
-                {isCustomer ? (
-                  <Link to="/welcome" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity" title="My Profile">
-                    <div className="w-7 h-7 rounded-full bg-primary-500/15 border border-primary-500/30 flex items-center justify-center">
-                      <Icon icon="solar:user-linear" width={14} className="text-primary-400" />
-                    </div>
-                    <span className="text-xs text-zinc-400 max-w-[130px] truncate">{user.email}</span>
-                  </Link>
-                ) : (
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-full bg-primary-500/15 border border-primary-500/30 flex items-center justify-center">
-                      <Icon icon="solar:user-linear" width={14} className="text-primary-400" />
-                    </div>
-                    <span className="text-xs text-zinc-400 max-w-[130px] truncate" title={user.email}>{user.email}</span>
-                  </div>
-                )}
-                <button onClick={handleLogout} className="text-sm font-medium text-zinc-400 hover:text-error-400 transition-colors">
-                  Sign out
-                </button>
-              </>
+              <UserMenu
+                user={user}
+                isAdmin={isAdmin}
+                isCustomer={isCustomer}
+                onLogout={handleLogout}
+                onEditProfile={() => setEditOpen(true)}
+              />
             ) : (
               <Link to="/sign-in" className="text-sm font-medium text-zinc-400 hover:text-zinc-100 transition-colors">
                 Sign in
@@ -124,10 +215,18 @@ export default function Header() {
           {!loading && (
             user ? (
               <>
-                <div className="flex items-center gap-2 text-xs text-zinc-500">
-                  <Icon icon="solar:user-linear" width={14} />
-                  <span className="truncate">{user.email}</span>
+                <div className="flex items-center gap-2.5 text-xs text-zinc-500">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary-500 to-secondary-400 flex items-center justify-center text-white text-[10px] font-semibold select-none shrink-0">
+                    {(user.name || user.email || '?')[0].toUpperCase()}
+                  </div>
+                  <span className="truncate">{user.name || user.email}</span>
                 </div>
+                <button
+                  onClick={() => { close(); setEditOpen(true); }}
+                  className="text-zinc-300 hover:text-zinc-100 font-medium text-left"
+                >
+                  Edit Profile
+                </button>
                 {isCustomer && (
                   <Link to="/welcome" onClick={close} className="text-primary-400 font-medium">
                     My Profile
@@ -156,6 +255,14 @@ export default function Header() {
             Start Project
           </Link>
         </div>
+      )}
+
+      {editOpen && user && (
+        <EditProfileModal
+          user={user}
+          onSave={updateUser}
+          onClose={() => setEditOpen(false)}
+        />
       )}
     </header>
   );

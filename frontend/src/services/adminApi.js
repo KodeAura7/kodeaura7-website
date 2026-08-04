@@ -50,6 +50,8 @@ export const adminApi = {
   login: (credentials) =>
     request('/api/auth/login', { method: 'POST', body: JSON.stringify(credentials) }),
   me: () => request('/api/auth/me'),
+  updateMe: (data) => request('/api/auth/me', { method: 'PATCH', body: JSON.stringify(data) }),
+  changePassword: (data) => request('/api/auth/change-password', { method: 'POST', body: JSON.stringify(data) }),
 
   dashboard: () => request('/api/admin/dashboard'),
 

@@ -45,8 +45,13 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  // Merges a partial user object (e.g. after a profile edit) into the current session.
+  const updateUser = useCallback((patch) => {
+    setUser((prev) => (prev ? { ...prev, ...patch } : prev));
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, setSession }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, setSession, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
