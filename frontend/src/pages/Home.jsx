@@ -30,6 +30,7 @@ export default function Home() {
         description="KodeAura7 builds websites, CRM systems, design systems, and campaigns that drive measurable business growth. Software development company based in India."
         keywords="software development company, web development India, Salesforce CRM, UI/UX design, digital marketing, India, KodeAura7"
       />
+      <AuraBackground />
       <section className="relative pt-32 md:pt-44 pb-20 md:pb-28">
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
           {/* <div className="fade-up inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/50 border border-zinc-800 text-xs font-medium text-zinc-300 backdrop-blur-sm mb-8">
@@ -134,9 +135,8 @@ export default function Home() {
         <div className="flex gap-12 animate-marquee items-center text-zinc-500">{marquee.map((m, i) => <span key={`${m.label}-${i}`} className="flex items-center gap-3 font-display font-semibold text-xl whitespace-nowrap shrink-0"><Icon icon={m.icon} width={24} />{m.label}</span>)}</div>
       </section>
 
-      <section id="contact" className="relative overflow-hidden py-24 md:py-32 border-t border-zinc-900">
-        <AuraBackground />
-        <div className="relative max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+      <section id="contact" className="py-24 md:py-32 border-t border-zinc-900">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-6"><Icon icon="solar:letter-linear" width={12} /> Contact Us</div>
             <h2 className="font-display font-semibold text-3xl md:text-5xl tracking-tighter leading-tight mb-6">Let's Build the <span className="text-gradient">Digital Future.</span></h2>

@@ -39,7 +39,7 @@ export default function AuraBackground({ projectId = 'HzcaAbRLaALMhHJp8gLY', cla
   }, []);
 
   return (
-    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
+    <div className={`fixed inset-x-0 bottom-0 -z-10 h-[70vh] overflow-hidden pointer-events-none ${className}`}>
       <div ref={elRef} data-us-project={projectId} className="absolute inset-0" />
     </div>
   );
