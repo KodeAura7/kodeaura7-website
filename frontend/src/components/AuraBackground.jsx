@@ -39,10 +39,10 @@ export default function AuraBackground({ projectId = 'HzcaAbRLaALMhHJp8gLY', cla
   }, []);
 
   return (
-    <div className={`fixed inset-0 -z-10 overflow-hidden pointer-events-none ${className}`}>
+    <div className={`fixed inset-x-0 top-[30px] bottom-0 -z-10 overflow-hidden pointer-events-none ${className}`}>
       <div ref={elRef} data-us-project={projectId} className="absolute inset-0" />
       <div className="absolute inset-0 aura-tint" />
-      {diffused && <div className="absolute inset-0 backdrop-blur-2xl bg-[#09090B]/78" />}
+      {diffused && <div className="absolute inset-0 backdrop-blur-[70px] bg-[#09090B]/78" />}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import AuraBackground from '../components/AuraBackground';
 import CTA from '../components/CTA';
 import Icon from '../components/Icon';
 import SEO from '../components/SEO';
@@ -66,6 +67,7 @@ export default function About() {
         description="KodeAura7 is a full-service digital technology agency, India. We design, build, and scale digital infrastructure — websites, CRMs, and campaigns — for ambitious businesses worldwide."
         keywords="about KodeAura7, digital agency India, software company India, web development team, Salesforce partner India"
       />
+      <AuraBackground diffused />
 
       <SectionHero
         eyebrow={hero.eyebrow}
