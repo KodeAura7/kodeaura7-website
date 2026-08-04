@@ -6,6 +6,8 @@ import { AuthProvider } from './contexts/AuthContext.jsx';
 import { SiteDataProvider, useSiteData } from './contexts/SiteDataContext.jsx';
 import { ToastProvider } from './contexts/ToastContext.jsx';
 import { routes } from './routes/routes.jsx';
+import { resolveAssetUrl } from './utils/assetUrl';
+import { upsertLink, upsertJsonLd } from './components/SEO.jsx';
 
 const SITE_URL = 'https://kodeaura7.in';
 const SITE_EMAIL = 'info@kodeaura7.in';
@@ -13,7 +15,6 @@ const SITE_EMAIL = 'info@kodeaura7.in';
 function BrandingApplier() {
   const { branding, socialLinks } = useSiteData();
 
-  // Apply CSS custom properties for brand colours
   useEffect(() => {
     if (!branding?.colors) return;
     const root = document.documentElement;
@@ -30,12 +31,12 @@ function BrandingApplier() {
     if (accent) root.style.setProperty('--brand-accent', accent);
   }, [branding]);
 
-  // Keep Organization JSON-LD in sync with live branding + social links
   useEffect(() => {
     const name = branding?.name || 'KodeAura7';
-    const logoUrl = branding?.logos?.universal?.url || `${SITE_URL}/logo.png`;
+    const theme = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const logoUrl = branding?.logos?.universal?.[theme]?.url || branding?.logos?.universal?.url || `${SITE_URL}/logo.png`;
+    const faviconUrl = branding?.logos?.favicon?.[theme]?.url || branding?.logos?.favicon?.light?.url || branding?.logos?.favicon?.dark?.url;
 
-    // Collect real social URLs (skip placeholder "#" entries)
     const sameAs = (socialLinks || [])
       .map((l) => l.url)
       .filter((u) => u && u !== '#' && u.startsWith('http'));
@@ -49,7 +50,20 @@ function BrandingApplier() {
       email: SITE_EMAIL,
       address: {
         '@type': 'PostalAddress',
+        addressRegion: 'Uttarakhand',
+        addressCountry: 'IN',
+      },
+      sameAs,
+    };
 
+    upsertJsonLd('organization', schema);
+
+    if (faviconUrl) {
+      const resolved = resolveAssetUrl(faviconUrl);
+      upsertLink('icon', resolved);
+      upsertLink('shortcut icon', resolved);
+    }
+  }, [branding, socialLinks]);
 
   return null;
 }
@@ -68,6 +82,7 @@ function renderRoute(route) {
       </Route>
     );
   }
+
   return <Route key={route.path} path={route.path} element={route.element} />;
 }
 

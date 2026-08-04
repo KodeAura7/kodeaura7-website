@@ -14,14 +14,27 @@ function normalizeBrandingLogoUrl(url) {
   return url;
 }
 
+function normalizeLogoValue(value) {
+  if (!value || typeof value !== 'object') return value;
+
+  if ('url' in value) {
+    return { ...value, url: normalizeBrandingLogoUrl(value.url) };
+  }
+
+  if (value.light || value.dark) {
+    return {
+      light: normalizeLogoValue(value.light || {}),
+      dark: normalizeLogoValue(value.dark || {}),
+    };
+  }
+
+  return value;
+}
+
 function normalizeBrandingContent(content) {
   if (!content || typeof content !== 'object' || !content.logos) return content;
   const logos = Object.entries(content.logos).reduce((acc, [key, value]) => {
-    if (value && typeof value === 'object' && 'url' in value) {
-      acc[key] = { ...value, url: normalizeBrandingLogoUrl(value.url) };
-    } else {
-      acc[key] = value;
-    }
+    acc[key] = normalizeLogoValue(value);
     return acc;
   }, {});
   return { ...content, logos };

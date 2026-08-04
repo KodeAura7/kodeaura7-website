@@ -2,15 +2,30 @@ import { Link } from 'react-router-dom';
 import { useSiteData } from '../contexts/SiteDataContext';
 import { resolveAssetUrl } from '../utils/assetUrl';
 
+function getPreferredTheme() {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return 'light';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
 export default function Logo({ to = '/', variant = 'universal' }) {
   const { branding } = useSiteData();
+  const theme = getPreferredTheme();
+
+  const themeLogo = branding?.logos?.[variant]?.[theme];
+  const universalLogo = branding?.logos?.universal?.[theme];
+  const legacyVariant = branding?.logos?.[variant];
+  const legacyUniversal = branding?.logos?.universal;
 
   const logoData =
-    branding?.logos?.[variant]?.url
-      ? branding.logos[variant]
-      : branding?.logos?.universal?.url
-        ? branding.logos.universal
-        : null;
+    themeLogo?.url
+      ? themeLogo
+      : universalLogo?.url
+        ? universalLogo
+        : legacyVariant?.url
+          ? legacyVariant
+          : legacyUniversal?.url
+            ? legacyUniversal
+            : null;
 
   const name = branding?.name || 'KodeAura7';
 
