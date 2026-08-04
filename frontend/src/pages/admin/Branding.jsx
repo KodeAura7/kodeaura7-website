@@ -143,6 +143,7 @@ function ColorSwatch({ label, value, onChange }) {
 
 function LogoPreview({ placement, theme, logoUrl, height }) {
   const src = logoUrl ? resolveAssetUrl(logoUrl) : null;
+  const previewHeight = Number(height) || 40;
   const img = src ? (
     <img src={src} alt="Logo preview" className="max-w-full max-h-full object-contain" />
   ) : (
@@ -166,27 +167,27 @@ function LogoPreview({ placement, theme, logoUrl, height }) {
       <p className="text-[10px] uppercase tracking-widest text-zinc-500 mb-3">Preview ({placement}, {theme})</p>
       {placement === 'header' ? (
         <div className="flex items-center gap-3 rounded-2xl border border-zinc-800 bg-[#111113] p-3">
-          <div className="w-[120px] h-[40px] flex items-center justify-center bg-[#0D0D11] rounded-xl">{img}</div>
+          <div className="w-[120px] flex items-center justify-center bg-[#0D0D11] rounded-xl" style={{ height: `${previewHeight}px` }}>{img}</div>
           <div className="text-xs text-zinc-500">Header nav</div>
         </div>
       ) : placement === 'footer' ? (
         <div className="rounded-2xl border border-zinc-800 bg-[#111113] p-4">
           <div className="flex items-center gap-3">
-            <div className="w-[120px] h-[40px] flex items-center justify-center bg-[#0D0D11] rounded-xl">{img}</div>
+            <div className="w-[120px] flex items-center justify-center bg-[#0D0D11] rounded-xl" style={{ height: `${previewHeight}px` }}>{img}</div>
             <div className="text-xs text-zinc-500">Footer brand</div>
           </div>
         </div>
       ) : placement === 'login_portal' ? (
         <div className="rounded-2xl border border-zinc-800 bg-[#111113] p-4">
           <div className="flex items-center gap-3">
-            <div className="w-[96px] h-[96px] flex items-center justify-center bg-[#0D0D11] rounded-2xl">{img}</div>
+            <div className="flex items-center justify-center bg-[#0D0D11] rounded-2xl" style={{ height: `${previewHeight}px`, width: `${previewHeight}px` }}>{img}</div>
             <div className="text-xs text-zinc-500">Login portal sidebar</div>
           </div>
         </div>
       ) : (
         <div className="rounded-2xl border border-zinc-800 bg-[#111113] p-4">
           <div className="flex items-center gap-3">
-            <div className="w-[120px] h-[80px] flex items-center justify-center bg-[#0D0D11] rounded-xl">{img}</div>
+            <div className="w-[120px] flex items-center justify-center bg-[#0D0D11] rounded-xl" style={{ minHeight: `${previewHeight}px` }}>{img}</div>
             <div className="text-xs text-zinc-500">Universal fallback</div>
           </div>
         </div>
@@ -234,7 +235,7 @@ function ThemeLogoSlot({ label, hint, value, onChange, showAlt = true, showSize 
           </div>
         </Field>
       ) : null}
-      {placement ? <LogoPreview placement={placement} theme={theme} logoUrl={currentValue.url} height={size} /> : null}
+      {placement ? <LogoPreview placement={placement} theme={theme} logoUrl={currentValue.url} height={size || currentValue.height} /> : null}
     </div>
   );
 }

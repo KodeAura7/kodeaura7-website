@@ -28,6 +28,7 @@ export default function Logo({ to = '/', variant = 'universal' }) {
             : null;
 
   const name = branding?.name || 'KodeAura7';
+  const variantHeight = Number(branding?.logos?.[variant]?.height || branding?.logos?.universal?.height || 32) || 32;
 
   return (
     <Link to={to} className="flex items-center gap-2.5">
@@ -35,7 +36,8 @@ export default function Logo({ to = '/', variant = 'universal' }) {
         <img
           src={resolveAssetUrl(logoData.url)}
           alt={logoData.alt || name}
-          className="h-8 w-auto object-contain"
+          className="w-auto object-contain"
+          style={{ height: `${variantHeight}px` }}
           onError={(e) => { e.currentTarget.style.display = 'none'; }}
         />
       ) : (

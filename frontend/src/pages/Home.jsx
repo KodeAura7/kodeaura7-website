@@ -139,7 +139,17 @@ export default function Home() {
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-6"><Icon icon="solar:letter-linear" width={12} /> Contact Us</div>
             <h2 className="font-display font-semibold text-3xl md:text-5xl tracking-tighter leading-tight mb-6">Let's Build the <span className="text-gradient">Digital Future.</span></h2>
             <p className="text-zinc-400 leading-relaxed max-w-md mb-10">Tell us about your project and we'll get back within one business day. No commitment, no pressure - just a conversation about what's possible.</p>
-            <div className="space-y-5"><a href="mailto:info@kodeaura7.in" className="flex items-center gap-4 group"><div className="w-11 h-11 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-primary-400 group-hover:border-primary-500/40 transition-all"><Icon icon="solar:letter-linear" width={20} /></div><div><p className="text-xs uppercase tracking-widest text-zinc-500 font-mono">Email</p><p className="text-sm text-zinc-200 group-hover:text-primary-300 transition-colors">info@kodeaura7.in</p></div></a><div className="flex items-center gap-4"><div className="w-11 h-11 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-secondary-400"><Icon icon="solar:map-point-linear" width={20} /></div><div><p className="text-xs uppercase tracking-widest text-zinc-500 font-mono">Location</p><p className="text-sm text-zinc-200">Uttarakhand, India</p></div></div></div>
+            <div className="space-y-5">
+              <a href="mailto:info@kodeaura7.in" className="flex items-center gap-4 group">
+                <div className="w-11 h-11 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-primary-400 group-hover:border-primary-500/40 transition-all">
+                  <Icon icon="solar:letter-linear" width={20} />
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-widest text-zinc-500 font-mono">Email</p>
+                  <p className="text-sm text-zinc-200 group-hover:text-primary-300 transition-colors">info@kodeaura7.in</p>
+                </div>
+              </a>
+            </div>
           </div>
           <ContactForm />
         </div>

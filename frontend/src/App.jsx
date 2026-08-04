@@ -48,11 +48,6 @@ function BrandingApplier() {
       url: SITE_URL,
       logo: logoUrl,
       email: SITE_EMAIL,
-      address: {
-        '@type': 'PostalAddress',
-        addressRegion: 'Uttarakhand',
-        addressCountry: 'IN',
-      },
       sameAs,
     };
 
