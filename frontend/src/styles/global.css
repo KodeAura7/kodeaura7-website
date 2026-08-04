@@ -195,7 +195,9 @@ h6,
 .svc-visual:hover {
   border-color: var(--accent) !important;
   box-shadow: 0 0 44px -10px var(--accent);
-  background: rgba(24, 24, 27, 0.6);
+  background: rgba(24, 24, 27, 0.82);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
 }
 
 .svc-card:hover .svc-icon,

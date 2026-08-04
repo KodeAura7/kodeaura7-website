@@ -58,7 +58,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-24 md:py-32 border-t border-zinc-900">
+      <section className="py-24 md:py-32">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
             <div>
@@ -94,7 +94,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-24 md:py-32 border-t border-zinc-900">
+      <section className="py-24 md:py-32">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20"><h2 className="font-display font-semibold text-3xl md:text-5xl tracking-tighter">Our 4-Step Process</h2><p className="text-zinc-400 mt-5 max-w-xl mx-auto leading-relaxed">Predictable delivery. Transparent communication.</p></div>
           <div className="relative grid grid-cols-2 md:grid-cols-4 gap-y-14 gap-x-6">
@@ -104,7 +104,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-24 md:py-32 border-t border-zinc-900">
+      <section className="py-24 md:py-32">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16"><p className="font-mono text-xs text-zinc-500 tracking-widest uppercase mb-4">Testimonials</p><h2 className="font-display font-semibold text-3xl md:text-5xl tracking-tighter">What Our <span className="text-gradient">Clients Say</span></h2><p className="text-zinc-400 mt-5 max-w-xl mx-auto leading-relaxed">Trusted by businesses across India.</p></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -130,12 +130,12 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-20 border-t border-zinc-900 overflow-hidden">
+      <section className="py-20 overflow-hidden">
         <p className="text-center font-mono text-xs text-zinc-600 tracking-widest uppercase mb-10">Built with a modern stack</p>
         <div className="flex gap-12 animate-marquee items-center text-zinc-500">{marquee.map((m, i) => <span key={`${m.label}-${i}`} className="flex items-center gap-3 font-display font-semibold text-xl whitespace-nowrap shrink-0"><Icon icon={m.icon} width={24} />{m.label}</span>)}</div>
       </section>
 
-      <section id="contact" className="py-24 md:py-32 border-t border-zinc-900">
+      <section id="contact" className="py-24 md:py-32">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-6"><Icon icon="solar:letter-linear" width={12} /> Contact Us</div>
