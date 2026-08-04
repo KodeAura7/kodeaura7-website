@@ -71,6 +71,18 @@ export async function remove(request, response) {
   response.status(200).json({ message: 'Contact deleted.' });
 }
 
+export async function bulkDelete(request, response) {
+  const { ids } = request.body;
+  if (!Array.isArray(ids) || ids.length === 0)
+    return response.status(400).json({ message: 'ids must be a non-empty array.' });
+  let deleted = 0;
+  for (const id of ids) {
+    try { await deleteContact(id); deleted++; } catch { /* skip */ }
+  }
+  auditLog({ ...actor(request), action: 'contact.bulk_delete', objectType: 'contact', details: { count: deleted } });
+  response.json({ deleted });
+}
+
 export async function exportCsv(request, response) {
   const rows = await exportAllContacts();
   const header = 'Name,Email,Service,Message,Source,Status,Created At,Updated At';

@@ -31,6 +31,22 @@ export async function remove(request, response) {
   response.status(200).json({ message: 'Subscriber deleted.' });
 }
 
+export async function bulkDelete(request, response) {
+  const { ids } = request.body;
+  if (!Array.isArray(ids) || ids.length === 0)
+    return response.status(400).json({ message: 'ids must be a non-empty array.' });
+  let deleted = 0;
+  for (const id of ids) {
+    try { await deleteSubscriber(id); deleted++; } catch { /* skip */ }
+  }
+  auditLog({
+    userId: request.user?.sub, userName: request.user?.name, userEmail: request.user?.email,
+    ipAddress: request.ip,
+    action: 'newsletter.bulk_delete', objectType: 'newsletter', details: { count: deleted },
+  });
+  response.json({ deleted });
+}
+
 export async function exportCsv(request, response) {
   const rows = await exportAllSubscribers();
   const header = 'Email,Source,Subscribed At';

@@ -1,13 +1,13 @@
 {
   "name": "KodeAura7 — Software Development Company",
   "short_name": "KodeAura7",
-  "description": "Professional Software Development, Salesforce Solutions, Web Development, UI/UX Design, and Digital Marketing from Dehradun, India.",
+  "description": "Professional Software Development, Salesforce Solutions, Web Development, UI/UX Design, and Digital Marketing from India.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#09090B",
-  "theme_color": "#6366F1",
+  "theme_color": "#1C63F3",
   "lang": "en-IN",
   "categories": ["business", "productivity"],
   "icons": [

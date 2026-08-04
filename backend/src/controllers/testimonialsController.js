@@ -4,12 +4,18 @@ import {
   submitTestimonial,
   updateMyTestimonial,
   deleteMyTestimonial,
+  adminDeleteTestimonial,
   listAllTestimonials,
   setVisibility,
   updateOrder,
   exportAllTestimonials,
   importTestimonials
 } from '../services/testimonialsService.js';
+import { auditLog } from '../services/auditLogService.js';
+
+function actor(req) {
+  return { userId: req.user?.sub, userName: req.user?.name, userEmail: req.user?.email, ipAddress: req.ip };
+}
 
 export async function publicList(_request, response) {
   const items = await getPublicTestimonials();
@@ -50,6 +56,12 @@ export async function updateVisibility(request, response) {
 export async function updateSortOrder(request, response) {
   const result = await updateOrder(request.params.id, request.body.sort_order);
   response.status(200).json(result);
+}
+
+export async function adminDelete(request, response) {
+  await adminDeleteTestimonial(request.params.id);
+  auditLog({ ...actor(request), action: 'testimonial.delete', objectType: 'testimonial', objectId: request.params.id });
+  response.status(204).end();
 }
 
 export async function exportCsv(_request, response) {

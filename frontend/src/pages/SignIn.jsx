@@ -36,7 +36,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className="antialiased selection:bg-indigo-500/30 overflow-x-hidden min-h-screen flex items-center justify-center relative">
+    <div className="antialiased selection:bg-primary-500/30 overflow-x-hidden min-h-screen flex items-center justify-center relative">
       <SEO title="Sign In" path="/sign-in" description="Sign in to your KodeAura7 account." />
       <AmbientBackground compact />
       <Link to="/" className="fixed top-6 left-6 inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors z-10 whitespace-nowrap">
@@ -44,9 +44,9 @@ export default function SignIn() {
       </Link>
       <div className="max-w-md w-full mx-auto px-6 py-16">
         <div className="fade-up relative bg-[#111113] rounded-3xl p-8 md:p-10 border border-zinc-800 shadow-2xl shadow-black/50">
-          <div className="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
+          <div className="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-primary-500/40 to-transparent" />
           <div className="flex flex-col items-center text-center mb-6">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.4)]">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-secondary-400 flex items-center justify-center shadow-[0_0_20px_rgba(51, 112, 246,0.4)]">
               <div className="w-4 h-4 bg-[#09090B] rounded-sm" />
             </div>
             <span className="font-display font-semibold text-lg mt-3">KodeAura7</span>
@@ -68,7 +68,7 @@ export default function SignIn() {
                   placeholder="you@example.com"
                   autoComplete="email"
                   required
-                  className="w-full bg-[#18181B] border border-zinc-800 rounded-xl pl-11 pr-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all"
+                  className="w-full bg-[#18181B] border border-zinc-800 rounded-xl pl-11 pr-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/50 transition-all"
                 />
               </div>
             </div>
@@ -86,7 +86,7 @@ export default function SignIn() {
                   placeholder="Your password"
                   autoComplete="current-password"
                   required
-                  className="w-full bg-[#18181B] border border-zinc-800 rounded-xl pl-11 pr-11 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all"
+                  className="w-full bg-[#18181B] border border-zinc-800 rounded-xl pl-11 pr-11 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/50 transition-all"
                 />
                 <button
                   type="button"
@@ -105,21 +105,21 @@ export default function SignIn() {
                   type="checkbox"
                   checked={values.rememberMe}
                   onChange={handleChange}
-                  className="w-3.5 h-3.5 rounded border-zinc-700 bg-[#18181B] accent-indigo-500"
+                  className="w-3.5 h-3.5 rounded border-zinc-700 bg-[#18181B] accent-primary-500"
                 />
                 Remember me
               </label>
-              <Link to="/forgot-password" className="text-indigo-400 hover:text-indigo-300 transition-colors whitespace-nowrap">Forgot password?</Link>
+              <Link to="/forgot-password" className="text-primary-400 hover:text-primary-300 transition-colors whitespace-nowrap">Forgot password?</Link>
             </div>
             {error ? (
-              <p className="text-xs text-rose-400 flex items-center gap-1.5">
+              <p className="text-xs text-error-400 flex items-center gap-1.5">
                 <Icon icon="solar:danger-circle-linear" width={14} /> {error}
               </p>
             ) : null}
             <button
               type="submit"
               disabled={loading}
-              className="w-full inline-flex items-center justify-center gap-2 bg-indigo-500 text-white rounded-xl py-3.5 text-sm font-medium hover:bg-indigo-400 transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full inline-flex items-center justify-center gap-2 bg-primary-500 text-white rounded-xl py-3.5 text-sm font-medium hover:bg-primary-400 transition-all shadow-[0_0_20px_rgba(51, 112, 246,0.2)] hover:shadow-[0_0_30px_rgba(51, 112, 246,0.4)] focus:outline-none focus:ring-2 focus:ring-primary-500/50 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? 'Signing in…' : <>Sign In <Icon icon="solar:arrow-right-linear" width={16} /></>}
             </button>

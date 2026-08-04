@@ -35,8 +35,8 @@ export default function ForgotPassword() {
       >
         <div className="mt-8 space-y-5">
           <div className="flex justify-center">
-            <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shadow-[0_0_24px_rgba(16,185,129,0.1)]">
-              <Icon icon="solar:letter-opened-linear" width={28} className="text-emerald-400" />
+            <div className="w-14 h-14 rounded-2xl bg-success-500/10 border border-success-500/20 flex items-center justify-center shadow-[0_0_24px_rgba(16,185,129,0.1)]">
+              <Icon icon="solar:letter-opened-linear" width={28} className="text-success-400" />
             </div>
           </div>
           <div className="text-center space-y-2">

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  bulkDelete as bulkDeleteContacts,
   bulkStatus as bulkContactStatus,
   exportCsv as exportContacts,
   getOne as getContact,
@@ -7,9 +8,9 @@ import {
   remove as removeContact,
   updateStatus as updateContactStatus
 } from '../controllers/adminContactController.js';
-import { exportCsv as exportNewsletter, list as listNewsletter, remove as removeNewsletter } from '../controllers/adminNewsletterController.js';
+import { bulkDelete as bulkDeleteNewsletter, exportCsv as exportNewsletter, list as listNewsletter, remove as removeNewsletter } from '../controllers/adminNewsletterController.js';
 import { getDashboard } from '../controllers/dashboardController.js';
-import { adminList as listTestimonials, exportCsv as exportTestimonials, importCsv as importTestimonials, updateSortOrder as updateTestimonialOrder, updateVisibility as updateTestimonialVisibility } from '../controllers/testimonialsController.js';
+import { adminDelete as deleteTestimonial, adminList as listTestimonials, exportCsv as exportTestimonials, importCsv as importTestimonials, updateSortOrder as updateTestimonialOrder, updateVisibility as updateTestimonialVisibility } from '../controllers/testimonialsController.js';
 import { adminBulkDelete as bulkDeleteServices, adminCreate as createService, adminDelete as deleteService, adminExportCsv as exportServicesCsv, adminGetHistory as getServiceHistory, adminGetOne as getService, adminImportCsv as importServicesCsv, adminListAll as listServices, adminSetEnabled as setServiceEnabled, adminSetOrder as setServiceOrder, adminUpdate as updateService } from '../controllers/servicesController.js';
 import { adminCreate as createSocialLink, adminDelete as deleteSocialLink, adminExportCsv as exportSocialLinksCsv, adminListAll as listSocialLinks, adminSetEnabled as setSocialLinkEnabled, adminUpdate as updateSocialLink } from '../controllers/socialLinksController.js';
 import { adminGetPage, adminGetPageHistory, adminSetPage } from '../controllers/pageContentController.js';
@@ -33,6 +34,12 @@ import {
 } from '../controllers/listViewController.js';
 import { initiateMigration } from '../controllers/migrateController.js';
 import { list as listAuditLogs } from '../controllers/auditLogController.js';
+import {
+  getSources,
+  listReports, getReport, createReport, updateReport, toggleFavorite as toggleReportFavorite, deleteReport, runReport, executeConfig,
+  listFolders, createFolder, deleteFolder,
+  listDashboards, getDashboard as getDashboardById, getDefaultDashboard, createDashboard, updateDashboard, deleteDashboard, getWidgetData,
+} from '../controllers/reportsController.js';
 import { exportDatabase, importDatabase, dbImportUpload, getCollectionCounts } from '../controllers/dbAdminController.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { authorize } from '../middleware/authorize.js';
@@ -48,24 +55,27 @@ router.use(authorize('admin', 'super_admin'));
 router.get('/dashboard', asyncHandler(getDashboard));
 
 // ── Contacts ──────────────────────────────────────────────────────────────────
-router.get('/contacts/export', requirePermission('contacts.export'), asyncHandler(exportContacts));
-router.get('/contacts',        requirePermission('contacts.view'),   asyncHandler(listContacts));
-router.get('/contacts/:id',    requirePermission('contacts.view'),   asyncHandler(getContact));
+router.get('/contacts/export',        requirePermission('contacts.export'),        asyncHandler(exportContacts));
+router.get('/contacts',               requirePermission('contacts.view'),           asyncHandler(listContacts));
+router.get('/contacts/:id',           requirePermission('contacts.view'),           asyncHandler(getContact));
 router.patch('/contacts/bulk-status', requirePermission('contacts.status_update'), asyncHandler(bulkContactStatus));
+router.delete('/contacts/bulk',       requirePermission('contacts.delete'),         asyncHandler(bulkDeleteContacts));
 router.patch('/contacts/:id/status',  requirePermission('contacts.status_update'), asyncHandler(updateContactStatus));
-router.delete('/contacts/:id', requirePermission('contacts.delete'), asyncHandler(removeContact));
+router.delete('/contacts/:id',        requirePermission('contacts.delete'),         asyncHandler(removeContact));
 
 // ── Newsletter ────────────────────────────────────────────────────────────────
-router.get('/newsletter/export', requirePermission('newsletter.export'), asyncHandler(exportNewsletter));
-router.get('/newsletter',        requirePermission('newsletter.view'),   asyncHandler(listNewsletter));
-router.delete('/newsletter/:id', requirePermission('newsletter.delete'), asyncHandler(removeNewsletter));
+router.get('/newsletter/export',    requirePermission('newsletter.export'), asyncHandler(exportNewsletter));
+router.get('/newsletter',           requirePermission('newsletter.view'),   asyncHandler(listNewsletter));
+router.delete('/newsletter/bulk',   requirePermission('newsletter.delete'), asyncHandler(bulkDeleteNewsletter));
+router.delete('/newsletter/:id',    requirePermission('newsletter.delete'), asyncHandler(removeNewsletter));
 
 // ── Testimonials ──────────────────────────────────────────────────────────────
-router.get('/testimonials/export', requirePermission('testimonials.view'), asyncHandler(exportTestimonials));
-router.get('/testimonials',        requirePermission('testimonials.view'), asyncHandler(listTestimonials));
-router.post('/testimonials/import',       requirePermission('testimonials.edit'), asyncHandler(importTestimonials));
+router.get('/testimonials/export',           requirePermission('testimonials.view'), asyncHandler(exportTestimonials));
+router.get('/testimonials',                  requirePermission('testimonials.view'), asyncHandler(listTestimonials));
+router.post('/testimonials/import',          requirePermission('testimonials.edit'), asyncHandler(importTestimonials));
 router.patch('/testimonials/:id/visibility', requirePermission('testimonials.edit'), asyncHandler(updateTestimonialVisibility));
 router.patch('/testimonials/:id/order',      requirePermission('testimonials.edit'), asyncHandler(updateTestimonialOrder));
+router.delete('/testimonials/:id',           requirePermission('testimonials.edit'), asyncHandler(deleteTestimonial));
 
 // ── Services ──────────────────────────────────────────────────────────────────
 router.get('/services/export',    requirePermission('services.view'),   asyncHandler(exportServicesCsv));
@@ -137,6 +147,28 @@ router.patch('/list-views/:id/default',    asyncHandler(setListViewDefault));
 router.patch('/list-views/:id/favorite',   asyncHandler(favoriteListView));
 router.patch('/list-views/:id/pin',        asyncHandler(pinListView));
 router.post('/list-views/:id/recent',      asyncHandler(recordRecentListView));
+
+// ── Reports & Dashboards ──────────────────────────────────────────────────────
+router.get('/reports/sources',            asyncHandler(getSources));
+router.post('/reports/execute',           asyncHandler(executeConfig));
+router.get('/reports/folders',            asyncHandler(listFolders));
+router.post('/reports/folders',           asyncHandler(createFolder));
+router.delete('/reports/folders/:id',     asyncHandler(deleteFolder));
+router.get('/reports',                    asyncHandler(listReports));
+router.post('/reports',                   asyncHandler(createReport));
+router.get('/reports/:id',                asyncHandler(getReport));
+router.put('/reports/:id',                asyncHandler(updateReport));
+router.patch('/reports/:id/favorite',     asyncHandler(toggleReportFavorite));
+router.delete('/reports/:id',             asyncHandler(deleteReport));
+router.post('/reports/:id/run',           asyncHandler(runReport));
+
+router.get('/dashboards/default',         asyncHandler(getDefaultDashboard));
+router.post('/dashboards/widget-data',    asyncHandler(getWidgetData));
+router.get('/dashboards',                 asyncHandler(listDashboards));
+router.post('/dashboards',                asyncHandler(createDashboard));
+router.get('/dashboards/:id',             asyncHandler(getDashboardById));
+router.put('/dashboards/:id',             asyncHandler(updateDashboard));
+router.delete('/dashboards/:id',          asyncHandler(deleteDashboard));
 
 // ── Migrate Records ───────────────────────────────────────────────────────────
 router.post('/migrate', asyncHandler(initiateMigration));

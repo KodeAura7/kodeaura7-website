@@ -92,6 +92,11 @@ export async function deleteMyTestimonial(id, userId) {
   if (!result.rows[0]) throw Object.assign(new Error('Testimonial not found.'), { status: 404 });
 }
 
+export async function adminDeleteTestimonial(id) {
+  const result = await query(`DELETE FROM testimonials WHERE id = $1 RETURNING id`, [id]);
+  if (!result.rows[0]) throw Object.assign(new Error('Testimonial not found.'), { status: 404 });
+}
+
 export async function listAllTestimonials() {
   const result = await query(
     `SELECT t.id, t.name, t.designation, t.rating, t.review,

@@ -2,8 +2,8 @@ import Icon from '../Icon';
 
 export default function AuthInput({ label, icon, error, className, ...inputProps }) {
   const borderClass = error
-    ? 'border-rose-500/50 focus:border-rose-500/50 focus:ring-rose-500/30'
-    : 'border-zinc-800 focus:border-indigo-500/50 focus:ring-indigo-500/50';
+    ? 'border-error-500/50 focus:border-error-500/50 focus:ring-error-500/30'
+    : 'border-zinc-800 focus:border-primary-500/50 focus:ring-primary-500/50';
 
   return (
     <div className="space-y-1.5">
@@ -22,7 +22,7 @@ export default function AuthInput({ label, icon, error, className, ...inputProps
         />
       </div>
       {error && (
-        <p className="text-xs text-rose-400 ml-0.5 flex items-center gap-1">
+        <p className="text-xs text-error-400 ml-0.5 flex items-center gap-1">
           <Icon icon="solar:danger-circle-linear" width={12} /> {error}
         </p>
       )}

@@ -18,7 +18,21 @@ export function createApp() {
   app.set('trust proxy', 1);
 
   app.use(helmet());
-  app.use(cors({ origin: env.corsOrigin, credentials: false }));
+
+  const corsOptions = {
+    origin: (origin, callback) => {
+      if (!origin) {
+        return callback(null, true);
+      }
+      if (env.corsOrigin.includes(origin) || env.corsOrigin.includes('*')) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: false
+  };
+
+  app.use(cors(corsOptions));
   app.use(express.json({ limit: '50kb' }));
   app.use(
     rateLimit({
@@ -29,7 +43,17 @@ export function createApp() {
     })
   );
 
-  app.use('/assets', express.static(path.join(__dirname, '../assets'), { maxAge: '7d' }));
+  app.use(
+    '/assets',
+    cors({ origin: true, credentials: false }),
+    (req, res, next) => {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+      res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+      next();
+    },
+    express.static(path.join(__dirname, '../assets'), { maxAge: '7d' })
+  );
   app.use('/api', apiRoutes);
   app.use(notFound);
   app.use(errorHandler);

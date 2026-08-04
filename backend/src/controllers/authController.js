@@ -1,9 +1,11 @@
 import {
+  changeMyPassword as changeMyPasswordService,
   forgotPassword as forgotPasswordService,
   getMe,
   loginUser,
   resetPassword as resetPasswordService,
-  signupUser
+  signupUser,
+  updateMe as updateMeService
 } from '../services/authService.js';
 import { auditLog } from '../services/auditLogService.js';
 
@@ -29,6 +31,36 @@ export async function logout(_request, response) {
 export async function me(request, response) {
   const user = await getMe(request.user.sub);
   response.status(200).json(user);
+}
+
+export async function updateMe(request, response) {
+  const user = await updateMeService(request.user.sub, request.body);
+  auditLog({
+    userId: user.id,
+    userName: user.name,
+    userEmail: user.email,
+    action: 'user.profile_update',
+    objectType: 'admin_user',
+    objectId: user.id,
+    objectLabel: user.name || user.email,
+    ipAddress: request.ip,
+  });
+  response.status(200).json(user);
+}
+
+export async function changePassword(request, response) {
+  await changeMyPasswordService(request.user.sub, request.body);
+  auditLog({
+    userId: request.user.sub,
+    userName: request.user.name,
+    userEmail: request.user.email,
+    action: 'user.password_change',
+    objectType: 'admin_user',
+    objectId: request.user.sub,
+    objectLabel: request.user.name || request.user.email,
+    ipAddress: request.ip,
+  });
+  response.status(200).json({ message: 'Password updated successfully.' });
 }
 
 export async function forgotPassword(request, response) {

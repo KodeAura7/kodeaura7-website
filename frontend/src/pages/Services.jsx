@@ -44,7 +44,7 @@ export default function Services() {
         title="Services | Web Development, Salesforce, UI/UX & Digital Ads"
         path="/services"
         description="Web development, Salesforce CRM implementation, UI/UX design, and performance advertising by KodeAura7. End-to-end digital solutions for modern businesses."
-        keywords="web development services, Salesforce CRM India, UI UX design agency, Google Ads management, Meta ads agency, digital marketing Dehradun"
+        keywords="web development services, Salesforce CRM India, UI UX design agency, Google Ads management, Meta ads agency, digital marketing"
       />
       <SectionHero eyebrow="What We Do" title="Services Designed to" gradient="Scale Your Business" description="Four specialised disciplines. One unified vision. Engineered for growth.">
         <div className="fade-up delay-3 flex flex-wrap items-center justify-center gap-3">

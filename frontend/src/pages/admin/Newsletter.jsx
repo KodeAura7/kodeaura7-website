@@ -45,7 +45,9 @@ export default function Newsletter() {
   const [checkedIds, setCheckedIds] = useState(new Set());
   const [migrateOpen, setMigrateOpen] = useState(false);
   const debouncedSearch = useDebounce(search);
-  const { visibleCols, toggle: toggleCol, reset: resetCols } = useColumnVisibility('newsletter', COLS);
+  const { visibleCols, visibleOrdered, allOrdered, toggle: toggleCol, reset: resetCols, reorder: reorderCols } = useColumnVisibility('newsletter', COLS);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+  const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState(false);
 
   const rows = (data?.data ?? []);
   const allChecked = rows.length > 0 && rows.every((r) => checkedIds.has(r.id));
@@ -73,6 +75,17 @@ export default function Newsletter() {
     setPage(1);
   };
 
+  const handleBulkDelete = async () => {
+    setBulkDeleteConfirm(false); setBulkDeleting(true);
+    try {
+      const result = await adminApi.bulkDeleteNewsletter([...checkedIds]);
+      setCheckedIds(new Set());
+      success('Deleted', `${result.deleted} subscriber${result.deleted !== 1 ? 's' : ''} removed.`);
+      load();
+    } catch (err) { toastError('Delete failed', err.message); }
+    finally { setBulkDeleting(false); }
+  };
+
   const handleDelete = async (id) => {
     if (!window.confirm('Remove this subscriber? This cannot be undone.')) return;
     setDeleting(id);
@@ -96,7 +109,7 @@ export default function Newsletter() {
 
   const SortIcon = ({ col }) =>
     sort === col ? (
-      <Icon icon={dir === 'asc' ? 'solar:sort-from-bottom-to-top-linear' : 'solar:sort-from-top-to-bottom-linear'} width={13} className="text-indigo-400" />
+      <Icon icon={dir === 'asc' ? 'solar:sort-from-bottom-to-top-linear' : 'solar:sort-from-top-to-bottom-linear'} width={13} className="text-primary-400" />
     ) : (
       <Icon icon="solar:sort-linear" width={13} className="text-zinc-600" />
     );
@@ -126,18 +139,37 @@ export default function Newsletter() {
         onPin={lv.togglePin}
       />
 
-      {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div> : null}
+      {error ? <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400 mb-4">{error}</div> : null}
 
       {/* Bulk toolbar */}
       {checkedIds.size > 0 && (
-        <div className="mb-4 flex flex-wrap items-center gap-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3">
-          <span className="text-xs text-indigo-400 font-medium">{checkedIds.size} selected</span>
+        <div className="mb-4 flex flex-wrap items-center gap-3 bg-primary-500/10 border border-primary-500/20 rounded-xl px-4 py-3">
+          <span className="text-xs text-primary-400 font-medium">{checkedIds.size} selected</span>
           <div className="flex items-center gap-2 ml-auto">
             <button onClick={() => setMigrateOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-indigo-500/50 text-zinc-300 hover:text-indigo-300 text-xs font-medium transition-all">
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-primary-500/50 text-zinc-300 hover:text-primary-300 text-xs font-medium transition-all">
               <Icon icon="solar:transfer-horizontal-linear" width={13} />
               Migrate
             </button>
+            {canDo('newsletter.delete') && (
+              bulkDeleteConfirm ? (
+                <>
+                  <span className="text-xs text-zinc-500">Delete {checkedIds.size}?</span>
+                  <button onClick={handleBulkDelete} disabled={bulkDeleting}
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-error-500 text-white hover:bg-error-400 transition-all disabled:opacity-50">
+                    <Icon icon={bulkDeleting ? 'solar:loading-linear' : 'solar:check-read-linear'} width={11} className={bulkDeleting ? 'animate-spin' : ''} />
+                    {bulkDeleting ? 'Deleting…' : 'Confirm'}
+                  </button>
+                  <button onClick={() => setBulkDeleteConfirm(false)} className="px-2.5 py-1.5 rounded-lg text-xs text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-all">Cancel</button>
+                </>
+              ) : (
+                <button onClick={() => setBulkDeleteConfirm(true)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#18181B] border border-error-500/30 text-error-400 hover:bg-error-500/10 text-xs font-medium transition-all">
+                  <Icon icon="solar:trash-bin-minimalistic-linear" width={13} />
+                  Delete ({checkedIds.size})
+                </button>
+              )
+            )}
             <button onClick={() => setCheckedIds(new Set())}
               className="px-3 py-1.5 rounded-lg bg-[#18181B] border border-zinc-700 hover:border-zinc-500 text-zinc-400 text-xs transition-all">
               Deselect all
@@ -160,7 +192,8 @@ export default function Newsletter() {
         onRefresh={load}
         sortOptions={SORT_OPTIONS} sort={sort} dir={dir}
         onSort={(col, d) => { setSort(col); setDir(d); setPage(1); }}
-        columns={COLS} visibleCols={visibleCols} onColumnsToggle={toggleCol} onColumnsReset={resetCols}
+        columns={COLS} allOrdered={allOrdered} visibleCols={visibleCols}
+        onColumnsToggle={toggleCol} onColumnsReset={resetCols} onColumnsReorder={reorderCols}
         placeholder="Search by email…"
       >
         {canDo('newsletter.export') && (
@@ -179,9 +212,9 @@ export default function Newsletter() {
               <tr className="bg-[#18181B] border-b border-zinc-800">
                 <th className="w-10 px-4 py-3">
                   <input type="checkbox" checked={allChecked} ref={(el) => { if (el) el.indeterminate = someChecked; }}
-                    onChange={toggleAll} className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer" />
+                    onChange={toggleAll} className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-primary-500 cursor-pointer" />
                 </th>
-                {COLS.filter((c) => visibleCols.has(c.key)).map(({ key, label }) => (
+                {visibleOrdered.map(({ key, label }) => (
                   <th key={key} onClick={() => handleSort(key)}
                     className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider cursor-pointer hover:text-zinc-300 transition-colors select-none">
                     <span className="flex items-center gap-1.5">
@@ -194,22 +227,35 @@ export default function Newsletter() {
             </thead>
             <tbody className="divide-y divide-zinc-800/60">
               {!data ? (
-                <tr><td colSpan={4} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
+                <tr><td colSpan={4} className="px-4 py-12 text-center">
+                  <div className="flex flex-col items-center gap-2 text-zinc-700">
+                    <Icon icon="solar:loading-linear" width={22} className="animate-spin" />
+                    <span className="text-sm">Loading subscribers…</span>
+                  </div>
+                </td></tr>
               ) : data.data.length === 0 ? (
-                <tr><td colSpan={4} className="px-4 py-10 text-center text-sm text-zinc-600">No subscribers found.</td></tr>
+                <tr><td colSpan={4} className="px-4 py-12 text-center">
+                  <div className="flex flex-col items-center gap-2 text-zinc-700">
+                    <Icon icon="solar:letter-linear" width={28} />
+                    <span className="text-sm">No subscribers found.</span>
+                  </div>
+                </td></tr>
               ) : (
                 data.data.map((s) => (
                   <tr key={s.id} className="hover:bg-zinc-800/30 transition-colors">
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       <input type="checkbox" checked={checkedIds.has(s.id)} onChange={() => toggleOne(s.id)}
-                        className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-indigo-500 cursor-pointer" />
+                        className="w-3.5 h-3.5 rounded border-zinc-600 bg-[#18181B] accent-primary-500 cursor-pointer" />
                     </td>
-                    {visibleCols.has('email') && <td className="px-4 py-3 text-zinc-200">{s.email}</td>}
-                    {visibleCols.has('subscribed_at') && <td className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">{new Date(s.subscribed_at).toLocaleDateString()}</td>}
+                    {visibleOrdered.map(({ key }) => {
+                      if (key === 'email')         return <td key={key} className="px-4 py-3 text-zinc-200">{s.email}</td>;
+                      if (key === 'subscribed_at') return <td key={key} className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">{new Date(s.subscribed_at).toLocaleDateString()}</td>;
+                      return null;
+                    })}
                     {canDo('newsletter.delete') && (
                       <td className="px-4 py-3 text-right">
                         <button onClick={() => handleDelete(s.id)} disabled={deleting === s.id}
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-40" title="Delete">
+                          className="p-1.5 rounded-lg text-zinc-500 hover:text-error-400 hover:bg-error-500/10 transition-all disabled:opacity-40" title="Delete">
                           <Icon icon="solar:trash-bin-minimalistic-linear" width={16} />
                         </button>
                       </td>

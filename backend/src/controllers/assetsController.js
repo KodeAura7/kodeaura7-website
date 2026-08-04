@@ -13,11 +13,10 @@ export async function listLogoAssets(req, res) {
     const images = files.filter(
       (f) => !f.startsWith('.') && ALLOWED_EXT.has(path.extname(f).toLowerCase())
     );
-    const base = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || 4000}`;
     res.json(
       images.map((name) => ({
         name,
-        url: `${base}/assets/logos/${encodeURIComponent(name)}`
+        url: `/assets/logos/${encodeURIComponent(name)}`
       }))
     );
   } catch {
@@ -53,9 +52,8 @@ export const uploadMiddleware = multer({
 
 export async function uploadLogoAsset(req, res) {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded.' });
-  const base = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || 4000}`;
   res.status(201).json({
     name: req.file.filename,
-    url: `${base}/assets/logos/${encodeURIComponent(req.file.filename)}`
+    url: `/assets/logos/${encodeURIComponent(req.file.filename)}`
   });
 }

@@ -1,7 +1,7 @@
 const STYLES = {
-  new: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-  in_progress: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-  completed: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  new: 'bg-primary-500/10 text-primary-400 border-primary-500/20',
+  in_progress: 'bg-warning-500/10 text-warning-400 border-warning-500/20',
+  completed: 'bg-success-500/10 text-success-400 border-success-500/20',
   closed: 'bg-zinc-800 text-zinc-500 border-zinc-700'
 };
 

@@ -3,6 +3,7 @@ import Icon from '../components/Icon';
 
 const ToastCtx = createContext(null);
 
+
 const ICONS = {
   success: 'solar:check-circle-bold',
   error: 'solar:danger-circle-bold',
@@ -11,10 +12,10 @@ const ICONS = {
 };
 
 const COLORS = {
-  success: { border: 'border-l-emerald-500', icon: 'text-emerald-400', bg: 'bg-emerald-500/8' },
-  error:   { border: 'border-l-rose-500',    icon: 'text-rose-400',    bg: 'bg-rose-500/8' },
-  warning: { border: 'border-l-amber-500',   icon: 'text-amber-400',   bg: 'bg-amber-500/8' },
-  info:    { border: 'border-l-indigo-500',  icon: 'text-indigo-400',  bg: 'bg-indigo-500/8' },
+  success: { border: 'border-l-success-500', icon: 'text-success-400', bg: 'bg-success-500/8' },
+  error:   { border: 'border-l-error-500',    icon: 'text-error-400',    bg: 'bg-error-500/8' },
+  warning: { border: 'border-l-warning-500',   icon: 'text-warning-400',   bg: 'bg-warning-500/8' },
+  info:    { border: 'border-l-primary-500',  icon: 'text-primary-400',  bg: 'bg-primary-500/8' },
 };
 
 function ToastItem({ id, type = 'info', title, message, onDismiss }) {
@@ -81,11 +82,10 @@ export function useToast() {
   const toast = useContext(ToastCtx);
   if (!toast) throw new Error('useToast must be used inside ToastProvider');
 
-  return {
-    toast,
-    success: (title, message, opts) => toast({ type: 'success', title, message, ...opts }),
-    error:   (title, message, opts) => toast({ type: 'error',   title, message, ...opts }),
-    warning: (title, message, opts) => toast({ type: 'warning', title, message, ...opts }),
-    info:    (title, message, opts) => toast({ type: 'info',    title, message, ...opts }),
-  };
+  const success = useCallback((title, message, opts) => toast({ type: 'success', title, message, ...opts }), [toast]);
+  const error   = useCallback((title, message, opts) => toast({ type: 'error',   title, message, ...opts }), [toast]);
+  const warning = useCallback((title, message, opts) => toast({ type: 'warning', title, message, ...opts }), [toast]);
+  const info    = useCallback((title, message, opts) => toast({ type: 'info',    title, message, ...opts }), [toast]);
+
+  return { toast, success, error, warning, info };
 }

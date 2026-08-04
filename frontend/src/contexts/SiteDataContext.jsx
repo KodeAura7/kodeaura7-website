@@ -13,7 +13,7 @@ const DEFAULT_BRANDING = {
   name: 'KodeAura7',
   tagline: 'We Build the Digital Future.',
   logos: { header: { url: '', alt: 'KodeAura7' }, footer: { url: '', alt: 'KodeAura7' }, universal: { url: '', alt: 'KodeAura7' } },
-  colors: { primary: '#6366F1', secondary: '#06B6D4', accent: '#8B5CF6' }
+  colors: { primary: '#1C63F3', secondary: '#0AA9D6', accent: '#8B5CF6' }
 };
 
 const SiteDataContext = createContext({
@@ -43,7 +43,52 @@ export function SiteDataProvider({ children }) {
       setSocialLinks(links.value);
     }
     if (brand.status === 'fulfilled' && brand.value && typeof brand.value === 'object') {
-      setBranding({ ...DEFAULT_BRANDING, ...brand.value });
+      const normalizeLogo = (slot = {}, defaultAlt = DEFAULT_BRANDING.name) => {
+      const hasTheme = slot?.light || slot?.dark;
+      if (hasTheme) {
+        return {
+          light: {
+            url: slot.light?.url || slot.url || '',
+            alt: slot.light?.alt || slot.alt || defaultAlt,
+          },
+          dark: {
+            url: slot.dark?.url || slot.url || '',
+            alt: slot.dark?.alt || slot.alt || defaultAlt,
+          },
+          height: slot.height || '40',
+        };
+      }
+
+      if (slot?.url || slot?.alt) {
+        return {
+          light: { url: slot.url || '', alt: slot.alt || defaultAlt },
+          dark: { url: slot.url || '', alt: slot.alt || defaultAlt },
+          height: slot.height || '40',
+        };
+      }
+
+      return { light: { url: '', alt: defaultAlt }, dark: { url: '', alt: defaultAlt }, height: '40' };
+    };
+
+    const normalize = (logos = {}) => ({
+      header: normalizeLogo(logos.header),
+      footer: normalizeLogo(logos.footer),
+      login_portal: normalizeLogo(logos.login_portal),
+      universal: normalizeLogo(logos.universal, DEFAULT_BRANDING.name),
+      favicon: {
+        light: { url: logos.favicon?.light?.url || logos.favicon?.url || '' },
+        dark: { url: logos.favicon?.dark?.url || logos.favicon?.url || '' },
+      },
+    });
+
+      const normalized = {
+        ...DEFAULT_BRANDING,
+        ...brand.value,
+        logos: normalize(brand.value?.logos),
+        colors: { ...DEFAULT_BRANDING.colors, ...(brand.value?.colors || {}) }
+      };
+
+      setBranding(normalized);
     }
     setLoading(false);
   }, []);

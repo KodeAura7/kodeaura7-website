@@ -46,9 +46,9 @@ const FILTER_GROUPS = [
 
 function RollupCard({ label, total, active, icon, color }) {
   const colors = {
-    indigo: 'bg-indigo-500/10 text-indigo-400',
-    amber: 'bg-amber-500/10 text-amber-400',
-    cyan: 'bg-cyan-500/10 text-cyan-400'
+    indigo: 'bg-primary-500/10 text-primary-400',
+    amber: 'bg-warning-500/10 text-warning-400',
+    cyan: 'bg-secondary-500/10 text-secondary-400'
   };
   return (
     <div className="bg-[#111113] border border-zinc-800 rounded-2xl p-5 flex items-center gap-4">
@@ -74,8 +74,8 @@ const ROLE_OPTIONS = [
     label: 'Customer',
     desc: 'View-only access to assigned resources',
     icon: 'solar:user-linear',
-    badge: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-    accent: '#06B6D4',
+    badge: 'bg-secondary-500/10 text-secondary-400 border-secondary-500/20',
+    accent: '#0AA9D6',
   },
   {
     value: 'admin',
@@ -90,8 +90,8 @@ const ROLE_OPTIONS = [
     label: 'Super Admin',
     desc: 'Unrestricted access including user and system management',
     icon: 'solar:crown-linear',
-    badge: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-    accent: '#6366F1',
+    badge: 'bg-primary-500/10 text-primary-400 border-primary-500/20',
+    accent: '#1C63F3',
   },
 ];
 
@@ -193,7 +193,7 @@ function UserModal({ initial, onClose, onSaved }) {
                 <label key={r.value}
                   className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                     values.role === r.value
-                      ? 'border-indigo-500/30 bg-indigo-500/6'
+                      ? 'border-primary-500/30 bg-primary-500/6'
                       : 'border-zinc-800 bg-[#1A1A1D] hover:border-zinc-700'
                   }`}>
                   <input type="radio" name="role" value={r.value} checked={values.role === r.value}
@@ -207,7 +207,7 @@ function UserModal({ initial, onClose, onSaved }) {
                     <p className="text-[10px] text-zinc-600 mt-0.5 leading-snug">{r.desc}</p>
                   </div>
                   <div className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
-                    values.role === r.value ? 'border-indigo-500 bg-indigo-500' : 'border-zinc-600'
+                    values.role === r.value ? 'border-primary-500 bg-primary-500' : 'border-zinc-600'
                   }`}>
                     {values.role === r.value && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                   </div>
@@ -226,7 +226,7 @@ function UserModal({ initial, onClose, onSaved }) {
             </select>
           </div>
           {error ? (
-            <p className="text-xs text-rose-400 flex items-center gap-1.5">
+            <p className="text-xs text-error-400 flex items-center gap-1.5">
               <Icon icon="solar:danger-circle-linear" width={14} /> {error}
             </p>
           ) : null}
@@ -241,7 +241,7 @@ function UserModal({ initial, onClose, onSaved }) {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 py-2.5 rounded-xl bg-indigo-500 text-white text-sm font-medium hover:bg-indigo-400 transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)] disabled:opacity-60"
+              className="flex-1 py-2.5 rounded-xl bg-primary-500 text-white text-sm font-medium hover:bg-primary-400 transition-all shadow-[0_0_20px_rgba(51, 112, 246,0.2)] disabled:opacity-60"
             >
               {loading ? 'Saving…' : isEdit ? 'Save Changes' : 'Create User'}
             </button>
@@ -301,7 +301,7 @@ function InlineRolePicker({ userId, currentRole, isSelf, onChanged }) {
             <button key={opt.value} onClick={() => handleSelect(opt.value)}
               className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-all ${
                 opt.value === currentRole
-                  ? 'bg-indigo-500/10 text-indigo-300'
+                  ? 'bg-primary-500/10 text-primary-300'
                   : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100'
               }`}>
               <div className="w-5 h-5 rounded-md flex items-center justify-center shrink-0"
@@ -309,7 +309,7 @@ function InlineRolePicker({ userId, currentRole, isSelf, onChanged }) {
                 <Icon icon={opt.icon} width={12} />
               </div>
               <span className="flex-1 capitalize font-medium text-xs">{opt.label}</span>
-              {opt.value === currentRole && <Icon icon="solar:check-read-linear" width={11} className="text-indigo-400 shrink-0" />}
+              {opt.value === currentRole && <Icon icon="solar:check-read-linear" width={11} className="text-primary-400 shrink-0" />}
             </button>
           ))}
         </div>
@@ -320,8 +320,8 @@ function InlineRolePicker({ userId, currentRole, isSelf, onChanged }) {
 
 function StatusDot({ status }) {
   return (
-    <span className={`inline-flex items-center gap-1.5 text-xs ${status === 'active' ? 'text-emerald-400' : 'text-zinc-500'}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${status === 'active' ? 'bg-emerald-400' : 'bg-zinc-600'}`} />
+    <span className={`inline-flex items-center gap-1.5 text-xs ${status === 'active' ? 'text-success-400' : 'text-zinc-500'}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${status === 'active' ? 'bg-success-400' : 'bg-zinc-600'}`} />
       {status}
     </span>
   );
@@ -341,7 +341,7 @@ export default function Users() {
   const [sort, setSort] = useState('name');
   const [dir, setDir] = useState('asc');
   const [filters, setFilters] = useState({});
-  const { visibleCols, toggle: toggleCol, reset: resetCols } = useColumnVisibility('users', COLS);
+  const { visibleCols, visibleOrdered, allOrdered, toggle: toggleCol, reset: resetCols, reorder: reorderCols } = useColumnVisibility('users', COLS);
 
   const handleFilter = (key, val) => setFilters((f) => ({ ...f, [key]: val }));
 
@@ -410,7 +410,7 @@ export default function Users() {
         </div>
         {isSuperAdmin ? (
           <button onClick={() => setModal('create')}
-            className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+            className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-all shadow-[0_0_20px_rgba(51, 112, 246,0.2)]">
             <Icon icon="solar:user-plus-linear" width={16} />Create User
           </button>
         ) : <span className="text-xs text-zinc-600 font-mono">View only</span>}
@@ -432,7 +432,7 @@ export default function Users() {
         onPin={lv.togglePin}
       />
 
-      {error ? <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div> : null}
+      {error ? <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400 mb-4">{error}</div> : null}
 
       {(() => {
         const q = search.toLowerCase();
@@ -456,7 +456,8 @@ export default function Users() {
               sortOptions={SORT_OPTIONS} sort={sort} dir={dir}
               onSort={(col, d) => { setSort(col); setDir(d); }}
               filterGroups={FILTER_GROUPS} filters={filters} onFilter={handleFilter}
-              columns={COLS} visibleCols={visibleCols} onColumnsToggle={toggleCol} onColumnsReset={resetCols}
+              columns={COLS} allOrdered={allOrdered} visibleCols={visibleCols}
+              onColumnsToggle={toggleCol} onColumnsReset={resetCols} onColumnsReorder={reorderCols}
               placeholder="Search by name or email…"
             />
             <div className="bg-[#111113] border border-zinc-800 rounded-2xl overflow-hidden">
@@ -464,7 +465,7 @@ export default function Users() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-[#18181B] border-b border-zinc-800">
-                      {COLS.filter((c) => visibleCols.has(c.key)).map(({ key, label }) => (
+                      {visibleOrdered.map(({ key, label }) => (
                         <th key={key} onClick={() => { setSort(key); setDir((d) => sort === key && d === 'asc' ? 'desc' : 'asc'); }}
                           className="text-left px-4 py-3 text-xs font-medium text-zinc-500 uppercase tracking-wider cursor-pointer hover:text-zinc-300 transition-colors select-none">
                           {label}
@@ -475,32 +476,45 @@ export default function Users() {
                   </thead>
                   <tbody className="divide-y divide-zinc-800/60">
                     {!users ? (
-                      <tr><td colSpan={visibleColCount + 1} className="px-4 py-10 text-center text-sm text-zinc-600">Loading…</td></tr>
+                      <tr><td colSpan={visibleColCount + 1} className="px-4 py-12 text-center">
+                        <div className="flex flex-col items-center gap-2 text-zinc-700">
+                          <Icon icon="solar:loading-linear" width={22} className="animate-spin" />
+                          <span className="text-sm">Loading users…</span>
+                        </div>
+                      </td></tr>
                     ) : filtered.length === 0 ? (
-                      <tr><td colSpan={visibleColCount + 1} className="px-4 py-10 text-center text-sm text-zinc-600">No users found.</td></tr>
+                      <tr><td colSpan={visibleColCount + 1} className="px-4 py-12 text-center">
+                        <div className="flex flex-col items-center gap-2 text-zinc-700">
+                          <Icon icon="solar:user-circle-linear" width={28} />
+                          <span className="text-sm">No users found.</span>
+                        </div>
+                      </td></tr>
                     ) : (
                       filtered.map((u) => (
                         <tr key={u.id} className="hover:bg-zinc-800/30 transition-colors">
-                          {visibleCols.has('name') && <td className="px-4 py-3 text-zinc-200 font-medium whitespace-nowrap">{u.name}</td>}
-                          {visibleCols.has('email') && <td className="px-4 py-3 text-zinc-400 whitespace-nowrap">{u.email}</td>}
-                          {visibleCols.has('role') && (
-                            <td className="px-4 py-3 whitespace-nowrap">
-                              {isSuperAdmin
-                                ? <InlineRolePicker userId={u.id} currentRole={u.role} isSelf={u.id === me?.id} onChanged={handleRoleChange} />
-                                : <RoleBadge role={u.role} />}
-                            </td>
-                          )}
-                          {visibleCols.has('status') && <td className="px-4 py-3 whitespace-nowrap"><StatusDot status={u.status} /></td>}
-                          {visibleCols.has('last_login') && <td className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">{u.last_login ? new Date(u.last_login).toLocaleDateString() : '—'}</td>}
-                          {visibleCols.has('created_at') && <td className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">{new Date(u.created_at).toLocaleDateString()}</td>}
+                          {visibleOrdered.map(({ key }) => {
+                            if (key === 'name')       return <td key={key} className="px-4 py-3 text-zinc-200 font-medium whitespace-nowrap">{u.name}</td>;
+                            if (key === 'email')      return <td key={key} className="px-4 py-3 text-zinc-400 whitespace-nowrap">{u.email}</td>;
+                            if (key === 'role')       return (
+                              <td key={key} className="px-4 py-3 whitespace-nowrap">
+                                {isSuperAdmin
+                                  ? <InlineRolePicker userId={u.id} currentRole={u.role} isSelf={u.id === me?.id} onChanged={handleRoleChange} />
+                                  : <RoleBadge role={u.role} />}
+                              </td>
+                            );
+                            if (key === 'status')     return <td key={key} className="px-4 py-3 whitespace-nowrap"><StatusDot status={u.status} /></td>;
+                            if (key === 'last_login') return <td key={key} className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">{u.last_login ? new Date(u.last_login).toLocaleDateString() : '—'}</td>;
+                            if (key === 'created_at') return <td key={key} className="px-4 py-3 text-zinc-500 font-mono text-xs whitespace-nowrap">{new Date(u.created_at).toLocaleDateString()}</td>;
+                            return null;
+                          })}
                           {isSuperAdmin && (
                             <td className="px-4 py-3 text-right whitespace-nowrap">
                               <div className="flex items-center justify-end gap-2">
-                                <button onClick={() => setModal(u)} className="p-1.5 rounded-lg text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all" title="Edit">
+                                <button onClick={() => setModal(u)} className="p-1.5 rounded-lg text-zinc-500 hover:text-primary-400 hover:bg-primary-500/10 transition-all" title="Edit">
                                   <Icon icon="solar:pen-linear" width={15} />
                                 </button>
                                 <button onClick={() => handleDelete(u)} disabled={deleting === u.id || u.id === me?.id}
-                                  className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-30"
+                                  className="p-1.5 rounded-lg text-zinc-500 hover:text-error-400 hover:bg-error-500/10 transition-all disabled:opacity-30"
                                   title={u.id === me?.id ? "Can't delete yourself" : 'Delete'}>
                                   <Icon icon="solar:trash-bin-minimalistic-linear" width={15} />
                                 </button>

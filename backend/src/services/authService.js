@@ -83,6 +83,60 @@ export async function getMe(userId) {
   return user;
 }
 
+export async function updateMe(userId, payload) {
+  const sets = [];
+  const values = [];
+  let i = 1;
+
+  if (payload.name !== undefined) {
+    const name = sanitize(payload.name).trim();
+    if (!name) throw Object.assign(new Error('Name cannot be empty.'), { status: 400 });
+    sets.push(`name = $${i++}`); values.push(name);
+  }
+
+  if (payload.email !== undefined) {
+    const email = sanitize(payload.email).toLowerCase().trim();
+    if (!validator.isEmail(email)) throw Object.assign(new Error('Please enter a valid email address.'), { status: 400 });
+    const existing = await query('SELECT id FROM admin_users WHERE email = $1 AND id != $2', [email, userId]);
+    if (existing.rows[0]) throw Object.assign(new Error('An account with this email already exists.'), { status: 409 });
+    sets.push(`email = $${i++}`); values.push(email);
+  }
+
+  if (!sets.length) throw Object.assign(new Error('No valid fields to update.'), { status: 400 });
+
+  sets.push('updated_at = NOW()');
+  values.push(userId);
+
+  const result = await query(
+    `UPDATE admin_users SET ${sets.join(', ')} WHERE id = $${i}
+     RETURNING id, name, email, role, status, last_login, created_at`,
+    values
+  );
+
+  if (!result.rows[0]) throw Object.assign(new Error('User not found.'), { status: 404 });
+  return result.rows[0];
+}
+
+export async function changeMyPassword(userId, payload) {
+  const currentPassword = String(payload.currentPassword || '');
+  const newPassword = String(payload.newPassword || '');
+  const confirmPassword = String(payload.confirmPassword || '');
+
+  if (!currentPassword) throw Object.assign(new Error('Current password is required.'), { status: 400 });
+  if (newPassword.length < 8) throw Object.assign(new Error('New password must be at least 8 characters.'), { status: 400 });
+  if (newPassword !== confirmPassword) throw Object.assign(new Error('Passwords do not match.'), { status: 400 });
+
+  const result = await query('SELECT password_hash FROM admin_users WHERE id = $1', [userId]);
+  const user = result.rows[0];
+  if (!user) throw Object.assign(new Error('User not found.'), { status: 404 });
+
+  const valid = await bcrypt.compare(currentPassword, user.password_hash);
+  if (!valid) throw Object.assign(new Error('Current password is incorrect.'), { status: 401 });
+
+  const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+  await query('UPDATE admin_users SET password_hash = $1, updated_at = NOW() WHERE id = $2', [passwordHash, userId]);
+}
+
 export async function forgotPassword(email) {
   const normalizedEmail = sanitize(email || '').toLowerCase();
 
@@ -122,14 +176,14 @@ export async function forgotPassword(email) {
     <tr><td align="center">
       <table width="480" cellpadding="0" cellspacing="0" style="background:#111113;border:1px solid #27272A;border-radius:16px;padding:40px;">
         <tr><td style="text-align:center;padding-bottom:24px;">
-          <div style="display:inline-block;width:40px;height:40px;background:linear-gradient(135deg,#6366F1,#06B6D4);border-radius:10px;"></div>
+          <div style="display:inline-block;width:40px;height:40px;background:linear-gradient(135deg,#1C63F3,#0AA9D6);border-radius:10px;"></div>
           <p style="margin:12px 0 0;font-size:18px;font-weight:600;color:#F4F4F5;">KodeAura7</p>
         </td></tr>
         <tr><td>
           <h1 style="margin:0 0 8px;font-size:22px;font-weight:600;color:#F4F4F5;text-align:center;">Reset your password</h1>
           <p style="margin:0 0 24px;font-size:14px;color:#71717A;text-align:center;">Hi ${user.name}, we received a request to reset your password.</p>
           <div style="text-align:center;margin-bottom:24px;">
-            <a href="${resetUrl}" style="display:inline-block;background:#6366F1;color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:14px;font-weight:600;">Reset Password</a>
+            <a href="${resetUrl}" style="display:inline-block;background:#1C63F3;color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:14px;font-weight:600;">Reset Password</a>
           </div>
           <p style="margin:0 0 8px;font-size:12px;color:#52525B;text-align:center;">This link expires in 30 minutes. If you didn't request this, you can safely ignore this email.</p>
           <p style="margin:0;font-size:11px;color:#3F3F46;text-align:center;word-break:break-all;">${resetUrl}</p>

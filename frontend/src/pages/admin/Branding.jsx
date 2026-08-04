@@ -5,20 +5,41 @@ import { useSiteData } from '../../contexts/SiteDataContext';
 import { useToast } from '../../contexts/ToastContext';
 import PageHistorySidebar from '../../components/admin/PageHistorySidebar';
 import MigrateModal from '../../components/admin/MigrateModal';
+import { resolveAssetUrl } from '../../utils/assetUrl';
 
-const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-all';
+const INPUT = 'w-full bg-[#18181B] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/50 transition-all';
 
 const DEFAULT = {
   name: 'KodeAura7',
   tagline: 'We Build the Digital Future.',
   logos: {
-    header: { url: '', alt: 'KodeAura7' },
-    footer: { url: '', alt: 'KodeAura7' },
-    universal: { url: '', alt: 'KodeAura7' },
+    header: {
+      light: { url: '', alt: 'KodeAura7' },
+      dark: { url: '', alt: 'KodeAura7' },
+      height: '40'
+    },
+    footer: {
+      light: { url: '', alt: 'KodeAura7' },
+      dark: { url: '', alt: 'KodeAura7' },
+      height: '40'
+    },
+    login_portal: {
+      light: { url: '', alt: 'KodeAura7' },
+      dark: { url: '', alt: 'KodeAura7' },
+      height: '40'
+    },
+    favicon: {
+      light: { url: '' },
+      dark: { url: '' }
+    },
+    universal: {
+      light: { url: '', alt: 'KodeAura7' },
+      dark: { url: '', alt: 'KodeAura7' }
+    }
   },
   colors: {
-    primary: '#6366F1',
-    secondary: '#06B6D4',
+    primary: '#1C63F3',
+    secondary: '#0AA9D6',
     accent: '#8B5CF6',
   },
 };
@@ -45,6 +66,54 @@ function Field({ label, hint, children }) {
   );
 }
 
+function normalizeLogoSlot(slot = {}, defaultAlt = DEFAULT.name) {
+  const fallback = { url: '', alt: defaultAlt };
+
+  if (!slot || (typeof slot === 'object' && Object.keys(slot).length === 0)) {
+    return { light: fallback, dark: fallback };
+  }
+
+  if (slot.light || slot.dark) {
+    return {
+      light: {
+        url: slot.light?.url || slot.url || '',
+        alt: slot.light?.alt || slot.alt || defaultAlt,
+      },
+      dark: {
+        url: slot.dark?.url || slot.url || '',
+        alt: slot.dark?.alt || slot.alt || defaultAlt,
+      },
+    };
+  }
+
+  return {
+    light: { url: slot.url || '', alt: slot.alt || defaultAlt },
+    dark: { url: slot.url || '', alt: slot.alt || defaultAlt },
+  };
+}
+
+function normalizeLogos(logos = {}) {
+  return {
+    header: {
+      ...normalizeLogoSlot(logos.header),
+      height: logos.header?.height || '40',
+    },
+    footer: {
+      ...normalizeLogoSlot(logos.footer),
+      height: logos.footer?.height || '40',
+    },
+    login_portal: {
+      ...normalizeLogoSlot(logos.login_portal),
+      height: logos.login_portal?.height || '40',
+    },
+    universal: normalizeLogoSlot(logos.universal),
+    favicon: {
+      light: { url: logos.favicon?.light?.url || logos.favicon?.url || '' },
+      dark: { url: logos.favicon?.dark?.url || logos.favicon?.url || '' },
+    },
+  };
+}
+
 function ColorSwatch({ label, value, onChange }) {
   return (
     <div className="space-y-1.5">
@@ -64,10 +133,127 @@ function ColorSwatch({ label, value, onChange }) {
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className={INPUT + ' font-mono text-xs'}
-          placeholder="#6366F1"
+          placeholder="#1C63F3"
           maxLength={7}
         />
       </div>
+    </div>
+  );
+}
+
+function LogoPreview({ placement, theme, logoUrl, height }) {
+  const src = logoUrl ? resolveAssetUrl(logoUrl) : null;
+  const previewHeight = Number(height) || 40;
+  const [loading, setLoading] = useState(Boolean(src));
+  const [errored, setErrored] = useState(false);
+
+  useEffect(() => {
+    if (!src) { setLoading(false); setErrored(false); return; }
+    let mounted = true;
+    setLoading(true);
+    setErrored(false);
+    const img = typeof window !== 'undefined' ? new window.Image() : null;
+    if (!img) { if (mounted) setLoading(false); return () => { mounted = false; }; }
+    img.onload = () => { if (mounted) setLoading(false); };
+    img.onerror = () => { if (mounted) { setLoading(false); setErrored(true); } };
+    img.src = src;
+    return () => { mounted = false; };
+  }, [src]);
+
+  const img = loading ? (
+    <div className="rounded-md bg-zinc-900 animate-pulse" style={{ width: 'auto', height: `${previewHeight}px`, minWidth: `${previewHeight}px`, minHeight: `${previewHeight}px` }} aria-hidden />
+  ) : src && !errored ? (
+    <img src={src} alt="Logo preview" className="max-w-full max-h-full object-contain" />
+  ) : (
+    <div className="flex items-center justify-center h-full text-[10px] text-zinc-500">No logo</div>
+  );
+
+  if (placement === 'favicon') {
+    return (
+      <div className="rounded-2xl border border-zinc-800 bg-[#09090B] p-3 text-sm text-zinc-300">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="w-5 h-5 rounded-sm bg-zinc-900 border border-zinc-800 flex items-center justify-center overflow-hidden">{src ? <img src={src} alt="favicon" className="w-full h-full object-contain" /> : 'F'}</span>
+          <span>Browser tab preview ({theme})</span>
+        </div>
+        <div className="rounded-xl bg-[#111113] border border-zinc-800 p-3 text-xs text-zinc-500">KodeAura7 — Software Development</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-2xl border border-zinc-800 bg-[#09090B] p-4">
+      <p className="text-[10px] uppercase tracking-widest text-zinc-500 mb-3">Preview ({placement}, {theme})</p>
+      {placement === 'header' ? (
+        <div className="flex items-center gap-3 rounded-2xl border border-zinc-800 bg-[#111113] p-3">
+          <div className="w-[120px] flex items-center justify-center bg-[#0D0D11] rounded-xl" style={{ height: `${previewHeight}px` }}>{img}</div>
+          <div className="text-xs text-zinc-500">Header nav</div>
+        </div>
+      ) : placement === 'footer' ? (
+        <div className="rounded-2xl border border-zinc-800 bg-[#111113] p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-[120px] flex items-center justify-center bg-[#0D0D11] rounded-xl" style={{ height: `${previewHeight}px` }}>{img}</div>
+            <div className="text-xs text-zinc-500">Footer brand</div>
+          </div>
+        </div>
+      ) : placement === 'login_portal' ? (
+        <div className="rounded-2xl border border-zinc-800 bg-[#111113] p-4">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center bg-[#0D0D11] rounded-2xl" style={{ height: `${previewHeight}px`, width: `${previewHeight}px` }}>{img}</div>
+            <div className="text-xs text-zinc-500">Login portal sidebar</div>
+          </div>
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-zinc-800 bg-[#111113] p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-[120px] flex items-center justify-center bg-[#0D0D11] rounded-xl" style={{ minHeight: `${previewHeight}px` }}>{img}</div>
+            <div className="text-xs text-zinc-500">Universal fallback</div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ThemeLogoSlot({ label, hint, value, onChange, showAlt = true, showSize = false, size, onSizeChange, placement }) {
+  const [theme, setTheme] = useState('light');
+  const currentValue = value?.[theme] || { url: '', alt: '' };
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center gap-2">
+        {['light', 'dark'].map((mode) => (
+          <button
+            key={mode}
+            type="button"
+            onClick={() => setTheme(mode)}
+            className={`rounded-full px-3 py-1 text-xs font-medium ${theme === mode ? 'bg-primary-500 text-white' : 'bg-[#18181B] text-zinc-400 border border-zinc-800'}`}
+          >
+            {mode}
+          </button>
+        ))}
+      </div>
+      <LogoSlot
+        label={`${label} (${theme})`}
+        hint={hint}
+        value={currentValue}
+        onChange={(logo) => onChange({ ...value, [theme]: logo })}
+        showAlt={showAlt}
+      />
+      {showSize ? (
+        <Field label="Max height" hint="Use a pixel value for best fit.">
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              value={size}
+              onChange={(e) => onSizeChange(e.target.value)}
+              className={INPUT + ' max-w-[90px]'}
+              placeholder="40"
+            />
+            <span className="text-xs text-zinc-500">px</span>
+          </div>
+        </Field>
+      ) : null}
+      {placement ? <LogoPreview placement={placement} theme={theme} logoUrl={currentValue.url} height={size || currentValue.height} /> : null}
     </div>
   );
 }
@@ -135,7 +321,7 @@ function AssetPickerModal({ onSelect, onClose }) {
               <span className="text-sm">Loading assets…</span>
             </div>
           )}
-          {err && <p className="text-sm text-rose-400 text-center py-6">{err}</p>}
+          {err && <p className="text-sm text-error-400 text-center py-6">{err}</p>}
           {!loading && !err && assets?.length === 0 && (
             <div className="text-center py-8">
               <Icon icon="solar:folder-open-linear" width={32} className="text-zinc-700 mx-auto mb-3" />
@@ -149,10 +335,10 @@ function AssetPickerModal({ onSelect, onClose }) {
                 <button
                   key={asset.name}
                   onClick={() => { onSelect(asset.url); onClose(); }}
-                  className="group flex flex-col items-center gap-2 p-3 rounded-xl border border-zinc-800 hover:border-indigo-500/40 hover:bg-indigo-500/5 transition-all"
+                  className="group flex flex-col items-center gap-2 p-3 rounded-xl border border-zinc-800 hover:border-primary-500/40 hover:bg-primary-500/5 transition-all"
                 >
                   <div className="w-full h-16 flex items-center justify-center overflow-hidden rounded-lg bg-[#18181B]">
-                    <img src={asset.url} alt={asset.name} className="max-w-full max-h-full object-contain" />
+                    <img src={resolveAssetUrl(asset.url)} alt={asset.name} className="max-w-full max-h-full object-contain" />
                   </div>
                   <span className="text-[9px] text-zinc-600 group-hover:text-zinc-400 font-mono truncate w-full text-center">
                     {asset.name}
@@ -167,11 +353,11 @@ function AssetPickerModal({ onSelect, onClose }) {
   );
 }
 
-function LogoSlot({ label, hint, value, onChange }) {
+function LogoSlot({ label, hint, value, onChange, showAlt = true }) {
   const [imgError, setImgError] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
 
-  useEffect(() => { setImgError(false); }, [value.url]);
+  useEffect(() => { setImgError(false); }, [value?.url]);
 
   return (
     <div className="space-y-3">
@@ -186,7 +372,7 @@ function LogoSlot({ label, hint, value, onChange }) {
         <div className="w-28 h-16 rounded-xl border border-zinc-800 bg-[#18181B] flex items-center justify-center shrink-0 overflow-hidden p-2">
           {value.url && !imgError ? (
             <img
-              src={value.url}
+              src={resolveAssetUrl(value.url)}
               alt={value.alt}
               className="max-w-full max-h-full object-contain"
               onError={() => setImgError(true)}
@@ -202,7 +388,7 @@ function LogoSlot({ label, hint, value, onChange }) {
           <Field label="Image URL" hint={hint}>
             <div className="flex gap-2">
               <input
-                type="url"
+                type="text"
                 value={value.url}
                 onChange={(e) => onChange({ ...value, url: e.target.value })}
                 placeholder="https://example.com/logo.svg"
@@ -219,19 +405,21 @@ function LogoSlot({ label, hint, value, onChange }) {
               </button>
             </div>
           </Field>
-          <Field label="Alt text">
-            <input
-              type="text"
-              value={value.alt}
-              onChange={(e) => onChange({ ...value, alt: e.target.value })}
-              placeholder="Company name"
-              className={INPUT}
-            />
-          </Field>
+          {showAlt ? (
+            <Field label="Alt text">
+              <input
+                type="text"
+                value={value.alt}
+                onChange={(e) => onChange({ ...value, alt: e.target.value })}
+                placeholder="Company name"
+                className={INPUT}
+              />
+            </Field>
+          ) : null}
         </div>
       </div>
       {value.url && imgError ? (
-        <p className="text-xs text-rose-400 flex items-center gap-1.5">
+        <p className="text-xs text-error-400 flex items-center gap-1.5">
           <Icon icon="solar:close-circle-linear" width={13} />
           Image failed to load — check the URL
         </p>
@@ -252,7 +440,12 @@ export default function AdminBranding() {
 
   useEffect(() => {
     adminApi.getPageContent('branding')
-      .then((d) => setData({ ...DEFAULT, ...d }))
+      .then((d) => setData({
+        ...DEFAULT,
+        ...d,
+        logos: normalizeLogos(d?.logos),
+        colors: { ...DEFAULT.colors, ...(d?.colors || {}) }
+      }))
       .catch(() => setData({ ...DEFAULT }));
   }, []);
 
@@ -306,14 +499,14 @@ export default function AdminBranding() {
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => setMigrateOpen(true)}
-            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-zinc-700 hover:border-indigo-500/40 text-indigo-400 hover:text-indigo-300 transition-all">
+            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border bg-[#18181B] border-zinc-700 hover:border-primary-500/40 text-primary-400 hover:text-primary-300 transition-all">
             <Icon icon="solar:transfer-horizontal-linear" width={15} />
             Push to Env
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(99,102,241,0.2)]"
+            className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(51, 112, 246,0.2)]"
           >
             <Icon icon={saving ? 'solar:loading-linear' : 'solar:floppy-disk-linear'} width={15} className={saving ? 'animate-spin' : ''} />
             {saving ? 'Saving…' : 'Save'}
@@ -322,7 +515,7 @@ export default function AdminBranding() {
       </div>
 
       {error ? (
-        <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-6">{error}</div>
+        <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400 mb-6">{error}</div>
       ) : null}
 
       <div className="space-y-6">
@@ -355,11 +548,15 @@ export default function AdminBranding() {
           title="Header Logo"
           subtitle="Shown in the top navigation bar."
         >
-          <LogoSlot
-            label="Header"
+          <ThemeLogoSlot
+            label="Header Logo"
             hint="Recommended: SVG or PNG with transparent background, max height ~40px."
-            value={data.logos?.header || { url: '', alt: data.name }}
+            value={data.logos?.header}
             onChange={(v) => setLogo('header', v)}
+            showSize
+            size={data.logos?.header?.height}
+            onSizeChange={(value) => setLogo('header', { ...data.logos.header, height: value })}
+            placement="header"
           />
         </SectionCard>
 
@@ -367,23 +564,58 @@ export default function AdminBranding() {
           title="Footer Logo"
           subtitle="Shown in the site footer."
         >
-          <LogoSlot
-            label="Footer"
+          <ThemeLogoSlot
+            label="Footer Logo"
             hint="Can be a lighter/inverted version of your logo."
-            value={data.logos?.footer || { url: '', alt: data.name }}
+            value={data.logos?.footer}
             onChange={(v) => setLogo('footer', v)}
+            showSize
+            size={data.logos?.footer?.height}
+            onSizeChange={(value) => setLogo('footer', { ...data.logos.footer, height: value })}
+            placement="footer"
+          />
+        </SectionCard>
+
+        <SectionCard
+          title="Login Portal Logo"
+          subtitle="Used for the admin/customer sign-in and portal header area."
+        >
+          <ThemeLogoSlot
+            label="Login Portal Logo"
+            hint="Use an icon-friendly version that works in compact auth flows."
+            value={data.logos?.login_portal}
+            onChange={(v) => setLogo('login_portal', v)}
+            showSize
+            size={data.logos?.login_portal?.height}
+            onSizeChange={(value) => setLogo('login_portal', { ...data.logos.login_portal, height: value })}
+            placement="login_portal"
           />
         </SectionCard>
 
         <SectionCard
           title="Universal Logo"
-          subtitle="Fallback used when no header or footer specific logo is set. Also used in meta/OG tags."
+          subtitle="Fallback used when no header/footer specific logo is set. Also used in meta and social previews."
         >
-          <LogoSlot
-            label="Universal"
+          <ThemeLogoSlot
+            label="Universal Logo"
             hint="Square format recommended for OG/social previews."
-            value={data.logos?.universal || { url: '', alt: data.name }}
+            value={data.logos?.universal}
             onChange={(v) => setLogo('universal', v)}
+            placement="universal"
+          />
+        </SectionCard>
+
+        <SectionCard
+          title="Favicon"
+          subtitle="Browser tab icons for light and dark mode."
+        >
+          <ThemeLogoSlot
+            label="Favicon"
+            hint="Use a small square PNG or SVG for browser tabs."
+            value={data.logos?.favicon}
+            onChange={(v) => setLogo('favicon', v)}
+            showAlt={false}
+            placement="favicon"
           />
         </SectionCard>
 
@@ -395,12 +627,12 @@ export default function AdminBranding() {
           <div className="grid grid-cols-3 gap-4">
             <ColorSwatch
               label="Primary"
-              value={data.colors?.primary || '#6366F1'}
+              value={data.colors?.primary || '#1C63F3'}
               onChange={(v) => setColor('primary', v)}
             />
             <ColorSwatch
               label="Secondary"
-              value={data.colors?.secondary || '#06B6D4'}
+              value={data.colors?.secondary || '#0AA9D6'}
               onChange={(v) => setColor('secondary', v)}
             />
             <ColorSwatch

@@ -1,12 +1,14 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import {
+  changePassword,
   forgotPassword,
   login,
   logout,
   me,
   resetPassword,
-  signup
+  signup,
+  updateMe
 } from '../controllers/authController.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -40,6 +42,8 @@ const router = Router();
 router.post('/login', loginLimiter, asyncHandler(login));
 router.post('/logout', asyncHandler(logout));
 router.get('/me', authenticate, asyncHandler(me));
+router.patch('/me', authenticate, asyncHandler(updateMe));
+router.post('/change-password', authenticate, passwordResetLimiter, asyncHandler(changePassword));
 router.post('/forgot-password', passwordResetLimiter, asyncHandler(forgotPassword));
 router.post('/reset-password', passwordResetLimiter, asyncHandler(resetPassword));
 router.post('/signup', signupLimiter, asyncHandler(signup));

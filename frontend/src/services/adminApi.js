@@ -50,6 +50,8 @@ export const adminApi = {
   login: (credentials) =>
     request('/api/auth/login', { method: 'POST', body: JSON.stringify(credentials) }),
   me: () => request('/api/auth/me'),
+  updateMe: (data) => request('/api/auth/me', { method: 'PATCH', body: JSON.stringify(data) }),
+  changePassword: (data) => request('/api/auth/change-password', { method: 'POST', body: JSON.stringify(data) }),
 
   dashboard: () => request('/api/admin/dashboard'),
 
@@ -66,6 +68,8 @@ export const adminApi = {
     request('/api/admin/contacts/bulk-status', { method: 'PATCH', body: JSON.stringify({ ids, status }) }),
   deleteContact: (id) =>
     request(`/api/admin/contacts/${id}`, { method: 'DELETE' }),
+  bulkDeleteContacts: (ids) =>
+    request('/api/admin/contacts/bulk', { method: 'DELETE', body: JSON.stringify({ ids }) }),
   exportContacts: () => downloadCsv('/api/admin/contacts/export', 'contacts.csv'),
 
   userRollup: () => request('/api/admin/users/rollup'),
@@ -74,6 +78,8 @@ export const adminApi = {
     request(`/api/admin/newsletter?${new URLSearchParams(params)}`),
   deleteNewsletter: (id) =>
     request(`/api/admin/newsletter/${id}`, { method: 'DELETE' }),
+  bulkDeleteNewsletter: (ids) =>
+    request('/api/admin/newsletter/bulk', { method: 'DELETE', body: JSON.stringify({ ids }) }),
   exportNewsletter: () => downloadCsv('/api/admin/newsletter/export', 'newsletter.csv'),
 
   services: (params = {}) => {
@@ -109,6 +115,7 @@ export const adminApi = {
   exportSocialLinks: () => downloadCsv('/api/admin/social-links/export', 'social-links.csv'),
 
   testimonials: () => request('/api/admin/testimonials'),
+  deleteTestimonial: (id) => request(`/api/admin/testimonials/${id}`, { method: 'DELETE' }),
   exportTestimonials: () => downloadCsv('/api/admin/testimonials/export', 'testimonials.csv'),
   importTestimonials: (csv) =>
     request('/api/admin/testimonials/import', { method: 'POST', body: JSON.stringify({ csv }) }),
@@ -228,4 +235,31 @@ export const adminApi = {
     if (!response.ok) throw new Error(data.message || `Import failed: HTTP ${response.status}`);
     return data;
   },
+
+  // ── Reports ───────────────────────────────────────────────────────────────────
+  getReportSources: () => request('/api/admin/reports/sources'),
+  listReports: (params = {}) => {
+    const qs = new URLSearchParams(Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))).toString();
+    return request(`/api/admin/reports${qs ? `?${qs}` : ''}`);
+  },
+  getReport: (id) => request(`/api/admin/reports/${id}`),
+  createReport: (data) => request('/api/admin/reports', { method: 'POST', body: JSON.stringify(data) }),
+  updateReport: (id, data) => request(`/api/admin/reports/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  toggleReportFavorite: (id) => request(`/api/admin/reports/${id}/favorite`, { method: 'PATCH' }),
+  deleteReport: (id) => request(`/api/admin/reports/${id}`, { method: 'DELETE' }),
+  runReport: (id) => request(`/api/admin/reports/${id}/run`, { method: 'POST' }),
+  executeReportConfig: (config) => request('/api/admin/reports/execute', { method: 'POST', body: JSON.stringify({ config }) }),
+
+  listReportFolders: () => request('/api/admin/reports/folders'),
+  createReportFolder: (name) => request('/api/admin/reports/folders', { method: 'POST', body: JSON.stringify({ name }) }),
+  deleteReportFolder: (id) => request(`/api/admin/reports/folders/${id}`, { method: 'DELETE' }),
+
+  // ── Dashboards ────────────────────────────────────────────────────────────────
+  listDashboards: () => request('/api/admin/dashboards'),
+  getDefaultDashboard: () => request('/api/admin/dashboards/default'),
+  getDashboard: (id) => request(`/api/admin/dashboards/${id}`),
+  createDashboard: (data) => request('/api/admin/dashboards', { method: 'POST', body: JSON.stringify(data) }),
+  updateDashboard: (id, data) => request(`/api/admin/dashboards/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteDashboard: (id) => request(`/api/admin/dashboards/${id}`, { method: 'DELETE' }),
+  getWidgetData: (widgetConfig) => request('/api/admin/dashboards/widget-data', { method: 'POST', body: JSON.stringify({ widgetConfig }) }),
 };

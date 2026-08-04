@@ -4,6 +4,8 @@ import ContactStatusBadge from '../../components/ContactStatusBadge';
 import { CONTACT_STATUSES } from '../../utils/contactStatusConfig';
 import Icon from '../../components/Icon';
 import { adminApi } from '../../services/adminApi';
+import { useToast } from '../../contexts/ToastContext';
+import { usePermissions } from '../../contexts/PermissionsContext';
 
 const STATUS_LABEL = { new: 'New', in_progress: 'In Progress', completed: 'Completed', closed: 'Closed' };
 
@@ -19,13 +21,14 @@ function Field({ label, value, mono = false }) {
 export default function ContactDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { success, error: toastError } = useToast();
+  const { canDo } = usePermissions();
 
   const [contact, setContact] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [newStatus, setNewStatus] = useState('');
   const [saving, setSaving] = useState(false);
-  const [saveMsg, setSaveMsg] = useState('');
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
@@ -38,14 +41,13 @@ export default function ContactDetail() {
 
   const handleStatusSave = async () => {
     setSaving(true);
-    setSaveMsg('');
     try {
       const updated = await adminApi.updateContactStatus(id, newStatus);
       setContact(updated);
-      setSaveMsg('Status updated.');
-      setTimeout(() => setSaveMsg(''), 2500);
+      success('Status updated', `Changed to ${newStatus.replace('_', ' ')}.`);
     } catch (err) {
       setError(err.message);
+      toastError('Save failed', err.message);
     } finally {
       setSaving(false);
     }
@@ -59,6 +61,7 @@ export default function ContactDetail() {
       navigate('/admin/contacts', { replace: true });
     } catch (err) {
       setError(err.message);
+      toastError('Delete failed', err.message);
       setDeleting(false);
     }
   };
@@ -66,7 +69,10 @@ export default function ContactDetail() {
   if (loading) {
     return (
       <div className="p-6 md:p-8 max-w-3xl mx-auto">
-        <p className="text-sm text-zinc-600">Loading…</p>
+        <div className="flex items-center gap-3 text-zinc-500">
+          <Icon icon="solar:loading-linear" width={18} className="animate-spin" />
+          <span className="text-sm">Loading contact…</span>
+        </div>
       </div>
     );
   }
@@ -74,7 +80,7 @@ export default function ContactDetail() {
   if (error && !contact) {
     return (
       <div className="p-6 md:p-8 max-w-3xl mx-auto">
-        <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 text-sm text-rose-400">{error}</div>
+        <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-4 text-sm text-error-400">{error}</div>
       </div>
     );
   }
@@ -95,18 +101,20 @@ export default function ContactDetail() {
             <p className="text-sm text-zinc-500 mt-0.5">{contact.email}</p>
           </div>
         </div>
-        <button
-          onClick={handleDelete}
-          disabled={deleting}
-          className="inline-flex items-center gap-2 border border-rose-500/20 text-rose-400 hover:bg-rose-500/10 rounded-xl px-3 py-2 text-xs font-medium transition-all disabled:opacity-50"
-        >
-          <Icon icon="solar:trash-bin-minimalistic-linear" width={14} />
-          {deleting ? 'Deleting…' : 'Delete'}
-        </button>
+        {canDo('contacts.delete') && (
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="inline-flex items-center gap-2 border border-error-500/20 text-error-400 hover:bg-error-500/10 rounded-xl px-3 py-2 text-xs font-medium transition-all disabled:opacity-50"
+          >
+            <Icon icon={deleting ? 'solar:loading-linear' : 'solar:trash-bin-minimalistic-linear'} width={14} className={deleting ? 'animate-spin' : ''} />
+            {deleting ? 'Deleting…' : 'Delete'}
+          </button>
+        )}
       </div>
 
       {error ? (
-        <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 mb-4">{error}</div>
+        <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400 mb-4">{error}</div>
       ) : null}
 
       {/* Status update */}
@@ -118,7 +126,7 @@ export default function ContactDetail() {
           <select
             value={newStatus}
             onChange={(e) => setNewStatus(e.target.value)}
-            className="bg-[#18181B] border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500/50 transition-all"
+            className="bg-[#18181B] border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-zinc-200 focus:outline-none focus:border-primary-500/50 transition-all"
           >
             {CONTACT_STATUSES.map((s) => (
               <option key={s} value={s}>{STATUS_LABEL[s]}</option>
@@ -127,11 +135,10 @@ export default function ContactDetail() {
           <button
             onClick={handleStatusSave}
             disabled={saving || newStatus === contact.status}
-            className="px-4 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white text-sm font-medium transition-all disabled:opacity-50"
+            className="px-4 py-1.5 rounded-lg bg-primary-500 hover:bg-primary-400 text-white text-sm font-medium transition-all disabled:opacity-50"
           >
             {saving ? 'Saving…' : 'Save'}
           </button>
-          {saveMsg ? <span className="text-xs text-emerald-400">{saveMsg}</span> : null}
         </div>
       </div>
 

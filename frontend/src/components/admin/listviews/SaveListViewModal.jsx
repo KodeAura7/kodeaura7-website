@@ -27,7 +27,7 @@ export default function SaveListViewModal({ mode = 'create', initialData = null,
     }
   };
 
-  const inputClass = 'w-full bg-[#18181B] border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/60 transition-colors';
+  const inputClass = 'w-full bg-[#18181B] border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary-500/60 transition-colors';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -46,13 +46,13 @@ export default function SaveListViewModal({ mode = 'create', initialData = null,
         {/* Body */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
           {error && (
-            <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-xs text-rose-400">
+            <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-xs text-error-400">
               {error}
             </div>
           )}
 
           <div className="space-y-1">
-            <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Name <span className="text-rose-400">*</span></label>
+            <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Name <span className="text-error-400">*</span></label>
             <input ref={nameRef} type="text" value={name} onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Closed Contacts" className={inputClass} />
           </div>
@@ -88,7 +88,7 @@ export default function SaveListViewModal({ mode = 'create', initialData = null,
             Cancel
           </button>
           <button type="button" onClick={handleSubmit} disabled={saving}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-medium bg-indigo-500 hover:bg-indigo-400 text-white transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-medium bg-primary-500 hover:bg-primary-400 text-white transition-all disabled:opacity-60 shadow-[0_0_20px_rgba(51, 112, 246,0.2)]">
             <Icon icon={saving ? 'solar:loading-linear' : 'solar:floppy-disk-linear'} width={15} className={saving ? 'animate-spin' : ''} />
             {saving ? 'Saving…' : mode === 'create' ? 'Create List View' : 'Save Changes'}
           </button>

@@ -53,8 +53,8 @@ export default function MigrateModal({ objectName, selectedIds, onClose, onSucce
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center">
-              <Icon icon="solar:transfer-horizontal-bold-duotone" width={18} className="text-indigo-400" />
+            <div className="w-9 h-9 rounded-xl bg-primary-500/15 border border-primary-500/25 flex items-center justify-center">
+              <Icon icon="solar:transfer-horizontal-bold-duotone" width={18} className="text-primary-400" />
             </div>
             <div>
               <h2 className="text-sm font-semibold text-zinc-100">
@@ -76,9 +76,9 @@ export default function MigrateModal({ objectName, selectedIds, onClose, onSucce
           {result ? (
             /* Success state */
             <div className="space-y-4">
-              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 text-center">
-                <Icon icon="solar:check-circle-bold" width={32} className="text-emerald-400 mx-auto mb-2" />
-                <p className="text-sm font-semibold text-emerald-400">
+              <div className="bg-success-500/10 border border-success-500/20 rounded-xl p-4 text-center">
+                <Icon icon="solar:check-circle-bold" width={32} className="text-success-400 mx-auto mb-2" />
+                <p className="text-sm font-semibold text-success-400">
                   {isConfig ? 'Sync Complete' : 'Migration Complete'}
                 </p>
                 <p className="text-xs text-zinc-400 mt-1">
@@ -100,14 +100,14 @@ export default function MigrateModal({ objectName, selectedIds, onClose, onSucce
                     <label key={env}
                       className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
                         targetEnv === env
-                          ? 'bg-indigo-500/10 border-indigo-500/30'
+                          ? 'bg-primary-500/10 border-primary-500/30'
                           : 'bg-[#18181B] border-zinc-800 hover:border-zinc-700'
                       }`}>
                       <input type="radio" name="env" value={env}
                         checked={targetEnv === env} onChange={() => setTargetEnv(env)}
-                        className="accent-indigo-500" />
+                        className="accent-primary-500" />
                       <div>
-                        <p className={`text-sm font-medium ${targetEnv === env ? 'text-indigo-300' : 'text-zinc-200'}`}>{label}</p>
+                        <p className={`text-sm font-medium ${targetEnv === env ? 'text-primary-300' : 'text-zinc-200'}`}>{label}</p>
                         <p className="text-[10px] text-zinc-600 mt-0.5">{ENV_URLS[env]}</p>
                       </div>
                     </label>
@@ -115,8 +115,8 @@ export default function MigrateModal({ objectName, selectedIds, onClose, onSucce
                 </div>
               </div>
 
-              <div className="bg-amber-500/8 border border-amber-500/20 rounded-xl p-3.5 flex gap-3">
-                <Icon icon="solar:danger-triangle-linear" width={15} className="text-amber-400 mt-0.5 shrink-0" />
+              <div className="bg-warning-500/8 border border-warning-500/20 rounded-xl p-3.5 flex gap-3">
+                <Icon icon="solar:danger-triangle-linear" width={15} className="text-warning-400 mt-0.5 shrink-0" />
                 <div className="text-[11px] text-zinc-400 leading-relaxed">
                   {isConfig
                     ? `The entire ${configLabel} configuration will be overwritten in ${ENV_LABELS[targetEnv] || '…'}.`
@@ -126,7 +126,7 @@ export default function MigrateModal({ objectName, selectedIds, onClose, onSucce
               </div>
 
               {error && (
-                <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-sm text-rose-400 flex gap-2 items-start">
+                <div className="bg-error-500/10 border border-error-500/20 rounded-xl p-3 text-sm text-error-400 flex gap-2 items-start">
                   <Icon icon="solar:danger-circle-linear" width={15} className="mt-0.5 shrink-0" />
                   <span className="break-words">{error}</span>
                 </div>
@@ -138,7 +138,7 @@ export default function MigrateModal({ objectName, selectedIds, onClose, onSucce
                   Cancel
                 </button>
                 <button onClick={handleMigrate} disabled={!targetEnv || loading}
-                  className="flex-1 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2">
+                  className="flex-1 py-2.5 rounded-xl bg-primary-500 hover:bg-primary-400 text-white text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2">
                   {loading ? (
                     <><Icon icon="solar:loading-linear" width={15} className="animate-spin" />{isConfig ? 'Syncing…' : 'Migrating…'}</>
                   ) : (
