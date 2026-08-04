@@ -253,7 +253,12 @@ export default function AdminBranding() {
 
   useEffect(() => {
     adminApi.getPageContent('branding')
-      .then((d) => setData({ ...DEFAULT, ...d }))
+      .then((d) => setData({
+        ...DEFAULT,
+        ...d,
+        logos: { ...DEFAULT.logos, ...(d?.logos || {}) },
+        colors: { ...DEFAULT.colors, ...(d?.colors || {}) }
+      }))
       .catch(() => setData({ ...DEFAULT }));
   }, []);
 

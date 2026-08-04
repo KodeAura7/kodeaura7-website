@@ -43,7 +43,12 @@ export function SiteDataProvider({ children }) {
       setSocialLinks(links.value);
     }
     if (brand.status === 'fulfilled' && brand.value && typeof brand.value === 'object') {
-      setBranding({ ...DEFAULT_BRANDING, ...brand.value });
+      setBranding({
+        ...DEFAULT_BRANDING,
+        ...brand.value,
+        logos: { ...DEFAULT_BRANDING.logos, ...(brand.value?.logos || {}) },
+        colors: { ...DEFAULT_BRANDING.colors, ...(brand.value?.colors || {}) }
+      });
     }
     setLoading(false);
   }, []);
