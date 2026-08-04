@@ -77,7 +77,7 @@ export default function About() {
       />
 
       {/* Story + Stats */}
-      <section className="py-20 md:py-28 border-t border-zinc-900">
+      <section className="py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           <div>
             <p className="font-mono text-xs text-zinc-500 tracking-widest uppercase mb-4">{story.subtitle}</p>
@@ -101,7 +101,7 @@ export default function About() {
       </section>
 
       {/* Values */}
-      <section className="py-20 md:py-28 border-t border-zinc-900">
+      <section className="py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
             <h2 className="font-display font-semibold text-3xl md:text-5xl tracking-tighter mb-4">{values.title}</h2>
@@ -123,7 +123,7 @@ export default function About() {
       </section>
 
       {/* Tech stack */}
-      <section className="py-20 md:py-28 border-t border-zinc-900">
+      <section className="py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
             <h2 className="font-display font-semibold text-3xl md:text-5xl tracking-tighter mb-4">{tech.title}</h2>

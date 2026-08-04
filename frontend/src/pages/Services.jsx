@@ -67,7 +67,7 @@ export default function Services() {
         const num = service.num || String(index + 1).padStart(2, '0');
 
         return (
-          <section key={service.id || service.slug} id={anchor} className="py-20 md:py-28 border-t border-zinc-900 scroll-mt-24">
+          <section key={service.id || service.slug} id={anchor} className="py-20 md:py-28 scroll-mt-24">
             <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               <div className={reverse ? 'lg:order-2' : 'lg:order-1'}>
                 <span className="font-mono text-xs" style={{ color: service.accent }}>{num}</span>
