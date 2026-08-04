@@ -49,16 +49,7 @@ function BrandingApplier() {
       email: SITE_EMAIL,
       address: {
         '@type': 'PostalAddress',
-        addressLocality: 'Dehradun',
-        addressRegion: 'Uttarakhand',
-        addressCountry: 'IN',
-      },
-      sameAs,
-    };
 
-    const el = document.getElementById('org-schema');
-    if (el) el.textContent = JSON.stringify(schema);
-  }, [branding, socialLinks]);
 
   return null;
 }

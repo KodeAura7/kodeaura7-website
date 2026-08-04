@@ -1,7 +1,7 @@
 export const site = {
   name: 'KodeAura7',
   email: 'info@kodeaura7.in',
-  location: 'Dehradun, Uttarakhand, India',
+  location: 'Uttarakhand, India',
 productionUrl: 'https://kodeaura7.in',
 stagingUrl: 'https://staging.kodeaura7.in'
 };

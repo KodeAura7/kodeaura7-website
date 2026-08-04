@@ -26,8 +26,8 @@ export default function Home() {
       <SEO
         title="KodeAura7"
         path="/"
-        description="KodeAura7 builds websites, CRM systems, design systems, and campaigns that drive measurable business growth. Software development company based in Dehradun, India."
-        keywords="software development company, web development India, Salesforce CRM, UI/UX design, digital marketing, Dehradun, KodeAura7"
+        description="KodeAura7 builds websites, CRM systems, design systems, and campaigns that drive measurable business growth. Software development company based in India."
+        keywords="software development company, web development India, Salesforce CRM, UI/UX design, digital marketing, India, KodeAura7"
       />
       <section className="relative pt-32 md:pt-44 pb-20 md:pb-28">
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
@@ -39,7 +39,7 @@ export default function Home() {
             We Build <span className="text-gradient">Growth Systems</span> That Drive Results.
           </h1>
           <p className="fade-up delay-2 text-zinc-400 text-lg leading-relaxed max-w-2xl mx-auto mb-10">
-            KodeAura7 is a premium digital technology agency from Dehradun. We design, build, and scale the websites, CRMs, and campaigns that turn ambitious businesses into market leaders.
+            KodeAura7 is a premium digital technology agency. We design, build, and scale the websites, CRMs, and campaigns that turn ambitious businesses into market leaders.
           </p>
           <div className="fade-up delay-3 flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Link to="/#contact" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary-500 text-white rounded-full text-sm font-medium hover:bg-primary-400 transition-all shadow-[0_0_30px_rgba(51, 112, 246,0.3)] hover:shadow-[0_0_40px_rgba(51, 112, 246,0.5)] hover:-translate-y-0.5">Start Your Project <Icon icon="solar:arrow-right-linear" width={18} /></Link>
@@ -139,7 +139,7 @@ export default function Home() {
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-6"><Icon icon="solar:letter-linear" width={12} /> Contact Us</div>
             <h2 className="font-display font-semibold text-3xl md:text-5xl tracking-tighter leading-tight mb-6">Let's Build the <span className="text-gradient">Digital Future.</span></h2>
             <p className="text-zinc-400 leading-relaxed max-w-md mb-10">Tell us about your project and we'll get back within one business day. No commitment, no pressure - just a conversation about what's possible.</p>
-            <div className="space-y-5"><a href="mailto:info@kodeaura7.in" className="flex items-center gap-4 group"><div className="w-11 h-11 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-primary-400 group-hover:border-primary-500/40 transition-all"><Icon icon="solar:letter-linear" width={20} /></div><div><p className="text-xs uppercase tracking-widest text-zinc-500 font-mono">Email</p><p className="text-sm text-zinc-200 group-hover:text-primary-300 transition-colors">info@kodeaura7.in</p></div></a><div className="flex items-center gap-4"><div className="w-11 h-11 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-secondary-400"><Icon icon="solar:map-point-linear" width={20} /></div><div><p className="text-xs uppercase tracking-widest text-zinc-500 font-mono">Location</p><p className="text-sm text-zinc-200">Dehradun, Uttarakhand, India</p></div></div></div>
+            <div className="space-y-5"><a href="mailto:info@kodeaura7.in" className="flex items-center gap-4 group"><div className="w-11 h-11 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-primary-400 group-hover:border-primary-500/40 transition-all"><Icon icon="solar:letter-linear" width={20} /></div><div><p className="text-xs uppercase tracking-widest text-zinc-500 font-mono">Email</p><p className="text-sm text-zinc-200 group-hover:text-primary-300 transition-colors">info@kodeaura7.in</p></div></a><div className="flex items-center gap-4"><div className="w-11 h-11 rounded-xl bg-[#18181B] border border-zinc-800 flex items-center justify-center text-secondary-400"><Icon icon="solar:map-point-linear" width={20} /></div><div><p className="text-xs uppercase tracking-widest text-zinc-500 font-mono">Location</p><p className="text-sm text-zinc-200">Uttarakhand, India</p></div></div></div>
           </div>
           <ContactForm />
         </div>
