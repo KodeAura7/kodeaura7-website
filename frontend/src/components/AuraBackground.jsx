@@ -23,7 +23,12 @@ function loadUnicornStudioScript() {
 
 // Renders an animated aura/gradient via UnicornStudio (aura.build embed).
 // init() is re-run on every mount so SPA route changes re-hook the fresh DOM node.
-export default function AuraBackground({ projectId = 'HzcaAbRLaALMhHJp8gLY', className = '' }) {
+export default function AuraBackground({
+  projectId = 'HzcaAbRLaALMhHJp8gLY',
+  className = '',
+  hueRotate = 305,
+  saturate = 1.3,
+}) {
   const elRef = useRef(null);
 
   useEffect(() => {
@@ -40,7 +45,12 @@ export default function AuraBackground({ projectId = 'HzcaAbRLaALMhHJp8gLY', cla
 
   return (
     <div className={`fixed inset-0 -z-10 overflow-hidden pointer-events-none ${className}`}>
-      <div ref={elRef} data-us-project={projectId} className="absolute inset-0" />
+      <div
+        ref={elRef}
+        data-us-project={projectId}
+        className="absolute inset-0"
+        style={{ filter: `hue-rotate(${hueRotate}deg) saturate(${saturate})` }}
+      />
     </div>
   );
 }
