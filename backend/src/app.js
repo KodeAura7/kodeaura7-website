@@ -46,6 +46,12 @@ export function createApp() {
   app.use(
     '/assets',
     cors({ origin: true, credentials: false }),
+    (req, res, next) => {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+      res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+      next();
+    },
     express.static(path.join(__dirname, '../assets'), { maxAge: '7d' })
   );
   app.use('/api', apiRoutes);
