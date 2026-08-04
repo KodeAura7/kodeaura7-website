@@ -144,7 +144,25 @@ function ColorSwatch({ label, value, onChange }) {
 function LogoPreview({ placement, theme, logoUrl, height }) {
   const src = logoUrl ? resolveAssetUrl(logoUrl) : null;
   const previewHeight = Number(height) || 40;
-  const img = src ? (
+  const [loading, setLoading] = useState(Boolean(src));
+  const [errored, setErrored] = useState(false);
+
+  useEffect(() => {
+    if (!src) { setLoading(false); setErrored(false); return; }
+    let mounted = true;
+    setLoading(true);
+    setErrored(false);
+    const img = typeof window !== 'undefined' ? new window.Image() : null;
+    if (!img) { if (mounted) setLoading(false); return () => { mounted = false; }; }
+    img.onload = () => { if (mounted) setLoading(false); };
+    img.onerror = () => { if (mounted) { setLoading(false); setErrored(true); } };
+    img.src = src;
+    return () => { mounted = false; };
+  }, [src]);
+
+  const img = loading ? (
+    <div className="rounded-md bg-zinc-900 animate-pulse" style={{ width: 'auto', height: `${previewHeight}px`, minWidth: `${previewHeight}px`, minHeight: `${previewHeight}px` }} aria-hidden />
+  ) : src && !errored ? (
     <img src={src} alt="Logo preview" className="max-w-full max-h-full object-contain" />
   ) : (
     <div className="flex items-center justify-center h-full text-[10px] text-zinc-500">No logo</div>
