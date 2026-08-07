@@ -39,7 +39,7 @@ export default function AuraBackground({ projectId = 'HzcaAbRLaALMhHJp8gLY', cla
   }, []);
 
   return (
-    <div className={`fixed inset-x-0 top-[30px] bottom-0 -z-10 overflow-hidden pointer-events-none ${className}`}>
+    <div className={`fixed inset-0 -z-10 overflow-hidden pointer-events-none ${className}`}>
       {/* Opaque so .aura-tint's mix-blend-mode has something to blend against
           before the canvas has painted — otherwise the raw gradient flashes unblended. */}
       <div className="absolute inset-0 bg-[#09090B]" />

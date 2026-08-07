@@ -2,6 +2,7 @@ import { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
 import { AlreadyAuthed, CustomerRoute, ProtectedRoute } from '../components/ProtectedRoute';
 import AdminLayout from '../layouts/AdminLayout';
+import App from '../App.jsx';
 
 const Home = lazy(() => import('../pages/Home.jsx'));
 const Services = lazy(() => import('../pages/Services.jsx'));
@@ -34,56 +35,62 @@ const Dashboards = lazy(() => import('../pages/admin/Dashboards.jsx'));
 const DashboardBuilder = lazy(() => import('../pages/admin/DashboardBuilder.jsx'));
 
 export const routes = [
-  { path: '/', element: <Home /> },
-  { path: '/services', element: <Services /> },
-  { path: '/portfolio', element: <Portfolio /> },
-  { path: '/about', element: <About /> },
   {
-    path: '/sign-in',
-    element: <AlreadyAuthed><SignIn /></AlreadyAuthed>
-  },
-  {
-    path: '/sign-up',
-    element: <AlreadyAuthed><SignUp /></AlreadyAuthed>
-  },
-  {
-    path: '/forgot-password',
-    element: <AlreadyAuthed><ForgotPassword /></AlreadyAuthed>
-  },
-  {
-    path: '/reset-password/:token',
-    element: <AlreadyAuthed><ResetPassword /></AlreadyAuthed>
-  },
-  {
-    path: '/welcome',
-    element: <CustomerRoute><Welcome /></CustomerRoute>
-  },
-  {
-    path: '/admin',
-    element: <ProtectedRoute><AdminLayout /></ProtectedRoute>,
+    path: '/',
+    element: <App />,
     children: [
-      { index: true, element: <Navigate to="/admin/dashboard" replace /> },
-      { path: 'dashboard', element: <Dashboard /> },
-      { path: 'contacts', element: <Contacts /> },
-      { path: 'contacts/:id', element: <ContactDetail /> },
-      { path: 'newsletter', element: <Newsletter /> },
-      { path: 'testimonials', element: <Testimonials /> },
-      { path: 'services', element: <AdminServices /> },
-      { path: 'social-links', element: <AdminSocialLinks /> },
-      { path: 'about', element: <AdminAbout /> },
-      { path: 'branding', element: <AdminBranding /> },
-      { path: 'contact-form', element: <AdminContactForm /> },
-      { path: 'permissions', element: <AdminPermissions /> },
-      { path: 'users', element: <Users /> },
-      { path: 'audit-log', element: <AuditLog /> },
-      { path: 'system-settings', element: <SystemSettings /> },
-      { path: 'reports', element: <Reports /> },
-      { path: 'reports/new', element: <ReportBuilder /> },
-      { path: 'reports/:id/edit', element: <ReportBuilder /> },
-      { path: 'reports/:id/view', element: <ReportViewer /> },
-      { path: 'dashboards', element: <Dashboards /> },
-      { path: 'dashboards/new', element: <DashboardBuilder /> },
-      { path: 'dashboards/:id/edit', element: <DashboardBuilder /> },
+      { index: true, element: <Home /> },
+      { path: 'services', element: <Services /> },
+      { path: 'portfolio', element: <Portfolio /> },
+      { path: 'about', element: <About /> },
+      {
+        path: 'sign-in',
+        element: <AlreadyAuthed><SignIn /></AlreadyAuthed>
+      },
+      {
+        path: 'sign-up',
+        element: <AlreadyAuthed><SignUp /></AlreadyAuthed>
+      },
+      {
+        path: 'forgot-password',
+        element: <AlreadyAuthed><ForgotPassword /></AlreadyAuthed>
+      },
+      {
+        path: 'reset-password/:token',
+        element: <AlreadyAuthed><ResetPassword /></AlreadyAuthed>
+      },
+      {
+        path: 'welcome',
+        element: <CustomerRoute><Welcome /></CustomerRoute>
+      },
+      {
+        path: 'admin',
+        element: <ProtectedRoute><AdminLayout /></ProtectedRoute>,
+        children: [
+          { index: true, element: <Navigate to="/admin/dashboard" replace /> },
+          { path: 'dashboard', element: <Dashboard /> },
+          { path: 'contacts', element: <Contacts /> },
+          { path: 'contacts/:id', element: <ContactDetail /> },
+          { path: 'newsletter', element: <Newsletter /> },
+          { path: 'testimonials', element: <Testimonials /> },
+          { path: 'services', element: <AdminServices /> },
+          { path: 'social-links', element: <AdminSocialLinks /> },
+          { path: 'about', element: <AdminAbout /> },
+          { path: 'branding', element: <AdminBranding /> },
+          { path: 'contact-form', element: <AdminContactForm /> },
+          { path: 'permissions', element: <AdminPermissions /> },
+          { path: 'users', element: <Users /> },
+          { path: 'audit-log', element: <AuditLog /> },
+          { path: 'system-settings', element: <SystemSettings /> },
+          { path: 'reports', element: <Reports /> },
+          { path: 'reports/new', element: <ReportBuilder /> },
+          { path: 'reports/:id/edit', element: <ReportBuilder /> },
+          { path: 'reports/:id/view', element: <ReportViewer /> },
+          { path: 'dashboards', element: <Dashboards /> },
+          { path: 'dashboards/new', element: <DashboardBuilder /> },
+          { path: 'dashboards/:id/edit', element: <DashboardBuilder /> },
+        ]
+      }
     ]
   }
 ];
