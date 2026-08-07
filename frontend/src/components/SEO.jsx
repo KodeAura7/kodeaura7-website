@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { site } from '../constants/site';
 
 const SITE_URL = site.productionUrl;
@@ -64,40 +64,12 @@ export default function SEO({
   keywords,
   type = 'website',
 }) {
-  useEffect(() => {
-    const url = `${SITE_URL}${path}`;
-    const ogImage = image || DEFAULT_OG_IMAGE;
-    const fullTitle = title === SITE_NAME ? title : `${title} | ${SITE_NAME}`;
+  const url = `${SITE_URL}${path}`;
+  const ogImage = image || DEFAULT_OG_IMAGE;
+  const fullTitle = title === SITE_NAME ? title : `${title} | ${SITE_NAME}`;
 
-    document.title = fullTitle;
-
-    upsertMeta('name', 'description', description);
-    if (keywords) upsertMeta('name', 'keywords', keywords);
-    upsertMeta('name', 'robots', 'index, follow');
-    upsertMeta('name', 'author', SITE_NAME);
-
-    upsertLink('canonical', url);
-
-    upsertMeta('property', 'og:type', type);
-    upsertMeta('property', 'og:title', fullTitle);
-    upsertMeta('property', 'og:description', description);
-    upsertMeta('property', 'og:url', url);
-    upsertMeta('property', 'og:site_name', SITE_NAME);
-    upsertMeta('property', 'og:image', ogImage);
-    upsertMeta('property', 'og:image:width', '1200');
-    upsertMeta('property', 'og:image:height', '630');
-    upsertMeta('property', 'og:image:alt', `${fullTitle} — ${SITE_NAME}`);
-    upsertMeta('property', 'og:locale', 'en_IN');
-
-    upsertMeta('name', 'twitter:card', 'summary_large_image');
-    upsertMeta('name', 'twitter:site', TWITTER_HANDLE);
-    upsertMeta('name', 'twitter:title', fullTitle);
-    upsertMeta('name', 'twitter:description', description);
-    upsertMeta('name', 'twitter:image', ogImage);
-    upsertMeta('name', 'twitter:image:alt', `${fullTitle} — ${SITE_NAME}`);
-
-    if (path !== '/') {
-      upsertJsonLd('breadcrumb', {
+  const breadcrumbJsonLd = path !== '/'
+    ? {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
         itemListElement: toBreadcrumbs(path).map((item, idx) => ({
@@ -106,11 +78,40 @@ export default function SEO({
           name: item.name,
           item: item.item,
         })),
-      });
-    } else {
-      removeJsonLd('breadcrumb');
-    }
-  }, [title, description, path, image, keywords, type]);
+      }
+    : null;
 
-  return null;
+  return (
+    <Helmet>
+      <title>{fullTitle}</title>
+      <meta name="description" content={description} />
+      {keywords && <meta name="keywords" content={keywords} />}
+      <meta name="robots" content="index, follow" />
+      <meta name="author" content={SITE_NAME} />
+
+      <link rel="canonical" href={url} />
+
+      <meta property="og:type" content={type} />
+      <meta property="og:title" content={fullTitle} />
+      <meta property="og:description" content={description} />
+      <meta property="og:url" content={url} />
+      <meta property="og:site_name" content={SITE_NAME} />
+      <meta property="og:image" content={ogImage} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content={`${fullTitle} — ${SITE_NAME}`} />
+      <meta property="og:locale" content="en_IN" />
+
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content={TWITTER_HANDLE} />
+      <meta name="twitter:title" content={fullTitle} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:image:alt" content={`${fullTitle} — ${SITE_NAME}`} />
+
+      {breadcrumbJsonLd && (
+        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
+      )}
+    </Helmet>
+  );
 }

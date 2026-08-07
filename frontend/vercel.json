@@ -3,9 +3,23 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
+    { "source": "/services", "destination": "/services/index.html" },
+    { "source": "/portfolio", "destination": "/portfolio/index.html" },
+    { "source": "/about", "destination": "/about/index.html" },
+    { "source": "/sign-in", "destination": "/index.html" },
+    { "source": "/sign-up", "destination": "/index.html" },
+    { "source": "/forgot-password", "destination": "/index.html" },
+    { "source": "/reset-password/:token", "destination": "/index.html" },
+    { "source": "/welcome", "destination": "/index.html" },
+    { "source": "/admin", "destination": "/index.html" },
+    { "source": "/admin/:path*", "destination": "/index.html" }
+  ],
+  "redirects": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.kodeaura7.in" }],
+      "destination": "https://kodeaura7.in/:path*",
+      "permanent": true
     }
   ]
 }

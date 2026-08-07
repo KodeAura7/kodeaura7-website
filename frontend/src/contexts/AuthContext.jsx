@@ -7,6 +7,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const token = localStorage.getItem('admin_token') || sessionStorage.getItem('admin_token');
     if (!token) {
       setLoading(false);
